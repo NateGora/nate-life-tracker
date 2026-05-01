@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nate Life Tracker</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+</style>
+
+</head>
+
+<body class="bg-gray-100 p-4">
+
+<h1 class="text-2xl font-bold mb-4">Nate Life Tracker</h1>
+
+<div class="space-y-4">
+
+<div class="bg-white p-4 rounded-xl">
+<h2 class="font-bold">Gym</h2>
+<button onclick="toggleGym()" class="mt-2 bg-black text-white px-4 py-2 rounded">
+Marcar asistencia
+</button>
+<p id="gymStatus"></p>
+</div>
+
+<div class="bg-white p-4 rounded-xl">
+<h2 class="font-bold">Macros</h2>
+<button onclick="toggleMacros()" class="mt-2 bg-black text-white px-4 py-2 rounded">
+Cumplí macros
+</button>
+<p id="macroStatus"></p>
+</div>
+
+<div class="bg-white p-4 rounded-xl">
+<h2 class="font-bold">Oración</h2>
+<button onclick="togglePrayer()" class="mt-2 bg-black text-white px-4 py-2 rounded">
+Hice oración
+</button>
+<p id="prayerStatus"></p>
+</div>
+
+</div>
+
+<script>
+let data = JSON.parse(localStorage.getItem("tracker")) || {};
+
+function toggleGym() {
+data.gym = !data.gym;
+save();
+}
+
+function toggleMacros() {
+data.macros = !data.macros;
+save();
+}
+
+function togglePrayer() {
+data.prayer = !data.prayer;
+save();
+}
+
+function save() {
+localStorage.setItem("tracker", JSON.stringify(data));
+render();
+}
+
+function render() {
+document.getElementById("gymStatus").innerText = data.gym ? "✅ Hecho" : "❌ No";
+document.getElementById("macroStatus").innerText = data.macros ? "✅ Hecho" : "❌ No";
+document.getElementById("prayerStatus").innerText = data.prayer ? "✅ Hecho" : "❌ No";
+}
+
+render();
+</script>
+
+</body>
+</html>

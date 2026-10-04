@@ -8,79 +8,165 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Nate Life Tracker" />
-  <title>Nate Life Tracker 2.0</title>
+  <title>Nate Life Tracker 2.1</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <style>
-    *{-webkit-tap-highlight-color:transparent}
+    :root{
+      --ink:#171915;
+      --ivory:#f5f2e9;
+      --paper:#fffdf8;
+      --olive:#626a4d;
+      --muted:#7b7d75;
+      --line:rgba(23,25,21,.09)
+    }
+
+    *{
+      -webkit-tap-highlight-color:transparent;
+      box-sizing:border-box
+    }
+
+    html{
+      background:var(--ivory)
+    }
+
     body{
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+      background:
+        radial-gradient(circle at top right,#ece8d9 0,transparent 28%),
+        var(--ivory);
+      color:var(--ink)
     }
+
     .safe-bottom{
-      padding-bottom:calc(92px + env(safe-area-inset-bottom))
+      padding-bottom:calc(104px + env(safe-area-inset-bottom))
     }
+
     .glass{
-      background:rgba(255,255,255,.88);
-      backdrop-filter:blur(18px)
+      background:rgba(245,242,233,.88);
+      backdrop-filter:blur(24px);
+      -webkit-backdrop-filter:blur(24px)
     }
+
     .tab-active{
-      background:#0f172a;
-      color:#fff
+      background:var(--ink);
+      color:#fff;
+      box-shadow:0 8px 24px rgba(23,25,21,.16)
     }
+
     .tab-inactive{
-      background:white;
-      color:#64748b
+      background:transparent;
+      color:#74766f
     }
+
     input,select,textarea{
-      font-size:16px
+      font-size:16px!important;
+      background:#fffdf8!important;
+      border-color:var(--line)!important
     }
+
     .bar{
-      height:8px;
+      height:7px;
       border-radius:999px;
-      background:#e2e8f0;
+      background:#e7e3d8;
       overflow:hidden
     }
+
     .bar>span{
       display:block;
       height:100%;
-      background:#0f172a;
+      background:var(--olive);
       border-radius:999px
+    }
+
+    .hide{
+      display:none!important
+    }
+
+    .premium-card{
+      background:rgba(255,253,248,.92);
+      border:1px solid var(--line);
+      box-shadow:0 12px 35px rgba(40,39,31,.055)
+    }
+
+    .hero{
+      background:linear-gradient(145deg,#171915,#2b2e25);
+      box-shadow:0 18px 42px rgba(23,25,21,.18)
+    }
+
+    button{
+      transition:transform .12s ease,opacity .12s ease
+    }
+
+    button:active{
+      transform:scale(.98)
+    }
+
+    .nav-icon{
+      display:block;
+      margin:0 auto 3px;
+      width:19px;
+      height:19px
+    }
+
+    .lock-orb{
+      width:78px;
+      height:78px;
+      border-radius:28px;
+      background:linear-gradient(145deg,#252820,#11130f);
+      display:grid;
+      place-items:center;
+      box-shadow:0 18px 50px rgba(23,25,21,.22)
     }
   </style>
 </head>
 
-<body class="bg-slate-100 text-slate-950">
+<body class="bg-[#e9e5da] text-slate-950">
 
 <main class="max-w-md mx-auto min-h-screen safe-bottom px-4 pt-5">
   <section id="app"></section>
 </main>
 
-<nav class="fixed bottom-0 left-0 right-0 glass border-t border-slate-200 z-50">
-  <div class="max-w-md mx-auto grid grid-cols-5 gap-1 px-2 pt-2 pb-[calc(10px+env(safe-area-inset-bottom))]">
+<nav id="bottom-nav"
+  class="fixed bottom-0 left-0 right-0 glass border-t border-black/5 z-50">
 
-    <button onclick="setView('inicio')" id="nav-inicio"
-      class="nav rounded-2xl py-2 text-[11px] font-bold">
-      Inicio
+  <div class="max-w-md mx-auto grid grid-cols-5 gap-1 px-2 pt-2 pb-[calc(9px+env(safe-area-inset-bottom))]">
+
+    <button onclick="setView('inicio')"
+      id="nav-inicio"
+      class="nav rounded-2xl py-2 text-[10px] font-bold">
+      ⌂
+      <span class="block mt-1">Inicio</span>
     </button>
 
-    <button onclick="setView('gym')" id="nav-gym"
-      class="nav rounded-2xl py-2 text-[11px] font-bold">
-      Gym
+    <button onclick="setView('gym')"
+      id="nav-gym"
+      class="nav rounded-2xl py-2 text-[10px] font-bold">
+      ◫
+      <span class="block mt-1">Entrenar</span>
     </button>
 
-    <button onclick="setView('nutricion')" id="nav-nutricion"
-      class="nav rounded-2xl py-2 text-[11px] font-bold">
-      Nutrición
+    <button onclick="setView('nutricion')"
+      id="nav-nutricion"
+      class="nav rounded-2xl py-2 text-[10px] font-bold">
+      ◌
+      <span class="block mt-1">Nutrición</span>
     </button>
 
-    <button onclick="setView('salud')" id="nav-salud"
-      class="nav rounded-2xl py-2 text-[11px] font-bold">
-      Salud
+    <button onclick="setView('salud')"
+      id="nav-salud"
+      class="nav rounded-2xl py-2 text-[10px] font-bold">
+      ⌁
+      <span class="block mt-1">Progreso</span>
     </button>
 
-    <button onclick="setView('fe')" id="nav-fe"
-      class="nav rounded-2xl py-2 text-[11px] font-bold">
-      Fe
+    <button onclick="setView('mas')"
+      id="nav-mas"
+      class="nav rounded-2xl py-2 text-[10px] font-bold">
+      •••
+      <span class="block mt-1">Más</span>
     </button>
 
   </div>
@@ -89,10 +175,18 @@
 <script>
 
 const TZ='America/Mexico_City';
+const DEFAULT_PIN='2943';
 
 const today=()=>new Date().toLocaleDateString(
   'en-CA',
   {timeZone:TZ}
+);
+
+const num=x=>Number(x||0);
+
+const clamp=x=>Math.max(
+  0,
+  Math.min(100,x)
 );
 
 const esc=s=>String(s??'').replace(
@@ -106,10 +200,6 @@ const esc=s=>String(s??'').replace(
   }[m])
 );
 
-const num=x=>Number(x||0);
-
-const clamp=x=>Math.max(0,Math.min(100,x));
-
 const DAYS=[
   'Domingo',
   'Lunes',
@@ -120,137 +210,143 @@ const DAYS=[
   'Sábado'
 ];
 
-
-/* =========================
-   RUTINA NATE Q4
-========================= */
-
 const routineV2=[
 
-{
-  day:'Lunes',
-  name:'PUSH',
-  focus:'Pecho + hombro + tríceps',
-  ex:[
-    ['Press inclinado con mancuernas','Pecho',3,'6–10','2:00',2],
-    ['Press pecho máquina / Smith plano','Pecho',3,'8–12','2:00',2],
-    ['Elevación lateral en polea unilateral','Hombro',3,'12–20','1:00',1],
-    ['Press hombro máquina / mancuernas','Hombro',2,'8–12','1:30',2],
-    ['Extensión tríceps en polea','Tríceps',2,'10–15','1:00',1],
-    ['Extensión tríceps overhead cuerda','Tríceps',2,'10–15','1:00',1]
-  ]
-},
+  {
+    day:'Lunes',
+    name:'PUSH',
+    focus:'Pecho + hombro + tríceps',
+    ex:[
+      ['Press inclinado con mancuernas','Pecho',3,'6–10','2:00',2],
+      ['Press pecho máquina / Smith plano','Pecho',3,'8–12','2:00',2],
+      ['Elevación lateral en polea unilateral','Hombro',3,'12–20','1:00',1],
+      ['Press hombro máquina / mancuernas','Hombro',2,'8–12','1:30',2],
+      ['Extensión tríceps en polea','Tríceps',2,'10–15','1:00',1],
+      ['Extensión tríceps overhead cuerda','Tríceps',2,'10–15','1:00',1]
+    ]
+  },
 
-{
-  day:'Martes',
-  name:'PULL',
-  focus:'Espalda + deltoide posterior + bíceps',
-  ex:[
-    ['Jalón al pecho agarre neutro/medio','Espalda',3,'6–10','2:00',2],
-    ['Remo con pecho apoyado','Espalda',3,'8–12','2:00',2],
-    ['Jalón unilateral hacia cadera','Espalda',2,'10–15','1:15',1],
-    ['Reverse pec-deck / pájaros','Hombro posterior',3,'12–20','1:00',1],
-    ['Curl inclinado mancuernas','Bíceps',2,'8–12','1:00',1],
-    ['Curl martillo','Bíceps',2,'10–15','1:00',1]
-  ]
-},
+  {
+    day:'Martes',
+    name:'PULL',
+    focus:'Espalda + deltoide posterior + bíceps',
+    ex:[
+      ['Jalón al pecho agarre neutro/medio','Espalda',3,'6–10','2:00',2],
+      ['Remo con pecho apoyado','Espalda',3,'8–12','2:00',2],
+      ['Jalón unilateral hacia cadera','Espalda',2,'10–15','1:15',1],
+      ['Reverse pec-deck / pájaros','Hombro posterior',3,'12–20','1:00',1],
+      ['Curl inclinado mancuernas','Bíceps',2,'8–12','1:00',1],
+      ['Curl martillo','Bíceps',2,'10–15','1:00',1]
+    ]
+  },
 
-{
-  day:'Miércoles',
-  name:'LEGS A',
-  focus:'Cuádriceps + femoral + core',
-  ex:[
-    ['Hack squat / sentadilla Smith','Pierna',3,'6–10','2:30',2],
-    ['Peso muerto rumano','Femoral',3,'6–10','2:00',2],
-    ['Prensa','Cuádriceps',2,'10–15','1:30',2],
-    ['Curl femoral','Femoral',3,'10–15','1:15',1],
-    ['Extensión de cuádriceps','Cuádriceps',2,'12–15','1:00',1],
-    ['Pantorrilla','Pantorrilla',2,'10–15','1:00',1],
-    ['Elevaciones de piernas/rodillas','Core',3,'8–15','1:00',1]
-  ]
-},
+  {
+    day:'Miércoles',
+    name:'LEGS A',
+    focus:'Cuádriceps + femoral + core',
+    ex:[
+      ['Hack squat / sentadilla Smith','Pierna',3,'6–10','2:30',2],
+      ['Peso muerto rumano','Femoral',3,'6–10','2:00',2],
+      ['Prensa','Cuádriceps',2,'10–15','1:30',2],
+      ['Curl femoral','Femoral',3,'10–15','1:15',1],
+      ['Extensión de cuádriceps','Cuádriceps',2,'12–15','1:00',1],
+      ['Pantorrilla','Pantorrilla',2,'10–15','1:00',1],
+      ['Elevaciones de piernas/rodillas','Core',3,'8–15','1:00',1]
+    ]
+  },
 
-{
-  day:'Jueves',
-  name:'UPPER',
-  focus:'Torso + especialización',
-  ex:[
-    ['Press inclinado Smith','Pecho',3,'8–12','2:00',2],
-    ['Remo sentado polea / máquina','Espalda',3,'8–12','1:30',2],
-    ['Jalón al pecho','Espalda',2,'10–15','1:30',2],
-    ['Elevaciones laterales','Hombro',3,'12–20','1:00',1],
-    ['Curl predicador / máquina','Bíceps',2,'10–15','1:00',1],
-    ['Extensión tríceps polea','Tríceps',2,'10–15','1:00',1]
-  ]
-},
+  {
+    day:'Jueves',
+    name:'UPPER',
+    focus:'Torso + especialización',
+    ex:[
+      ['Press inclinado Smith','Pecho',3,'8–12','2:00',2],
+      ['Remo sentado polea / máquina','Espalda',3,'8–12','1:30',2],
+      ['Jalón al pecho','Espalda',2,'10–15','1:30',2],
+      ['Elevaciones laterales','Hombro',3,'12–20','1:00',1],
+      ['Curl predicador / máquina','Bíceps',2,'10–15','1:00',1],
+      ['Extensión tríceps polea','Tríceps',2,'10–15','1:00',1]
+    ]
+  },
 
-{
-  day:'Viernes',
-  name:'LEGS B + DELTS/ARMS',
-  focus:'Cadena posterior + estética + core',
-  ex:[
-    ['Hip thrust','Glúteo',3,'6–10','2:00',2],
-    ['Bulgarian split squat','Pierna',2,'8–12','1:30',2],
-    ['Curl femoral','Femoral',3,'10–15','1:15',1],
-    ['Elevación lateral máquina/mancuerna','Hombro',3,'12–20','1:00',1],
-    ['Curl en polea','Bíceps',2,'10–15','1:00',1],
-    ['Extensión tríceps overhead','Tríceps',2,'10–15','1:00',1],
-    ['Crunch en polea','Core',3,'10–15','1:00',1]
-  ]
-}
+  {
+    day:'Viernes',
+    name:'LEGS B + DELTS/ARMS',
+    focus:'Cadena posterior + estética + core',
+    ex:[
+      ['Hip thrust','Glúteo',3,'6–10','2:00',2],
+      ['Bulgarian split squat','Pierna',2,'8–12','1:30',2],
+      ['Curl femoral','Femoral',3,'10–15','1:15',1],
+      ['Elevación lateral máquina/mancuerna','Hombro',3,'12–20','1:00',1],
+      ['Curl en polea','Bíceps',2,'10–15','1:00',1],
+      ['Extensión tríceps overhead','Tríceps',2,'10–15','1:00',1],
+      ['Crunch en polea','Core',3,'10–15','1:00',1]
+    ]
+  }
 
 ];
 
-
-/* =========================
-   DATOS
-========================= */
+const mealPlan=[
+  [
+    '05:40',
+    'Pre-gym',
+    'Whey 1 scoop + plátano + creatina 5 g + agua. Glutamina según tolerancia GI.'
+  ],
+  [
+    '07:15',
+    'Desayuno',
+    'Verduras 160–170 g + 3 huevos + 2–3 claras + quinoa cocida 140 g + kiwi + crema de almendras.'
+  ],
+  [
+    '11:30',
+    'Comida 2',
+    'Arroz basmati cocido 120–150 g + 1 lata de atún + ½ aguacate.'
+  ],
+  [
+    '14:30',
+    'Comida principal',
+    'Pollo/res cocidos 150–160 g + papa/camote cocido 120–150 g + verduras ~170 g.'
+  ],
+  [
+    '18:30',
+    'Snack',
+    'Yogurt griego + berries + chía + avena opcional según requerimiento.'
+  ],
+  [
+    '21:00',
+    'Cena',
+    'Tilapia o salmón + verduras + carbohidrato según objetivo del día.'
+  ]
+];
 
 function fresh(){
-  return {
-    version:2,
 
+  return{
+    version:2.1,
+    pin:DEFAULT_PIN,
     gymAttendance:{},
-
-    routineV2,
-
     workouts:{},
-
     progress:[],
-
+    cardio:{},
     macroGoal:{
       calories:2400,
       protein:155,
       carbs:275,
       fats:70
     },
-
     macroLog:{},
-
     meals:{},
-
     body:{},
-
     sleep:{},
-
-    cardio:{},
-
     faith:{},
-
     finance:[],
-
     budgets:{},
-
     settings:{
       returnPhaseStart:today()
     }
   };
+
 }
-
-
-/* =========================
-   MIGRACIÓN V1 → V2
-========================= */
 
 function migrate(){
 
@@ -263,32 +359,44 @@ function migrate(){
   }
   catch(e){}
 
-  if(old.version===2){
-    return old;
-  }
-
-  let n=fresh();
+  const n=fresh();
 
   [
     'gymAttendance',
+    'workouts',
     'progress',
+    'cardio',
     'macroLog',
+    'meals',
+    'body',
+    'sleep',
+    'faith',
     'finance',
-    'budgets',
-    'faith'
+    'budgets'
   ].forEach(k=>{
-    if(old[k]){
+    if(old[k]!==undefined){
       n[k]=old[k];
     }
   });
 
+  if(old.pin){
+    n.pin=old.pin;
+  }
+
   if(old.macroGoal){
-    n.oldMacroGoal=old.macroGoal;
+    n.macroGoal=old.macroGoal;
+  }
+
+  if(old.settings){
+    n.settings={
+      ...n.settings,
+      ...old.settings
+    };
   }
 
   return n;
-}
 
+}
 
 let data=migrate();
 
@@ -298,14 +406,9 @@ localStorage.setItem(
 );
 
 let view=
-  localStorage.getItem('nlt-view-v2')
+  localStorage.getItem('nlt-view-v21')
   ||
   'inicio';
-
-
-/* =========================
-   SISTEMA
-========================= */
 
 function save(renderAgain=true){
 
@@ -317,139 +420,119 @@ function save(renderAgain=true){
   if(renderAgain){
     render();
   }
+
 }
 
-
-function setView(v){
-
-  view=v;
-
-  localStorage.setItem(
-    'nlt-view-v2',
-    v
-  );
-
-  render();
+function val(id){
+  return document.getElementById(id)?.value||'';
 }
-
 
 function app(html){
-
   document.getElementById('app').innerHTML=html;
-
 }
-
-
-/* =========================
-   UI
-========================= */
 
 function section(title,sub=''){
 
-  return `
-    <div class="mb-4">
-
-      <h1 class="text-3xl font-black tracking-tight">
+  return`
+    <div class="mb-5">
+      <h1 class="text-[30px] leading-none font-black tracking-[-.035em]">
         ${title}
       </h1>
 
       ${
         sub
         ?
-        `<p class="text-slate-500 text-sm mt-1">
-          ${sub}
-        </p>`
+        `<p class="text-[#7b7d75] text-sm mt-2">${sub}</p>`
         :
         ''
       }
-
     </div>
   `;
+
 }
 
+function card(title,value,sub=''){
 
-function card(title,value,sub){
-
-  return `
-    <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200">
-
-      <p class="text-xs font-bold text-slate-500">
+  return`
+    <div class="premium-card rounded-[26px] p-4">
+      <p class="text-[11px] font-black uppercase tracking-[.12em] text-[#7b7d75]">
         ${title}
       </p>
 
-      <p class="text-2xl font-black mt-1">
+      <p class="text-2xl font-black mt-1 tracking-tight">
         ${value}
       </p>
 
-      <p class="text-xs text-slate-500 mt-1">
+      <p class="text-xs text-[#7b7d75] mt-1">
         ${sub}
       </p>
-
     </div>
   `;
+
 }
 
+function input(label,id,value='',type='text',placeholder=''){
 
-function input(label,name,value='',type='text',placeholder=''){
-
-  return `
-    <label>
-
-      <span class="text-xs font-bold text-slate-500">
+  return`
+    <label class="block">
+      <span class="text-[11px] uppercase tracking-[.1em] font-black text-[#7b7d75]">
         ${label}
       </span>
 
       <input
-        id="${name}"
+        id="${id}"
         type="${type}"
         value="${esc(value)}"
         placeholder="${placeholder}"
-        class="mt-1 w-full rounded-2xl border border-slate-200 px-4 py-3 bg-white outline-none focus:ring-2 focus:ring-slate-900"
+        class="mt-1 w-full rounded-2xl border px-4 py-3 outline-none focus:ring-2 focus:ring-[#626a4d]"
       >
-
     </label>
   `;
-}
 
+}
 
 function pill(text,active,click){
 
-  return `
+  return`
     <button
       onclick="${click}"
       class="px-4 py-2 rounded-full whitespace-nowrap text-sm font-black ${
         active
         ?
-        'bg-slate-950 text-white'
+        'bg-[#171915] text-white'
         :
-        'bg-white text-slate-500 border border-slate-200'
+        'bg-[#fffdf8] text-[#7b7d75] border border-black/5'
       }"
     >
       ${text}
     </button>
   `;
-}
-
-
-function val(x){
-
-  return document.getElementById(x)?.value||'';
 
 }
 
+function pct(a,b){
+  return b?clamp(Math.round(a/b*100)):0;
+}
+
+function bar(a,b){
+
+  return`
+    <div class="bar mt-2">
+      <span style="width:${pct(a,b)}%"></span>
+    </div>
+  `;
+
+}
 
 function dayName(date=today()){
 
-  const [y,m,d]=date
-    .split('-')
-    .map(Number);
+  const [y,m,d]=date.split('-').map(Number);
 
   return DAYS[
     new Date(y,m-1,d).getDay()
   ];
 
 }
-
 
 function planFor(date=today()){
 
@@ -459,101 +542,164 @@ function planFor(date=today()){
 
 }
 
+function isUnlocked(){
+  return sessionStorage.getItem('nlt-unlocked')==='1';
+}
 
-function pct(a,b){
+function lock(){
 
-  return b
-    ?
-    clamp(Math.round(a/b*100))
-    :
-    0;
+  sessionStorage.removeItem('nlt-unlocked');
+
+  render();
 
 }
 
+function unlock(){
 
-function bar(a,b){
+  const pin=val('pin-entry');
 
-  return `
-    <div class="bar mt-2">
-      <span style="width:${pct(a,b)}%"></span>
+  if(pin===String(data.pin||DEFAULT_PIN)){
+
+    sessionStorage.setItem(
+      'nlt-unlocked',
+      '1'
+    );
+
+    render();
+
+  }else{
+
+    const el=document.getElementById('pin-error');
+
+    if(el){
+      el.textContent='PIN incorrecto';
+    }
+
+  }
+
+}
+
+function lockScreen(){
+
+  document.getElementById('bottom-nav').classList.add('hide');
+
+  app(`
+    <div class="min-h-[82vh] flex flex-col justify-center items-center px-5">
+
+      <div class="lock-orb text-white text-3xl font-black">
+        N
+      </div>
+
+      <p class="mt-7 text-[11px] tracking-[.24em] font-black text-[#7b7d75]">
+        NATE LIFE TRACKER
+      </p>
+
+      <h1 class="text-3xl font-black mt-2 tracking-tight">
+        Bienvenido, Nate.
+      </h1>
+
+      <p class="text-sm text-[#7b7d75] mt-2">
+        Tu sistema personal.
+      </p>
+
+      <div class="w-full max-w-xs mt-8">
+
+        <input
+          id="pin-entry"
+          type="password"
+          inputmode="numeric"
+          maxlength="8"
+          placeholder="PIN"
+          onkeydown="if(event.key==='Enter')unlock()"
+          class="w-full text-center tracking-[.4em] font-black rounded-[22px] border px-4 py-4"
+        >
+
+        <p id="pin-error"
+          class="text-red-600 text-xs text-center h-5 mt-2">
+        </p>
+
+        <button
+          onclick="unlock()"
+          class="w-full hero text-white rounded-[22px] py-4 font-black mt-2">
+          Entrar
+        </button>
+
+      </div>
+
+      <p class="text-xs text-[#9a9b95] mt-8">
+        THE NATE SYSTEM
+      </p>
+
     </div>
-  `;
+  `);
 
 }
 
+function setView(v){
 
-function habit(label,done){
+  view=v;
 
-  return `
-    <div class="flex justify-between bg-slate-50 rounded-2xl px-4 py-3">
+  localStorage.setItem(
+    'nlt-view-v21',
+    v
+  );
 
-      <span class="font-semibold">
-        ${label}
-      </span>
-
-      <span>
-        ${done?'✓':'○'}
-      </span>
-
-    </div>
-  `;
+  render();
 
 }
-
-
-/* =========================
-   INICIO
-========================= */
 
 function inicio(){
 
   const t=today();
-
   const plan=planFor(t);
-
-  const ml=data.macroLog[t]||{};
-
+  const macros=data.macroLog[t]||{};
   const body=data.body[t]||{};
-
-  const sl=data.sleep[t]||{};
-
-  const f=data.faith[t]||{};
-
-  const completed=
-    data.workouts[t]?.completed;
-
+  const sleep=data.sleep[t]||{};
+  const faith=data.faith[t]||{};
+  const done=!!data.workouts[t]?.completed;
 
   app(`
+    <div class="flex items-center justify-between mb-6">
 
-    ${section(
-      'Nate Life Tracker',
-      'The Nate System · dirección, no perfección.'
-    )}
+      <div>
+        <p class="text-[11px] tracking-[.18em] font-black text-[#7b7d75]">
+          THE NATE SYSTEM
+        </p>
 
+        <h1 class="text-[32px] font-black tracking-[-.04em]">
+          Hoy.
+        </h1>
+      </div>
 
-    <div class="bg-slate-950 text-white rounded-[2rem] p-5 shadow-lg mb-4">
+      <button
+        onclick="setView('mas')"
+        class="w-11 h-11 rounded-full premium-card font-black">
+        N
+      </button>
 
-      <p class="text-sm text-slate-300">
-        Hoy · ${dayName()} · ${t}
+    </div>
+
+    <div class="hero text-white rounded-[32px] p-6 mb-4">
+
+      <p class="text-xs text-white/60">
+        ${dayName()} · ${t}
       </p>
 
-      <h2 class="text-2xl font-black mt-1">
+      <h2 class="text-3xl font-black tracking-tight mt-2">
         ${
           plan
           ?
           plan.name
           :
-          (
-            dayName()==='Domingo'
-            ?
-            'Fútbol + recuperación'
-            :
-            'Recuperación / vida'
-          )
+          dayName()==='Domingo'
+          ?
+          'Fútbol + recuperación'
+          :
+          'Recuperación'
         }
       </h2>
 
-      <p class="text-sm text-slate-300 mt-1">
+      <p class="text-sm text-white/65 mt-1">
         ${
           plan
           ?
@@ -569,9 +715,8 @@ function inicio(){
         `
         <button
           onclick="setView('gym')"
-          class="mt-4 bg-white text-slate-950 rounded-2xl px-4 py-3 font-black w-full"
-        >
-          Abrir entrenamiento
+          class="mt-5 bg-[#f5f2e9] text-[#171915] rounded-2xl px-5 py-3 font-black">
+          ${done?'Ver sesión':'Comenzar entrenamiento'} →
         </button>
         `
         :
@@ -580,353 +725,282 @@ function inicio(){
 
     </div>
 
-
-    <div class="grid grid-cols-2 gap-3 mb-4">
+    <div class="grid grid-cols-2 gap-3">
 
       ${card(
-        'Entrenamiento',
-        completed?'Hecho':'Pendiente',
-        plan?plan.name:'—'
+        'Gym',
+        done?'Completo':'Pendiente',
+        plan?plan.name:'Descanso'
       )}
 
       ${card(
         'Nutrición',
-        ml.calories
-          ?
-          ml.calories+' kcal'
-          :
-          '—',
-        `meta ${data.macroGoal.calories} kcal`
+        macros.calories?macros.calories+' kcal':'—',
+        'Meta '+data.macroGoal.calories
       )}
 
       ${card(
         'Peso',
-        body.weight
-          ?
-          body.weight+' kg'
-          :
-          '—',
-        'promedio semanal en Salud'
+        body.weight?body.weight+' kg':'—',
+        'Tendencia > número'
       )}
 
       ${card(
         'Sueño',
-        sl.hours
-          ?
-          sl.hours+' h'
-          :
-          '—',
-        'objetivo ~7–8 h'
+        sleep.hours?sleep.hours+' h':'—',
+        'Recuperación'
       )}
 
     </div>
 
+    <div class="premium-card rounded-[28px] p-5 mt-4">
 
-    <div class="bg-white rounded-3xl p-5 border border-slate-200 mb-4">
+      <p class="text-[11px] tracking-[.12em] font-black text-[#7b7d75]">
+        HOY
+      </p>
 
-      <h2 class="font-black text-xl">
-        Hoy
-      </h2>
+      <div class="mt-3 space-y-3">
 
-      <div class="mt-3 space-y-2">
-
-        ${habit(
+        ${homeRow(
           'Entrenamiento',
-          !!completed
+          done
         )}
 
-        ${habit(
+        ${homeRow(
           'Nutrición registrada',
-          !!ml.calories
+          !!macros.calories
         )}
 
-        ${habit(
+        ${homeRow(
           'Oración',
-          !!f.prayed
+          !!faith.prayed
         )}
 
-        ${habit(
-          'Examen / oración nocturna',
-          !!f.exam
+        ${homeRow(
+          'Examen del día',
+          !!faith.exam
         )}
 
       </div>
 
     </div>
 
+    <div class="rounded-[28px] p-5 mt-4 bg-[#e5e1d2]">
 
-    <div class="bg-white rounded-3xl p-5 border border-slate-200">
-
-      <p class="text-xs font-black text-slate-500">
-        REGLA DEL SISTEMA
+      <p class="text-[11px] tracking-[.12em] font-black text-[#626a4d]">
+        NATE CODE
       </p>
 
-      <p class="font-black mt-1">
+      <p class="font-black text-lg mt-1">
         Ritmos, no perfección.
       </p>
 
-      <p class="text-sm text-slate-500 mt-1">
-        Si una semana se complica, ajusta.
-        No reinicies tu vida el lunes.
+      <p class="text-sm text-[#6f7169] mt-1">
+        El sistema sirve a mi vida; mi vida no sirve al sistema.
       </p>
 
     </div>
-
   `);
 
 }
 
+function homeRow(label,done){
 
-/* =========================
-   GYM
-========================= */
+  return`
+    <div class="flex items-center justify-between py-1">
+
+      <span class="font-semibold">
+        ${label}
+      </span>
+
+      <span class="${
+        done
+        ?
+        'bg-[#626a4d] text-white'
+        :
+        'bg-[#e7e3d8] text-[#7b7d75]'
+      } w-7 h-7 rounded-full grid place-items-center text-xs font-black">
+        ${done?'✓':'○'}
+      </span>
+
+    </div>
+  `;
+
+}
 
 function gym(tab='hoy'){
 
   app(`
-
     ${section(
-      'Gym',
-      '5 días L–V · 50 min · sábado recuperación opcional.'
+      'Entrenar',
+      '50 minutos. Calidad, progresión y consistencia.'
     )}
 
-    <div class="flex gap-2 mb-5 overflow-x-auto">
-
-      ${pill(
-        'Hoy',
-        tab==='hoy',
-        "gym('hoy')"
-      )}
-
-      ${pill(
-        'Rutina',
-        tab==='rutina',
-        "gym('rutina')"
-      )}
-
-      ${pill(
-        'Historial',
-        tab==='historial',
-        "gym('historial')"
-      )}
-
-      ${pill(
-        'Cardio',
-        tab==='cardio',
-        "gym('cardio')"
-      )}
-
+    <div class="flex gap-2 overflow-x-auto mb-5">
+      ${pill('Hoy',tab==='hoy',"gym('hoy')")}
+      ${pill('Rutina',tab==='rutina',"gym('rutina')")}
+      ${pill('Historial',tab==='historial',"gym('historial')")}
+      ${pill('Cardio',tab==='cardio',"gym('cardio')")}
     </div>
 
     <div id="gym-content"></div>
-
   `);
 
-
-  if(tab==='hoy'){
-    gymToday();
-  }
-
-  if(tab==='rutina'){
-    gymRoutine();
-  }
-
-  if(tab==='historial'){
-    gymHistory();
-  }
-
-  if(tab==='cardio'){
-    cardio();
-  }
+  if(tab==='hoy')gymToday();
+  if(tab==='rutina')gymRoutine();
+  if(tab==='historial')gymHistory();
+  if(tab==='cardio')cardio();
 
 }
 
+function phaseSets(sets){
 
-function phaseSets(exSets){
+  const start=new Date(
+    (data.settings.returnPhaseStart||today())+'T12:00:00'
+  );
 
-  const start=
-    new Date(
-      data.settings.returnPhaseStart+
-      'T12:00:00'
-    );
+  const now=new Date(
+    today()+'T12:00:00'
+  );
 
-  const now=
-    new Date(
-      today()+
-      'T12:00:00'
-    );
-
-  const days=
-    Math.floor(
-      (now-start)/86400000
-    );
+  const days=Math.floor(
+    (now-start)/86400000
+  );
 
   return days<14
     ?
-    Math.min(2,exSets)
+    Math.min(2,sets)
     :
-    exSets;
+    sets;
 
 }
-
 
 function gymToday(){
 
   const t=today();
-
   const plan=planFor(t);
+  const w=data.workouts[t]||{
+    entries:[],
+    completed:false
+  };
 
-  const w=
-    data.workouts[t]
-    ||
-    {
-      sets:{},
-      completed:false
-    };
-
-  const el=
-    document.getElementById(
-      'gym-content'
-    );
-
+  const el=document.getElementById('gym-content');
 
   if(!plan){
 
     el.innerHTML=`
+      <div class="premium-card rounded-[28px] p-5">
 
-      <div class="bg-white rounded-3xl p-5 border">
-
-        <h2 class="font-black text-xl">
-          Sin pesas programadas
+        <h2 class="text-xl font-black">
+          Sin pesas programadas.
         </h2>
 
-        <p class="text-slate-500 mt-1">
-
+        <p class="text-sm text-[#7b7d75] mt-2">
           ${
             dayName()==='Domingo'
             ?
             'Fútbol + recuperación.'
             :
-            'Sábado es recuperación de una sesión perdida si aplica.'
+            'Sábado funciona como recuperación opcional si perdiste una sesión.'
           }
-
         </p>
 
       </div>
     `;
 
     return;
-
   }
 
-
   el.innerHTML=`
+    <div class="hero text-white rounded-[30px] p-5 mb-4">
 
-    <div class="bg-white rounded-3xl p-5 border border-slate-200 mb-4">
+      <p class="text-xs text-white/55">
+        ${plan.day}
+      </p>
 
-      <div class="flex justify-between">
+      <h2 class="text-2xl font-black mt-1">
+        ${plan.name}
+      </h2>
 
-        <div>
+      <p class="text-sm text-white/60">
+        ${plan.focus}
+      </p>
 
-          <p class="text-xs font-black text-slate-500">
-            ${plan.day}
-          </p>
+      <div class="mt-4 flex gap-2 text-[11px]">
 
-          <h2 class="font-black text-2xl">
-            ${plan.name}
-          </h2>
+        <span class="bg-white/10 rounded-full px-3 py-2">
+          50 min
+        </span>
 
-          <p class="text-sm text-slate-500">
-            ${plan.focus}
-          </p>
+        <span class="bg-white/10 rounded-full px-3 py-2">
+          RIR 1–2
+        </span>
 
-        </div>
-
-        <span class="text-xs font-black bg-slate-100 rounded-full h-fit px-3 py-2">
-          RIR 1–2*
+        <span class="bg-white/10 rounded-full px-3 py-2">
+          Progresión doble
         </span>
 
       </div>
 
-      <p class="text-xs text-slate-500 mt-3">
-        *Primeras 2 semanas:
-        2 series por ejercicio y RIR ~3.
-      </p>
-
     </div>
-
 
     <div class="space-y-3">
-
       ${
-        plan.ex
-          .map(
-            (e,i)=>exerciseCard(e,i,w)
-          )
-          .join('')
+        plan.ex.map(
+          (e,i)=>exerciseCard(e,i,w)
+        ).join('')
       }
-
     </div>
-
 
     <button
       onclick="finishWorkout()"
-      class="mt-4 w-full ${
+      class="w-full mt-4 ${
         w.completed
         ?
-        'bg-green-600'
+        'bg-[#626a4d]'
         :
-        'bg-slate-950'
-      } text-white rounded-2xl py-4 font-black"
-    >
+        'bg-[#171915]'
+      } text-white rounded-[22px] py-4 font-black">
 
       ${
         w.completed
         ?
-        'Entrenamiento completado ✓'
+        'Sesión completada ✓'
         :
-        'Finalizar entrenamiento'
+        'Finalizar sesión'
       }
 
     </button>
-
   `;
 
 }
 
-
-function lastExercise(exercise){
+function lastExercise(name){
 
   const rows=[];
 
-  Object.entries(
-    data.workouts
-  ).forEach(
+  Object.entries(data.workouts).forEach(
     ([date,w])=>{
 
-      const x=
-        w.entries?.find(
-          a=>a.exercise===exercise
-        );
+      const e=(w.entries||[]).find(
+        x=>x.exercise===name
+      );
 
-      if(x){
+      if(e){
         rows.push({
           date,
-          ...x
+          ...e
         });
       }
 
     }
   );
 
-  return rows
-    .sort(
-      (a,b)=>
-        b.date.localeCompare(a.date)
-    )[0];
+  return rows.sort(
+    (a,b)=>b.date.localeCompare(a.date)
+  )[0];
 
 }
-
 
 function exerciseCard(e,i,w){
 
@@ -939,56 +1013,53 @@ function exerciseCard(e,i,w){
     rir
   ]=e;
 
-  const n=
-    phaseSets(sets);
+  const effectiveSets=phaseSets(sets);
 
-  const entry=
-    w.entries?.find(
-      x=>x.exercise===name
-    );
+  const entry=(w.entries||[]).find(
+    x=>x.exercise===name
+  );
 
-  const last=
-    lastExercise(name);
+  const last=lastExercise(name);
 
+  return`
+    <div class="premium-card rounded-[26px] p-4">
 
-  return `
-
-    <div class="bg-white rounded-3xl p-4 border border-slate-200">
-
-      <div class="flex justify-between gap-3">
+      <div class="flex justify-between gap-4">
 
         <div>
 
-          <h3 class="font-black">
+          <p class="text-[10px] tracking-[.12em] font-black text-[#626a4d] uppercase">
+            ${muscle}
+          </p>
+
+          <h3 class="font-black mt-1">
             ${name}
           </h3>
 
-          <p class="text-xs text-slate-500">
-            ${muscle}
-            · ${n}×${reps}
-            · descanso ${rest}
+          <p class="text-xs text-[#7b7d75] mt-1">
+            ${effectiveSets} × ${reps}
+            · ${rest}
             · RIR ${
-              phaseSets(sets)<sets
-              ?
-              3
-              :
-              rir
+              effectiveSets<sets?3:rir
             }
           </p>
 
         </div>
 
-
         ${
           last
           ?
           `
-          <div class="text-right text-[11px] text-slate-500">
-            Último
-            <br>
-            <b>
-              ${esc(last.weight||'—')} kg
-            </b>
+          <div class="text-right shrink-0">
+
+            <p class="text-[10px] text-[#7b7d75]">
+              ÚLTIMO
+            </p>
+
+            <p class="font-black">
+              ${last.weight||'—'} kg
+            </p>
+
           </div>
           `
           :
@@ -997,11 +1068,10 @@ function exerciseCard(e,i,w){
 
       </div>
 
-
-      <div class="grid grid-cols-3 gap-2 mt-3">
+      <div class="grid grid-cols-3 gap-2 mt-4">
 
         ${input(
-          'Peso kg',
+          'Peso',
           `w-${i}`,
           entry?.weight||'',
           'number'
@@ -1012,285 +1082,189 @@ function exerciseCard(e,i,w){
           `r-${i}`,
           entry?.reps||'',
           'text',
-          '10,9,8'
+          '10, 9, 8'
         )}
 
         ${input(
           'RIR',
-          `i-${i}`,
-          entry?.rir??
-          (
-            phaseSets(sets)<sets
-            ?
-            3
-            :
-            rir
-          ),
+          `rir-${i}`,
+          entry?.rir??(effectiveSets<sets?3:rir),
           'number'
         )}
 
       </div>
 
-
       <button
         onclick="saveExercise(${i})"
-        class="mt-3 w-full bg-slate-100 rounded-xl py-2 text-sm font-black"
-      >
+        class="w-full bg-[#ebe7dc] rounded-2xl py-2.5 mt-3 text-sm font-black">
         Guardar ejercicio
       </button>
 
     </div>
-
   `;
 
 }
 
-
 function saveExercise(i){
 
   const t=today();
+  const plan=planFor(t);
+  const e=plan.ex[i];
 
-  const plan=
-    planFor(t);
-
-  const e=
-    plan.ex[i];
-
-
-  data.workouts[t]=
-    data.workouts[t]
-    ||
-    {
-      entries:[],
-      completed:false
-    };
-
-
-  data.workouts[t].entries=
-    data.workouts[t].entries
-    ||
-    [];
-
-
-  const x={
-
-    exercise:e[0],
-
-    weight:
-      val(`w-${i}`),
-
-    reps:
-      val(`r-${i}`),
-
-    rir:
-      val(`i-${i}`),
-
-    target:
-      `${phaseSets(e[2])}×${e[3]}`,
-
-    rest:e[4]
-
+  data.workouts[t]=data.workouts[t]||{
+    entries:[],
+    completed:false
   };
 
+  data.workouts[t].entries=
+    data.workouts[t].entries||[];
+
+  const entry={
+    exercise:e[0],
+    muscle:e[1],
+    weight:val(`w-${i}`),
+    reps:val(`r-${i}`),
+    rir:val(`rir-${i}`),
+    sets:phaseSets(e[2]),
+    targetReps:e[3],
+    rest:e[4]
+  };
 
   data.workouts[t].entries=
     data.workouts[t].entries.filter(
-      z=>z.exercise!==e[0]
+      x=>x.exercise!==e[0]
     );
 
-
-  data.workouts[t].entries.push(x);
-
+  data.workouts[t].entries.push(entry);
 
   save(false);
-
   gym('hoy');
 
 }
-
 
 function finishWorkout(){
 
   const t=today();
 
-
-  data.workouts[t]=
-    data.workouts[t]
-    ||
-    {
-      entries:[]
-    };
-
+  data.workouts[t]=data.workouts[t]||{
+    entries:[]
+  };
 
   data.workouts[t].completed=
     !data.workouts[t].completed;
 
-
   data.gymAttendance[t]=
     data.workouts[t].completed;
 
-
   save(false);
-
   gym('hoy');
 
 }
 
-
 function gymRoutine(){
 
-  document.getElementById(
-    'gym-content'
-  ).innerHTML=
+  document.getElementById('gym-content').innerHTML=
+    routineV2.map(r=>`
+      <div class="premium-card rounded-[28px] p-5 mb-4">
 
-  routineV2
-    .map(
-      r=>`
+        <p class="text-[10px] tracking-[.12em] font-black text-[#626a4d]">
+          ${r.day.toUpperCase()}
+        </p>
 
-        <div class="bg-white rounded-3xl p-5 border mb-4">
+        <h2 class="text-xl font-black mt-1">
+          ${r.name}
+        </h2>
 
-          <p class="text-xs font-black text-slate-500">
-            ${r.day}
-          </p>
+        <p class="text-sm text-[#7b7d75] mb-3">
+          ${r.focus}
+        </p>
 
-          <h2 class="font-black text-xl">
-            ${r.name}
-          </h2>
+        ${
+          r.ex.map(e=>`
+            <div class="py-3 border-t border-black/5">
 
-          <p class="text-sm text-slate-500 mb-3">
-            ${r.focus}
-          </p>
+              <p class="font-bold text-sm">
+                ${e[0]}
+              </p>
 
-          ${
-            r.ex
-              .map(
-                e=>`
+              <p class="text-xs text-[#7b7d75] mt-1">
+                ${e[2]}×${e[3]}
+                · descanso ${e[4]}
+                · RIR ${e[5]}
+              </p>
 
-                  <div class="py-2 border-t border-slate-100">
+            </div>
+          `).join('')
+        }
 
-                    <p class="font-bold text-sm">
-                      ${e[0]}
-                    </p>
-
-                    <p class="text-xs text-slate-500">
-                      ${e[2]}×${e[3]}
-                      · ${e[4]}
-                      · RIR ${e[5]}
-                    </p>
-
-                  </div>
-
-                `
-              )
-              .join('')
-          }
-
-        </div>
-
-      `
-    )
-    .join('');
+      </div>
+    `).join('');
 
 }
-
 
 function gymHistory(){
 
-  const rows=
-    Object.entries(
-      data.workouts
-    )
-    .sort(
-      (a,b)=>
-        b[0].localeCompare(a[0])
-    );
+  const rows=Object.entries(data.workouts)
+    .sort((a,b)=>b[0].localeCompare(a[0]));
 
+  document.getElementById('gym-content').innerHTML=
+    rows.length
+    ?
+    rows.map(([d,w])=>`
+      <div class="premium-card rounded-[26px] p-4 mb-3">
 
-  document.getElementById(
-    'gym-content'
-  ).innerHTML=
+        <div class="flex justify-between">
 
-  rows.length
-  ?
-  rows
-    .map(
-      ([d,w])=>`
+          <div>
+            <p class="font-black">
+              ${planFor(d)?.name||'Sesión'}
+            </p>
 
-        <div class="bg-white rounded-3xl p-4 border mb-3">
-
-          <div class="flex justify-between">
-
-            <b>
+            <p class="text-xs text-[#7b7d75]">
               ${d}
-              · ${planFor(d)?.name||'Sesión'}
-            </b>
-
-            <span>
-              ${w.completed?'✓':''}
-            </span>
-
+            </p>
           </div>
 
-
-          ${
-            (w.entries||[])
-              .map(
-                x=>`
-
-                  <p class="text-xs text-slate-500 mt-1">
-                    ${x.exercise}:
-                    ${x.weight||'—'} kg
-                    · ${x.reps||'—'}
-                    · RIR ${x.rir||'—'}
-                  </p>
-
-                `
-              )
-              .join('')
-          }
+          <span class="font-black text-[#626a4d]">
+            ${w.completed?'✓':''}
+          </span>
 
         </div>
 
-      `
-    )
-    .join('')
-  :
-  `
-    <div class="bg-white rounded-3xl p-5 border">
-      Aún no hay sesiones registradas.
-    </div>
-  `;
+        ${
+          (w.entries||[]).map(x=>`
+            <div class="text-xs text-[#7b7d75] mt-2">
+              ${x.exercise}
+              · ${x.weight||'—'} kg
+              · ${x.reps||'—'}
+              · RIR ${x.rir||'—'}
+            </div>
+          `).join('')
+        }
+
+      </div>
+    `).join('')
+    :
+    `<div class="premium-card rounded-[26px] p-5">Aún no hay sesiones.</div>`;
 
 }
 
-
 function cardio(){
 
-  const t=today();
+  const c=data.cardio[today()]||{};
 
-  const c=
-    data.cardio[t]
-    ||
-    {};
+  document.getElementById('gym-content').innerHTML=`
+    <div class="premium-card rounded-[28px] p-5">
 
-
-  document.getElementById(
-    'gym-content'
-  ).innerHTML=`
-
-    <div class="bg-white rounded-3xl p-5 border">
-
-      <h2 class="font-black text-xl">
-        Cardio / fútbol
+      <h2 class="text-xl font-black">
+        Cardio
       </h2>
 
-      <p class="text-sm text-slate-500 mb-4">
-        Base: 1–2 sesiones de 25–30 min
-        + fútbol domingo.
+      <p class="text-sm text-[#7b7d75] mt-1 mb-4">
+        1–2 sesiones de 25–30 min + fútbol.
       </p>
 
-
-      <div class="grid gap-3">
+      <div class="space-y-3">
 
         ${input(
           'Minutos',
@@ -1308,192 +1282,114 @@ function cardio(){
         )}
 
         ${input(
-          'Intensidad (1–10)',
+          'Intensidad 1–10',
           'c-int',
           c.intensity||'',
           'number'
         )}
 
-
         <button
           onclick="saveCardio()"
-          class="bg-slate-950 text-white rounded-2xl py-3 font-black"
-        >
-          Guardar
+          class="w-full bg-[#171915] text-white rounded-2xl py-3 font-black">
+          Guardar cardio
         </button>
 
       </div>
 
     </div>
-
   `;
 
 }
 
-
 function saveCardio(){
 
   data.cardio[today()]={
-
-    minutes:
-      val('c-min'),
-
-    type:
-      val('c-type'),
-
-    intensity:
-      val('c-int')
-
+    minutes:val('c-min'),
+    type:val('c-type'),
+    intensity:val('c-int')
   };
 
-
   save(false);
-
   gym('cardio');
 
 }
 
-
-/* =========================
-   NUTRICIÓN
-========================= */
-
-const mealPlan=[
-
-[
-  '05:40',
-  'Pre-gym',
-  'Whey 1 scoop (23 g proteína) + 1 plátano + creatina 5 g + agua. Glutamina según tolerancia/uso GI.'
-],
-
-[
-  '07:15',
-  'Desayuno',
-  'Verduras 160–170 g + 3 huevos + 2–3 claras + quinoa cocida 140 g + kiwi. Crema de almendras: probar 15 g.'
-],
-
-[
-  '11:30',
-  'Comida 2',
-  'Arroz basmati cocido 120–150 g + 1 lata de atún + ½ aguacate.'
-],
-
-[
-  '14:30',
-  'Comida principal',
-  'Pollo/res cocidos 150–160 g + papa/camote cocido 120–150 g + verduras ~170 g.'
-],
-
-[
-  '18:30',
-  'Snack',
-  'Yogurt griego + berries + chía. Avena 30–40 g si se necesita carbohidrato. Elegir nueces O crema de almendras.'
-],
-
-[
-  '21:00',
-  'Cena',
-  'Tilapia 130–160 g o salmón 150–160 g + verduras ~170 g + carbohidrato según objetivo del día.'
-]
-
-];
-
-
 function nutricion(tab='hoy'){
 
   app(`
-
     ${section(
       'Nutrición',
-      'Recomposición · alimentos pesados cocidos/listos para comer.'
+      'Recomposición. Consistencia antes que precisión falsa.'
     )}
 
-    <div class="flex gap-2 mb-5 overflow-x-auto">
-
-      ${pill(
-        'Hoy',
-        tab==='hoy',
-        "nutricion('hoy')"
-      )}
-
-      ${pill(
-        'Plan',
-        tab==='plan',
-        "nutricion('plan')"
-      )}
-
-      ${pill(
-        'Metas',
-        tab==='metas',
-        "nutricion('metas')"
-      )}
-
+    <div class="flex gap-2 overflow-x-auto mb-5">
+      ${pill('Hoy',tab==='hoy',"nutricion('hoy')")}
+      ${pill('Plan',tab==='plan',"nutricion('plan')")}
+      ${pill('Metas',tab==='metas',"nutricion('metas')")}
     </div>
 
-    <div id="nutri"></div>
-
+    <div id="nutrition-content"></div>
   `);
 
-
-  if(tab==='hoy'){
-    nutriToday();
-  }
-
-  if(tab==='plan'){
-    nutriPlan();
-  }
-
-  if(tab==='metas'){
-    nutriGoals();
-  }
+  if(tab==='hoy')nutritionToday();
+  if(tab==='plan')nutritionPlan();
+  if(tab==='metas')nutritionGoals();
 
 }
 
+function macroCard(label,value,goal,unit=''){
 
-function nutriToday(){
+  return`
+    <div class="premium-card rounded-[25px] p-4">
 
-  const t=today();
+      <p class="text-[10px] tracking-[.1em] font-black text-[#7b7d75]">
+        ${label}
+      </p>
 
-  const e=
-    data.macroLog[t]
-    ||
-    {
-      calories:'',
-      protein:'',
-      carbs:'',
-      fats:'',
-      done:false
-    };
+      <p class="text-xl font-black mt-1">
+        ${value||0}${unit}
+      </p>
 
+      <p class="text-[10px] text-[#9a9b95]">
+        / ${goal}${unit}
+      </p>
 
-  document.getElementById(
-    'nutri'
-  ).innerHTML=`
+      ${bar(num(value),num(goal))}
 
-    <div class="grid grid-cols-2 gap-3 mb-4">
+    </div>
+  `;
+
+}
+
+function nutritionToday(){
+
+  const e=data.macroLog[today()]||{};
+
+  document.getElementById('nutrition-content').innerHTML=`
+    <div class="grid grid-cols-2 gap-3">
 
       ${macroCard(
-        'Kcal',
+        'CALORÍAS',
         e.calories,
         data.macroGoal.calories
       )}
 
       ${macroCard(
-        'Proteína',
+        'PROTEÍNA',
         e.protein,
         data.macroGoal.protein,
         'g'
       )}
 
       ${macroCard(
-        'Carbs',
+        'CARBS',
         e.carbs,
         data.macroGoal.carbs,
         'g'
       )}
 
       ${macroCard(
-        'Grasas',
+        'GRASAS',
         e.fats,
         data.macroGoal.fats,
         'g'
@@ -1501,161 +1397,94 @@ function nutriToday(){
 
     </div>
 
+    <div class="premium-card rounded-[28px] p-5 mt-4">
 
-    <div class="bg-white rounded-3xl p-5 border">
-
-      <h2 class="font-black text-xl mb-3">
-        Registro del día
+      <h2 class="font-black text-xl">
+        Cierre del día
       </h2>
 
-
-      <div class="grid grid-cols-2 gap-3">
+      <div class="grid grid-cols-2 gap-3 mt-4">
 
         ${input(
           'Calorías',
           'm-cal',
-          e.calories,
+          e.calories||'',
           'number'
         )}
 
         ${input(
           'Proteína g',
           'm-pro',
-          e.protein,
+          e.protein||'',
           'number'
         )}
 
         ${input(
           'Carbs g',
           'm-carb',
-          e.carbs,
+          e.carbs||'',
           'number'
         )}
 
         ${input(
           'Grasas g',
           'm-fat',
-          e.fats,
+          e.fats||'',
           'number'
         )}
 
       </div>
 
-
       <button
         onclick="saveMacros()"
-        class="mt-3 w-full bg-slate-950 text-white rounded-2xl py-3 font-black"
-      >
-        Guardar
+        class="w-full bg-[#171915] text-white rounded-2xl py-3 mt-3 font-black">
+        Guardar día
       </button>
 
     </div>
-
   `;
 
 }
-
-
-function macroCard(label,value,goal,unit=''){
-
-  return `
-
-    <div class="bg-white rounded-3xl p-4 border">
-
-      <p class="text-xs font-bold text-slate-500">
-        ${label}
-      </p>
-
-      <p class="text-xl font-black">
-
-        ${value||0}${unit}
-
-        <span class="text-xs text-slate-400">
-          / ${goal}${unit}
-        </span>
-
-      </p>
-
-      ${bar(
-        num(value),
-        num(goal)
-      )}
-
-    </div>
-
-  `;
-
-}
-
 
 function saveMacros(){
 
-  const t=today();
-
-
-  data.macroLog[t]={
-
-    ...(data.macroLog[t]||{}),
-
-    calories:
-      val('m-cal'),
-
-    protein:
-      val('m-pro'),
-
-    carbs:
-      val('m-carb'),
-
-    fats:
-      val('m-fat'),
-
+  data.macroLog[today()]={
+    ...(data.macroLog[today()]||{}),
+    calories:val('m-cal'),
+    protein:val('m-pro'),
+    carbs:val('m-carb'),
+    fats:val('m-fat'),
     done:true
-
   };
 
-
   save(false);
-
   nutricion('hoy');
 
 }
 
+function nutritionPlan(){
 
-function nutriPlan(){
-
-  document.getElementById(
-    'nutri'
-  ).innerHTML=
-
-  `
-
-    <div class="bg-amber-50 border border-amber-200 rounded-3xl p-4 mb-4">
+  document.getElementById('nutrition-content').innerHTML=`
+    <div class="rounded-[26px] p-4 bg-[#e5e1d2] mb-4">
 
       <p class="font-black">
-        Dieta v1 · pendiente de cierre fino
+        Plan de recomposición
       </p>
 
-      <p class="text-sm text-amber-900 mt-1">
-        Las cantidades finales y macros se ajustarán
-        con tu respuesta de peso, cintura y rendimiento
-        durante 2–3 semanas.
+      <p class="text-sm text-[#6f7169] mt-1">
+        Las cantidades son un punto de partida.
+        Ajustamos con peso, cintura y rendimiento.
       </p>
 
     </div>
 
-  `
-
-  +
-
-  mealPlan
-    .map(
-      m=>`
-
-        <div class="bg-white rounded-3xl p-4 border mb-3">
+    ${
+      mealPlan.map(m=>`
+        <div class="premium-card rounded-[25px] p-4 mb-3">
 
           <div class="flex gap-3">
 
-            <span class="text-xs font-black bg-slate-100 rounded-full px-3 py-2 h-fit">
+            <span class="bg-[#ebe7dc] rounded-full px-3 py-2 text-xs font-black h-fit">
               ${m[0]}
             </span>
 
@@ -1665,7 +1494,7 @@ function nutriPlan(){
                 ${m[1]}
               </h3>
 
-              <p class="text-sm text-slate-500 mt-1">
+              <p class="text-sm text-[#7b7d75] mt-1">
                 ${m[2]}
               </p>
 
@@ -1674,35 +1503,26 @@ function nutriPlan(){
           </div>
 
         </div>
-
-      `
-    )
-    .join('');
+      `).join('')
+    }
+  `;
 
 }
 
+function nutritionGoals(){
 
-function nutriGoals(){
+  const g=data.macroGoal;
 
-  const g=
-    data.macroGoal;
+  document.getElementById('nutrition-content').innerHTML=`
+    <div class="premium-card rounded-[28px] p-5">
 
-
-  document.getElementById(
-    'nutri'
-  ).innerHTML=`
-
-    <div class="bg-white rounded-3xl p-5 border">
-
-      <h2 class="font-black text-xl">
-        Metas iniciales
+      <h2 class="text-xl font-black">
+        Objetivos iniciales
       </h2>
 
-      <p class="text-sm text-slate-500 mt-1 mb-4">
-        Punto de partida,
-        no números sagrados.
+      <p class="text-sm text-[#7b7d75] mt-1 mb-4">
+        Editables conforme respondas.
       </p>
-
 
       <div class="grid grid-cols-2 gap-3">
 
@@ -1714,21 +1534,21 @@ function nutriGoals(){
         )}
 
         ${input(
-          'Proteína g',
+          'Proteína',
           'g-pro',
           g.protein,
           'number'
         )}
 
         ${input(
-          'Carbs g',
+          'Carbs',
           'g-carb',
           g.carbs,
           'number'
         )}
 
         ${input(
-          'Grasas g',
+          'Grasas',
           'g-fat',
           g.fats,
           'number'
@@ -1736,134 +1556,74 @@ function nutriGoals(){
 
       </div>
 
-
       <button
         onclick="saveGoals()"
-        class="mt-3 w-full bg-slate-950 text-white rounded-2xl py-3 font-black"
-      >
+        class="w-full bg-[#171915] text-white rounded-2xl py-3 mt-3 font-black">
         Guardar metas
       </button>
 
     </div>
-
   `;
 
 }
 
-
 function saveGoals(){
 
   data.macroGoal={
-
-    calories:
-      num(val('g-cal')),
-
-    protein:
-      num(val('g-pro')),
-
-    carbs:
-      num(val('g-carb')),
-
-    fats:
-      num(val('g-fat'))
-
+    calories:num(val('g-cal')),
+    protein:num(val('g-pro')),
+    carbs:num(val('g-carb')),
+    fats:num(val('g-fat'))
   };
 
-
   save(false);
-
   nutricion('metas');
 
 }
 
-
-/* =========================
-   SALUD
-========================= */
-
 function salud(tab='cuerpo'){
 
   app(`
-
     ${section(
-      'Salud',
-      'Mide lo que cambia decisiones.'
+      'Progreso',
+      'Mide tendencias. No conviertas tu vida en una hoja de cálculo.'
     )}
 
-    <div class="flex gap-2 mb-5 overflow-x-auto">
-
-      ${pill(
-        'Cuerpo',
-        tab==='cuerpo',
-        "salud('cuerpo')"
-      )}
-
-      ${pill(
-        'Sueño',
-        tab==='sueno',
-        "salud('sueno')"
-      )}
-
-      ${pill(
-        'Tendencia',
-        tab==='tendencia',
-        "salud('tendencia')"
-      )}
-
+    <div class="flex gap-2 overflow-x-auto mb-5">
+      ${pill('Cuerpo',tab==='cuerpo',"salud('cuerpo')")}
+      ${pill('Sueño',tab==='sueno',"salud('sueno')")}
+      ${pill('Tendencia',tab==='tendencia',"salud('tendencia')")}
     </div>
 
-    <div id="health"></div>
-
+    <div id="health-content"></div>
   `);
 
-
-  if(tab==='cuerpo'){
-    body();
-  }
-
-  if(tab==='sueno'){
-    sleep();
-  }
-
-  if(tab==='tendencia'){
-    trend();
-  }
+  if(tab==='cuerpo')body();
+  if(tab==='sueno')sleep();
+  if(tab==='tendencia')trend();
 
 }
 
-
 function body(){
 
-  const t=today();
+  const b=data.body[today()]||{};
 
-  const b=
-    data.body[t]
-    ||
-    {};
-
-
-  document.getElementById(
-    'health'
-  ).innerHTML=`
-
-    <div class="bg-white rounded-3xl p-5 border">
+  document.getElementById('health-content').innerHTML=`
+    <div class="premium-card rounded-[28px] p-5">
 
       <h2 class="font-black text-xl">
-        Registro físico
+        Composición corporal
       </h2>
 
-      <p class="text-sm text-slate-500 mb-4">
-        Peso frecuente;
-        cintura ~1×/semana;
-        fotos cada 4 semanas.
+      <p class="text-sm text-[#7b7d75] mt-1 mb-4">
+        Peso frecuente · cintura semanal · fotos cada 4 semanas.
       </p>
 
-
-      <div class="grid gap-3">
+      <div class="space-y-3">
 
         ${input(
           'Peso kg',
-          'b-w',
+          'b-weight',
           b.weight||'',
           'number'
         )}
@@ -1876,81 +1636,55 @@ function body(){
         )}
 
         ${input(
-          'Nota / foto referencia',
+          'Nota',
           'b-note',
           b.note||'',
           'text',
-          'Ej. Fotos octubre tomadas'
+          'Fotos / sensación / observaciones'
         )}
-
 
         <button
           onclick="saveBody()"
-          class="bg-slate-950 text-white rounded-2xl py-3 font-black"
-        >
+          class="w-full bg-[#171915] text-white rounded-2xl py-3 font-black">
           Guardar
         </button>
 
       </div>
 
     </div>
-
   `;
 
 }
 
-
 function saveBody(){
 
   data.body[today()]={
-
-    weight:
-      val('b-w'),
-
-    waist:
-      val('b-waist'),
-
-    note:
-      val('b-note')
-
+    weight:val('b-weight'),
+    waist:val('b-waist'),
+    note:val('b-note')
   };
 
-
   save(false);
-
   salud('cuerpo');
 
 }
 
-
 function sleep(){
 
-  const t=today();
+  const s=data.sleep[today()]||{};
 
-  const s=
-    data.sleep[t]
-    ||
-    {};
-
-
-  document.getElementById(
-    'health'
-  ).innerHTML=`
-
-    <div class="bg-white rounded-3xl p-5 border">
+  document.getElementById('health-content').innerHTML=`
+    <div class="premium-card rounded-[28px] p-5">
 
       <h2 class="font-black text-xl">
         Sueño
       </h2>
 
-      <p class="text-sm text-slate-500 mb-4">
-        Objetivo habitual:
-        dormir ~22:00–22:30;
-        23:00 como límite normal.
+      <p class="text-sm text-[#7b7d75] mt-1 mb-4">
+        Recuperación primero.
       </p>
 
-
-      <div class="grid gap-3">
+      <div class="space-y-3">
 
         ${input(
           'Horas dormidas',
@@ -1968,419 +1702,844 @@ function sleep(){
 
         ${input(
           'Calidad 1–5',
-          's-q',
+          's-quality',
           s.quality||'',
           'number'
         )}
 
-
         <button
           onclick="saveSleep()"
-          class="bg-slate-950 text-white rounded-2xl py-3 font-black"
-        >
+          class="w-full bg-[#171915] text-white rounded-2xl py-3 font-black">
           Guardar
         </button>
 
       </div>
 
     </div>
-
   `;
 
 }
-
 
 function saveSleep(){
 
   data.sleep[today()]={
-
-    hours:
-      val('s-hours'),
-
-    bed:
-      val('s-bed'),
-
-    quality:
-      val('s-q')
-
+    hours:val('s-hours'),
+    bed:val('s-bed'),
+    quality:val('s-quality')
   };
 
-
   save(false);
-
   salud('sueno');
 
 }
 
-
 function trend(){
 
-  const entries=
-    Object.entries(
-      data.body
-    )
-    .filter(
-      ([,b])=>b.weight
-    )
-    .sort(
-      (a,b)=>
-        a[0].localeCompare(b[0])
-    );
+  const entries=Object.entries(data.body)
+    .filter(([,b])=>b.weight)
+    .sort((a,b)=>a[0].localeCompare(b[0]));
 
+  const recent=entries.slice(-7);
 
-  const last7=
-    entries.slice(-7);
-
-
-  const avg=
-    last7.length
+  const avg=recent.length
     ?
     (
-      last7.reduce(
-        (s,[,b])=>
-          s+num(b.weight),
+      recent.reduce(
+        (s,[,b])=>s+num(b.weight),
         0
-      )
-      /
-      last7.length
+      )/recent.length
     ).toFixed(1)
     :
     '—';
 
+  const waistEntry=[...entries]
+    .reverse()
+    .find(([,b])=>b.waist);
 
-  const waist=
-    [...entries]
-      .reverse()
-      .find(
-        ([,b])=>b.waist
-      )
-      ?.[1]
-      ?.waist
-    ||
-    '—';
+  const waist=waistEntry?.[1]?.waist||'—';
 
-
-  document.getElementById(
-    'health'
-  ).innerHTML=`
-
-    <div class="grid grid-cols-2 gap-3 mb-4">
+  document.getElementById('health-content').innerHTML=`
+    <div class="grid grid-cols-2 gap-3">
 
       ${card(
-        'Peso prom.',
-        avg+
-        (
-          avg==='—'
-          ?
-          ''
-          :
-          ' kg'
-        ),
-        `${last7.length} registros recientes`
+        'PESO PROM.',
+        avg==='—'?'—':avg+' kg',
+        recent.length+' registros'
       )}
 
       ${card(
-        'Cintura',
-        waist+
-        (
-          waist==='—'
-          ?
-          ''
-          :
-          ' cm'
-        ),
-        'último registro'
+        'CINTURA',
+        waist==='—'?'—':waist+' cm',
+        'Último registro'
       )}
 
     </div>
 
+    <div class="premium-card rounded-[28px] p-5 mt-4">
 
-    <div class="bg-white rounded-3xl p-5 border">
-
-      <h2 class="font-black text-xl mb-3">
+      <h2 class="font-black text-xl">
         Historial
       </h2>
 
+      <div class="mt-3">
 
-      ${
-        entries
-          .slice(-12)
-          .reverse()
-          .map(
-            ([d,b])=>`
+        ${
+          entries.length
+          ?
+          entries.slice(-15).reverse().map(([d,b])=>`
+            <div class="flex justify-between py-3 border-t border-black/5">
 
-              <div class="py-2 border-t text-sm flex justify-between">
+              <span class="text-sm text-[#7b7d75]">
+                ${d}
+              </span>
 
-                <span>
-                  ${d}
-                </span>
+              <b class="text-sm">
+                ${b.weight} kg
+                ${b.waist?' · '+b.waist+' cm':''}
+              </b>
 
-                <b>
-                  ${b.weight} kg
-                  ${
-                    b.waist
-                    ?
-                    '· '+b.waist+' cm'
-                    :
-                    ''
-                  }
-                </b>
+            </div>
+          `).join('')
+          :
+          `<p class="text-sm text-[#7b7d75]">Sin datos todavía.</p>`
+        }
 
-              </div>
-
-            `
-          )
-          .join('')
-        ||
-        `
-          <p class="text-slate-500">
-            Sin datos todavía.
-          </p>
-        `
-      }
+      </div>
 
     </div>
-
   `;
 
 }
 
-
-/* =========================
-   FE
-========================= */
-
-function fe(){
-
-  const t=today();
-
-  const e=
-    data.faith[t]
-    ||
-    {};
-
+function mas(){
 
   app(`
-
     ${section(
-      'Fe',
-      'Relación con Dios · prácticas como medios, no como puntuación.'
+      'Más',
+      'Fe, dinero, datos y configuración.'
     )}
 
+    <div class="space-y-3">
 
-    <div class="bg-white rounded-3xl p-5 border mb-4 space-y-2">
-
-      ${faithBtn(
-        'prayed',
-        'Oración personal',
-        e.prayed
+      ${menuCard(
+        'Fe',
+        'Oración, Misa, Rosario y notas.',
+        "faith()"
       )}
 
-      ${faithBtn(
-        'exam',
-        'Oración nocturna / examen',
-        e.exam
+      ${menuCard(
+        'Finanzas',
+        'Movimientos y registro personal.',
+        "finance()"
       )}
 
-      ${faithBtn(
-        'mass',
-        'Misa',
-        e.mass
+      ${menuCard(
+        'Datos & Backup',
+        'Excel, respaldo y restauración.',
+        "backupScreen()"
       )}
 
-      ${faithBtn(
-        'rosary',
-        'Rosario',
-        e.rosary
-      )}
-
-      ${faithBtn(
-        'adoration',
-        'Santísimo / adoración',
-        e.adoration
+      ${menuCard(
+        'Seguridad',
+        'Cambiar PIN y bloquear sesión.',
+        "securityScreen()"
       )}
 
     </div>
-
-
-    <div class="bg-white rounded-3xl p-5 border mb-4">
-
-      <h2 class="font-black text-xl">
-        Ritmo actual
-      </h2>
-
-      <p class="text-sm text-slate-500 mt-2">
-        Misa:
-        lunes 20:00 ·
-        jueves 20:00 con Deny ·
-        domingo.
-      </p>
-
-      <p class="text-sm text-slate-500 mt-1">
-        Rosario con mamá:
-        lunes 21:00.
-      </p>
-
-      <p class="text-sm text-slate-500 mt-1">
-        Confesión:
-        aproximadamente cada 3 semanas ·
-        servicio: mensual.
-      </p>
-
-    </div>
-
-
-    <div class="bg-white rounded-3xl p-5 border">
-
-      <h2 class="font-black text-xl mb-3">
-        Nota espiritual
-      </h2>
-
-
-      <textarea
-        id="f-note"
-        class="w-full rounded-2xl border p-4 min-h-28"
-        placeholder="Gratitud, examen, intención..."
-      >${esc(e.note||'')}</textarea>
-
-
-      <button
-        onclick="saveFaithNote()"
-        class="mt-3 w-full bg-slate-950 text-white rounded-2xl py-3 font-black"
-      >
-        Guardar
-      </button>
-
-    </div>
-
   `);
 
 }
 
+function menuCard(title,sub,click){
 
-function faithBtn(k,l,d){
-
-  return `
-
+  return`
     <button
-      onclick="toggleFaith('${k}')"
-      class="w-full flex justify-between rounded-2xl px-4 py-3 ${
-        d
-        ?
-        'bg-green-50 text-green-700'
-        :
-        'bg-slate-50'
-      }"
-    >
+      onclick="${click}"
+      class="premium-card rounded-[26px] p-5 w-full text-left flex justify-between items-center">
 
-      <b>
-        ${l}
-      </b>
+      <div>
 
-      <span>
-        ${d?'✓':'○'}
+        <h2 class="font-black">
+          ${title}
+        </h2>
+
+        <p class="text-sm text-[#7b7d75] mt-1">
+          ${sub}
+        </p>
+
+      </div>
+
+      <span class="text-xl">
+        →
       </span>
 
     </button>
-
   `;
 
 }
 
+function backButton(){
 
-function toggleFaith(k){
-
-  const t=today();
-
-  data.faith[t]=
-    data.faith[t]
-    ||
-    {};
-
-
-  data.faith[t][k]=
-    !data.faith[t][k];
-
-
-  save(false);
-
-  fe();
+  return`
+    <button
+      onclick="setView('mas')"
+      class="text-sm font-black text-[#626a4d] mb-5">
+      ← Más
+    </button>
+  `;
 
 }
 
+function faith(){
+
+  const e=data.faith[today()]||{};
+
+  app(`
+    ${backButton()}
+    ${section(
+      'Fe',
+      'Prácticas como medios para permanecer cerca de Dios.'
+    )}
+
+    <div class="premium-card rounded-[28px] p-5 space-y-2">
+
+      ${faithButton('prayed','Oración personal',e.prayed)}
+      ${faithButton('exam','Examen / oración nocturna',e.exam)}
+      ${faithButton('mass','Misa',e.mass)}
+      ${faithButton('rosary','Rosario',e.rosary)}
+      ${faithButton('adoration','Santísimo',e.adoration)}
+
+    </div>
+
+    <div class="rounded-[28px] p-5 bg-[#e5e1d2] mt-4">
+
+      <p class="text-[10px] tracking-[.12em] font-black text-[#626a4d]">
+        RITMO
+      </p>
+
+      <p class="text-sm mt-2">
+        Misa lunes 20:00 · jueves 20:00 con Deny · domingo.
+      </p>
+
+      <p class="text-sm mt-1">
+        Rosario con mamá lunes ~21:00.
+      </p>
+
+      <p class="text-sm mt-1">
+        Confesión aproximadamente cada 3 semanas · servicio mensual.
+      </p>
+
+    </div>
+
+    <div class="premium-card rounded-[28px] p-5 mt-4">
+
+      <textarea
+        id="faith-note"
+        class="w-full rounded-2xl border p-4 min-h-28"
+        placeholder="Gratitud, examen, intención..."
+      >${esc(e.note||'')}</textarea>
+
+      <button
+        onclick="saveFaithNote()"
+        class="w-full bg-[#171915] text-white rounded-2xl py-3 mt-3 font-black">
+        Guardar nota
+      </button>
+
+    </div>
+  `);
+
+}
+
+function faithButton(key,label,done){
+
+  return`
+    <button
+      onclick="toggleFaith('${key}')"
+      class="w-full flex justify-between items-center rounded-2xl px-4 py-3 ${
+        done
+        ?
+        'bg-[#e5eadb] text-[#465037]'
+        :
+        'bg-[#f2efe6]'
+      }">
+
+      <b>
+        ${label}
+      </b>
+
+      <span>
+        ${done?'✓':'○'}
+      </span>
+
+    </button>
+  `;
+
+}
+
+function toggleFaith(key){
+
+  const t=today();
+
+  data.faith[t]=data.faith[t]||{};
+
+  data.faith[t][key]=
+    !data.faith[t][key];
+
+  save(false);
+  faith();
+
+}
 
 function saveFaithNote(){
 
   const t=today();
 
-  data.faith[t]=
-    data.faith[t]
-    ||
-    {};
-
+  data.faith[t]=data.faith[t]||{};
 
   data.faith[t].note=
-    val('f-note');
-
+    val('faith-note');
 
   save(false);
-
-  fe();
+  faith();
 
 }
 
+function finance(){
 
-/* =========================
-   RENDER
-========================= */
+  const rows=[...data.finance].reverse();
+
+  app(`
+    ${backButton()}
+    ${section(
+      'Finanzas',
+      'Registro simple. El dinero es un medio.'
+    )}
+
+    <div class="premium-card rounded-[28px] p-5">
+
+      <div class="space-y-3">
+
+        ${input(
+          'Concepto',
+          'f-concept',
+          '',
+          'text',
+          'Ej. Supermercado'
+        )}
+
+        <div class="grid grid-cols-2 gap-3">
+
+          ${input(
+            'Monto',
+            'f-amount',
+            '',
+            'number'
+          )}
+
+          <label>
+            <span class="text-[11px] uppercase tracking-[.1em] font-black text-[#7b7d75]">
+              Tipo
+            </span>
+
+            <select
+              id="f-type"
+              class="mt-1 w-full rounded-2xl border px-4 py-3">
+              <option value="Gasto">Gasto</option>
+              <option value="Ingreso">Ingreso</option>
+            </select>
+          </label>
+
+        </div>
+
+        ${input(
+          'Categoría',
+          'f-category',
+          '',
+          'text',
+          'Comida / Deny / Transporte...'
+        )}
+
+        <button
+          onclick="addFinance()"
+          class="w-full bg-[#171915] text-white rounded-2xl py-3 font-black">
+          Agregar movimiento
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="premium-card rounded-[28px] p-5 mt-4">
+
+      <h2 class="font-black text-xl">
+        Movimientos
+      </h2>
+
+      <div class="mt-3">
+
+        ${
+          rows.length
+          ?
+          rows.slice(0,30).map(x=>`
+            <div class="flex justify-between gap-3 py-3 border-t border-black/5">
+
+              <div>
+
+                <p class="font-bold text-sm">
+                  ${esc(x.concept||x.description||'Movimiento')}
+                </p>
+
+                <p class="text-xs text-[#7b7d75]">
+                  ${x.date||''}
+                  · ${esc(x.category||'Sin categoría')}
+                </p>
+
+              </div>
+
+              <b class="${
+                x.type==='Ingreso'
+                ?
+                'text-[#626a4d]'
+                :
+                ''
+              }">
+                ${x.type==='Ingreso'?'+':'-'}$${num(x.amount).toLocaleString('es-MX')}
+              </b>
+
+            </div>
+          `).join('')
+          :
+          `<p class="text-sm text-[#7b7d75]">Sin movimientos.</p>`
+        }
+
+      </div>
+
+    </div>
+  `);
+
+}
+
+function addFinance(){
+
+  data.finance.push({
+    date:today(),
+    concept:val('f-concept'),
+    amount:num(val('f-amount')),
+    type:val('f-type'),
+    category:val('f-category')
+  });
+
+  save(false);
+  finance();
+
+}
+
+function backupScreen(){
+
+  app(`
+    ${backButton()}
+    ${section(
+      'Datos & Backup',
+      'Tus registros permanecen en este dispositivo hasta que los exportas.'
+    )}
+
+    <div class="space-y-3">
+
+      ${menuCard(
+        'Exportar Excel',
+        'Genera un .xlsx con hojas separadas.',
+        'exportExcel()'
+      )}
+
+      ${menuCard(
+        'Backup JSON',
+        'Copia completa para restaurar la app.',
+        'exportJSON()'
+      )}
+
+      <div class="premium-card rounded-[26px] p-5">
+
+        <h2 class="font-black">
+          Restaurar backup
+        </h2>
+
+        <p class="text-sm text-[#7b7d75] mt-1">
+          Selecciona un archivo JSON exportado por Nate Life Tracker.
+        </p>
+
+        <input
+          type="file"
+          accept=".json,application/json"
+          onchange="importJSON(event)"
+          class="mt-4 w-full"
+        >
+
+      </div>
+
+    </div>
+  `);
+
+}
+
+function securityScreen(){
+
+  app(`
+    ${backButton()}
+    ${section(
+      'Seguridad',
+      'PIN local de acceso.'
+    )}
+
+    <div class="premium-card rounded-[28px] p-5">
+
+      ${input(
+        'Nuevo PIN',
+        'new-pin',
+        '',
+        'password',
+        '4–8 dígitos'
+      )}
+
+      <button
+        onclick="changePin()"
+        class="w-full bg-[#171915] text-white rounded-2xl py-3 mt-3 font-black">
+        Cambiar PIN
+      </button>
+
+      <button
+        onclick="lock()"
+        class="w-full bg-[#ebe7dc] rounded-2xl py-3 mt-3 font-black">
+        Bloquear ahora
+      </button>
+
+    </div>
+
+    <p class="text-xs text-[#7b7d75] mt-4 px-2">
+      El PIN protege la interfaz local, pero no es cifrado de seguridad bancaria.
+    </p>
+  `);
+
+}
+
+function changePin(){
+
+  const p=val('new-pin').trim();
+
+  if(!/^\d{4,8}$/.test(p)){
+    alert('Usa un PIN de 4 a 8 dígitos.');
+    return;
+  }
+
+  data.pin=p;
+
+  save(false);
+
+  alert('PIN actualizado.');
+
+  securityScreen();
+
+}
+
+function exportJSON(){
+
+  const blob=new Blob(
+    [JSON.stringify(data,null,2)],
+    {type:'application/json'}
+  );
+
+  downloadBlob(
+    blob,
+    `Nate_Life_Tracker_Backup_${today()}.json`
+  );
+
+}
+
+function importJSON(event){
+
+  const file=event.target.files?.[0];
+
+  if(!file)return;
+
+  const reader=new FileReader();
+
+  reader.onload=()=>{
+
+    try{
+
+      const imported=JSON.parse(reader.result);
+
+      if(!imported||typeof imported!=='object'){
+        throw new Error();
+      }
+
+      if(!confirm(
+        'Esto reemplazará los datos actuales de Nate Life Tracker. ¿Continuar?'
+      )){
+        return;
+      }
+
+      data={
+        ...fresh(),
+        ...imported
+      };
+
+      save(false);
+
+      alert('Backup restaurado.');
+
+      setView('inicio');
+
+    }catch(e){
+
+      alert('El archivo no es un backup válido.');
+
+    }
+
+  };
+
+  reader.readAsText(file);
+
+}
+
+function downloadBlob(blob,name){
+
+  const a=document.createElement('a');
+
+  a.href=URL.createObjectURL(blob);
+  a.download=name;
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  setTimeout(()=>{
+    URL.revokeObjectURL(a.href);
+    a.remove();
+  },500);
+
+}
+
+function exportExcel(){
+
+  if(typeof XLSX==='undefined'){
+
+    alert(
+      'No se pudo cargar el módulo de Excel. Revisa tu conexión a internet.'
+    );
+
+    return;
+  }
+
+  const wb=XLSX.utils.book_new();
+
+  const summary=[
+    ['Nate Life Tracker 2.1'],
+    ['Exportado',today()],
+    [],
+    ['Objetivo calorías',data.macroGoal.calories],
+    ['Objetivo proteína',data.macroGoal.protein],
+    ['Objetivo carbohidratos',data.macroGoal.carbs],
+    ['Objetivo grasas',data.macroGoal.fats]
+  ];
+
+  XLSX.utils.book_append_sheet(
+    wb,
+    XLSX.utils.aoa_to_sheet(summary),
+    'Resumen'
+  );
+
+  const gymRows=[];
+
+  Object.entries(data.workouts).forEach(
+    ([date,w])=>{
+
+      gymRows.push({
+        Fecha:date,
+        Dia:dayName(date),
+        Rutina:planFor(date)?.name||'',
+        Completada:w.completed?'Sí':'No'
+      });
+
+    }
+  );
+
+  XLSX.utils.book_append_sheet(
+    wb,
+    XLSX.utils.json_to_sheet(gymRows),
+    'Gym Sesiones'
+  );
+
+  const setRows=[];
+
+  Object.entries(data.workouts).forEach(
+    ([date,w])=>{
+
+      (w.entries||[]).forEach(x=>{
+
+        setRows.push({
+          Fecha:date,
+          Rutina:planFor(date)?.name||'',
+          Ejercicio:x.exercise||'',
+          Musculo:x.muscle||'',
+          PesoKg:x.weight||'',
+          Reps:x.reps||'',
+          RIR:x.rir||'',
+          Series:x.sets||'',
+          ObjetivoReps:x.targetReps||'',
+          Descanso:x.rest||''
+        });
+
+      });
+
+    }
+  );
+
+  XLSX.utils.book_append_sheet(
+    wb,
+    XLSX.utils.json_to_sheet(setRows),
+    'Gym Ejercicios'
+  );
+
+  const cardioRows=Object.entries(data.cardio).map(
+    ([date,x])=>({
+      Fecha:date,
+      Minutos:x.minutes||'',
+      Actividad:x.type||'',
+      Intensidad:x.intensity||''
+    })
+  );
+
+  XLSX.utils.book_append_sheet(
+    wb,
+    XLSX.utils.json_to_sheet(cardioRows),
+    'Cardio'
+  );
+
+  const nutritionRows=Object.entries(data.macroLog).map(
+    ([date,x])=>({
+      Fecha:date,
+      Calorias:x.calories||'',
+      Proteina:x.protein||'',
+      Carbohidratos:x.carbs||'',
+      Grasas:x.fats||''
+    })
+  );
+
+  XLSX.utils.book_append_sheet(
+    wb,
+    XLSX.utils.json_to_sheet(nutritionRows),
+    'Nutricion'
+  );
+
+  const bodyRows=Object.entries(data.body).map(
+    ([date,x])=>({
+      Fecha:date,
+      PesoKg:x.weight||'',
+      CinturaCm:x.waist||'',
+      Nota:x.note||''
+    })
+  );
+
+  XLSX.utils.book_append_sheet(
+    wb,
+    XLSX.utils.json_to_sheet(bodyRows),
+    'Cuerpo'
+  );
+
+  const sleepRows=Object.entries(data.sleep).map(
+    ([date,x])=>({
+      Fecha:date,
+      Horas:x.hours||'',
+      HoraDormir:x.bed||'',
+      Calidad:x.quality||''
+    })
+  );
+
+  XLSX.utils.book_append_sheet(
+    wb,
+    XLSX.utils.json_to_sheet(sleepRows),
+    'Sueño'
+  );
+
+  const faithRows=Object.entries(data.faith).map(
+    ([date,x])=>({
+      Fecha:date,
+      Oracion:x.prayed?'Sí':'No',
+      Examen:x.exam?'Sí':'No',
+      Misa:x.mass?'Sí':'No',
+      Rosario:x.rosary?'Sí':'No',
+      Santisimo:x.adoration?'Sí':'No',
+      Nota:x.note||''
+    })
+  );
+
+  XLSX.utils.book_append_sheet(
+    wb,
+    XLSX.utils.json_to_sheet(faithRows),
+    'Fe'
+  );
+
+  const financeRows=data.finance.map(x=>({
+    Fecha:x.date||'',
+    Tipo:x.type||'',
+    Concepto:x.concept||x.description||'',
+    Categoria:x.category||'',
+    Monto:num(x.amount)
+  }));
+
+  XLSX.utils.book_append_sheet(
+    wb,
+    XLSX.utils.json_to_sheet(financeRows),
+    'Finanzas'
+  );
+
+  XLSX.writeFile(
+    wb,
+    `Nate_Life_Tracker_${today()}.xlsx`
+  );
+
+}
 
 function render(){
 
+  if(!isUnlocked()){
+
+    lockScreen();
+
+    return;
+
+  }
+
+  document
+    .getElementById('bottom-nav')
+    .classList.remove('hide');
+
   document
     .querySelectorAll('.nav')
-    .forEach(
-      b=>
-        b.className=
-        'nav rounded-2xl py-2 text-[11px] font-bold tab-inactive'
-    );
-
+    .forEach(b=>{
+      b.className=
+        'nav rounded-2xl py-2 text-[10px] font-bold tab-inactive';
+    });
 
   const active=
     document.getElementById(
       'nav-'+view
     );
 
-
   if(active){
 
     active.className=
-      'nav rounded-2xl py-2 text-[11px] font-bold tab-active';
+      'nav rounded-2xl py-2 text-[10px] font-bold tab-active';
 
   }
 
-
-  if(view==='inicio'){
-    inicio();
-  }
-
-  if(view==='gym'){
-    gym();
-  }
-
-  if(view==='nutricion'){
-    nutricion();
-  }
-
-  if(view==='salud'){
-    salud();
-  }
-
-  if(view==='fe'){
-    fe();
-  }
+  if(view==='inicio')inicio();
+  if(view==='gym')gym();
+  if(view==='nutricion')nutricion();
+  if(view==='salud')salud();
+  if(view==='mas')mas();
 
 }
-
 
 render();
 

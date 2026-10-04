@@ -1,2549 +1,3673 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <link rel="apple-touch-icon" href="/icon.jpeg">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f172a" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Nate Life Tracker" />
-  <title>Nate Life Tracker 2.1</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#171915">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nate Life Tracker">
+<link rel="apple-touch-icon" href="/icon.jpeg">
+<title>Nate Life Tracker 2.2</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <style>
-    :root{
-      --ink:#171915;
-      --ivory:#f5f2e9;
-      --paper:#fffdf8;
-      --olive:#626a4d;
-      --muted:#7b7d75;
-      --line:rgba(23,25,21,.09)
-    }
+<style>
+:root{
+--ink:#171915;
+--ivory:#f4f0e6;
+--paper:#fffdf8;
+--olive:#626a4d;
+--sage:#dfe4d3;
+--muted:#777a71;
+--line:rgba(23,25,21,.09);
+--danger:#9b4d42;
+--gold:#a98546
+}
 
-    *{
-      -webkit-tap-highlight-color:transparent;
-      box-sizing:border-box
-    }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
-    html{
-      background:var(--ivory)
-    }
+html,body{
+margin:0;
+background:var(--ivory);
+color:var(--ink);
+font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif
+}
 
-    body{
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
-      background:
-        radial-gradient(circle at top right,#ece8d9 0,transparent 28%),
-        var(--ivory);
-      color:var(--ink)
-    }
+body{
+background:
+radial-gradient(circle at 95% 0,#e7e1d0 0,transparent 27%),
+var(--ivory)
+}
 
-    .safe-bottom{
-      padding-bottom:calc(104px + env(safe-area-inset-bottom))
-    }
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0}
 
-    .glass{
-      background:rgba(245,242,233,.88);
-      backdrop-filter:blur(24px);
-      -webkit-backdrop-filter:blur(24px)
-    }
+.app{
+max-width:480px;
+margin:auto;
+min-height:100vh;
+padding:22px 16px calc(105px + env(safe-area-inset-bottom))
+}
 
-    .tab-active{
-      background:var(--ink);
-      color:#fff;
-      box-shadow:0 8px 24px rgba(23,25,21,.16)
-    }
+.card{
+background:rgba(255,253,248,.94);
+border:1px solid var(--line);
+box-shadow:0 12px 35px rgba(40,39,31,.055);
+border-radius:26px;
+padding:17px
+}
 
-    .tab-inactive{
-      background:transparent;
-      color:#74766f
-    }
+.hero{
+background:linear-gradient(145deg,#171915,#2b2e25);
+color:white;
+border-radius:31px;
+padding:22px;
+box-shadow:0 18px 42px rgba(23,25,21,.18)
+}
 
-    input,select,textarea{
-      font-size:16px!important;
-      background:#fffdf8!important;
-      border-color:var(--line)!important
-    }
+.eyebrow{
+font-size:10px;
+letter-spacing:.14em;
+font-weight:850;
+color:var(--muted);
+text-transform:uppercase
+}
 
-    .bar{
-      height:7px;
-      border-radius:999px;
-      background:#e7e3d8;
-      overflow:hidden
-    }
+.hero .eyebrow{color:#ffffff88}
 
-    .bar>span{
-      display:block;
-      height:100%;
-      background:var(--olive);
-      border-radius:999px
-    }
+h1{
+font-size:31px;
+line-height:1;
+margin:4px 0 8px;
+letter-spacing:-.04em
+}
 
-    .hide{
-      display:none!important
-    }
+h2{
+font-size:20px;
+margin:0;
+letter-spacing:-.02em
+}
 
-    .premium-card{
-      background:rgba(255,253,248,.92);
-      border:1px solid var(--line);
-      box-shadow:0 12px 35px rgba(40,39,31,.055)
-    }
+h3{font-size:15px;margin:0}
 
-    .hero{
-      background:linear-gradient(145deg,#171915,#2b2e25);
-      box-shadow:0 18px 42px rgba(23,25,21,.18)
-    }
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.tiny{font-size:10px}
 
-    button{
-      transition:transform .12s ease,opacity .12s ease
-    }
+.row{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:12px
+}
 
-    button:active{
-      transform:scale(.98)
-    }
+.grid2{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:11px
+}
 
-    .nav-icon{
-      display:block;
-      margin:0 auto 3px;
-      width:19px;
-      height:19px
-    }
+.stack{display:grid;gap:11px}
 
-    .lock-orb{
-      width:78px;
-      height:78px;
-      border-radius:28px;
-      background:linear-gradient(145deg,#252820,#11130f);
-      display:grid;
-      place-items:center;
-      box-shadow:0 18px 50px rgba(23,25,21,.22)
-    }
-  </style>
+.btn{
+background:var(--ink);
+color:#fff;
+border-radius:17px;
+padding:12px 15px;
+font-weight:800
+}
+
+.btn.light{
+background:#ebe7dc;
+color:var(--ink)
+}
+
+.btn.olive{background:var(--olive)}
+
+.btn.danger{
+background:#f0dfdc;
+color:var(--danger)
+}
+
+.btn.sm{
+padding:8px 11px;
+border-radius:13px;
+font-size:12px
+}
+
+.field{
+width:100%;
+border:1px solid var(--line);
+background:var(--paper);
+border-radius:16px;
+padding:12px 13px;
+outline:none;
+font-size:16px
+}
+
+.label{
+display:block;
+font-size:10px;
+font-weight:850;
+letter-spacing:.1em;
+text-transform:uppercase;
+color:var(--muted);
+margin:0 0 5px
+}
+
+.bar{
+height:7px;
+background:#e6e1d5;
+border-radius:99px;
+overflow:hidden
+}
+
+.bar i{
+display:block;
+height:100%;
+background:var(--olive);
+border-radius:99px
+}
+
+.pillrow{
+display:flex;
+gap:8px;
+overflow:auto;
+padding:1px 0 13px
+}
+
+.pill{
+white-space:nowrap;
+padding:9px 13px;
+border-radius:99px;
+background:var(--paper);
+color:var(--muted);
+border:1px solid var(--line);
+font-weight:800;
+font-size:12px
+}
+
+.pill.on{
+background:var(--ink);
+color:white
+}
+
+.nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:#f4f0e6e8;
+backdrop-filter:blur(22px);
+border-top:1px solid var(--line);
+z-index:50
+}
+
+.navin{
+max-width:480px;
+margin:auto;
+display:grid;
+grid-template-columns:repeat(5,1fr);
+padding:8px 7px calc(8px + env(safe-area-inset-bottom))
+}
+
+.nav button{
+background:transparent;
+color:#777a71;
+border-radius:16px;
+padding:7px 2px;
+font-size:9px;
+font-weight:800
+}
+
+.nav button b{
+display:block;
+font-size:18px;
+line-height:18px;
+margin-bottom:3px
+}
+
+.nav button.on{
+background:var(--ink);
+color:white
+}
+
+.check{
+width:29px;
+height:29px;
+border-radius:50%;
+display:grid;
+place-items:center;
+background:#e7e2d7;
+color:var(--muted);
+font-weight:900;
+flex:0 0 auto
+}
+
+.check.on{
+background:var(--olive);
+color:white
+}
+
+.divider{
+border-top:1px solid var(--line);
+margin:13px 0
+}
+
+.metric{
+font-size:25px;
+font-weight:900;
+letter-spacing:-.03em
+}
+
+.notice{
+background:#e7e3d4;
+border-radius:22px;
+padding:14px 16px
+}
+
+.good{color:#52603e}
+.warn{color:#9a6a2f}
+.bad{color:var(--danger)}
+
+.calgrid{
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:5px
+}
+
+.calday{
+aspect-ratio:1;
+border-radius:12px;
+background:#fffaf2;
+border:1px solid var(--line);
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+font-size:12px;
+position:relative
+}
+
+.calday.today{outline:2px solid var(--ink)}
+
+.calday.has:after{
+content:"";
+position:absolute;
+bottom:5px;
+width:4px;
+height:4px;
+background:var(--olive);
+border-radius:50%
+}
+
+.calday.blank{visibility:hidden}
+
+.photo{
+width:100%;
+aspect-ratio:3/4;
+object-fit:cover;
+border-radius:18px;
+background:#e9e5da
+}
+
+.lock{
+min-height:82vh;
+display:grid;
+place-items:center;
+text-align:center
+}
+
+.orb{
+width:80px;
+height:80px;
+border-radius:28px;
+background:linear-gradient(145deg,#252820,#11130f);
+color:white;
+display:grid;
+place-items:center;
+font-size:30px;
+font-weight:900;
+margin:auto;
+box-shadow:0 18px 50px #17191533
+}
+
+.hide{display:none!important}
+
+.syncdot{
+width:8px;
+height:8px;
+border-radius:50%;
+display:inline-block;
+background:#aaa
+}
+
+.syncdot.ok{background:#65734e}
+.syncdot.pending{background:#c18a3f}
+.syncdot.err{background:#a75046}
+
+.setrow{
+display:grid;
+grid-template-columns:30px 1fr 1fr 1fr;
+gap:7px;
+align-items:end;
+margin-top:8px
+}
+
+.setnum{
+height:42px;
+display:grid;
+place-items:center;
+font-weight:900;
+color:var(--muted)
+}
+</style>
 </head>
 
-<body class="bg-[#e9e5da] text-slate-950">
+<body>
 
-<main class="max-w-md mx-auto min-h-screen safe-bottom px-4 pt-5">
-  <section id="app"></section>
+<main class="app">
+<section id="app"></section>
 </main>
 
-<nav id="bottom-nav"
-  class="fixed bottom-0 left-0 right-0 glass border-t border-black/5 z-50">
-
-  <div class="max-w-md mx-auto grid grid-cols-5 gap-1 px-2 pt-2 pb-[calc(9px+env(safe-area-inset-bottom))]">
-
-    <button onclick="setView('inicio')"
-      id="nav-inicio"
-      class="nav rounded-2xl py-2 text-[10px] font-bold">
-      ⌂
-      <span class="block mt-1">Inicio</span>
-    </button>
-
-    <button onclick="setView('gym')"
-      id="nav-gym"
-      class="nav rounded-2xl py-2 text-[10px] font-bold">
-      ◫
-      <span class="block mt-1">Entrenar</span>
-    </button>
-
-    <button onclick="setView('nutricion')"
-      id="nav-nutricion"
-      class="nav rounded-2xl py-2 text-[10px] font-bold">
-      ◌
-      <span class="block mt-1">Nutrición</span>
-    </button>
-
-    <button onclick="setView('salud')"
-      id="nav-salud"
-      class="nav rounded-2xl py-2 text-[10px] font-bold">
-      ⌁
-      <span class="block mt-1">Progreso</span>
-    </button>
-
-    <button onclick="setView('mas')"
-      id="nav-mas"
-      class="nav rounded-2xl py-2 text-[10px] font-bold">
-      •••
-      <span class="block mt-1">Más</span>
-    </button>
-
-  </div>
+<nav class="nav" id="nav">
+<div class="navin">
+<button id="n-home" onclick="go('home')"><b>⌂</b>Inicio</button>
+<button id="n-plan" onclick="go('plan')"><b>▦</b>Plan</button>
+<button id="n-food" onclick="go('food')"><b>◌</b>Nutrición</button>
+<button id="n-progress" onclick="go('progress')"><b>⌁</b>Progreso</button>
+<button id="n-more" onclick="go('more')"><b>•••</b>Más</button>
+</div>
 </nav>
 
 <script>
 
 const TZ='America/Mexico_City';
+const KEY='nlt-pro';
+const VIEW='nlt-view-v22';
 const DEFAULT_PIN='2943';
 
+const SUPABASE_URL='https://fapkqpynuusudnulxdkg.supabase.co';
+const SUPABASE_KEY='sb_publishable_3bxW3dDFCsQz2WNBH3DW_A_JBz2Zitj';
+
+const sb=window.supabase?.createClient(
+SUPABASE_URL,
+SUPABASE_KEY,
+{
+auth:{
+persistSession:true,
+autoRefreshToken:true,
+detectSessionInUrl:true
+}
+}
+);
+
+let cloudUser=null;
+
+const $=id=>document.getElementById(id);
+
 const today=()=>new Date().toLocaleDateString(
-  'en-CA',
-  {timeZone:TZ}
+'en-CA',
+{timeZone:TZ}
 );
 
-const num=x=>Number(x||0);
-
-const clamp=x=>Math.max(
-  0,
-  Math.min(100,x)
-);
+const n=x=>Number(x||0);
 
 const esc=s=>String(s??'').replace(
-  /[&<>"']/g,
-  m=>({
-    '&':'&amp;',
-    '<':'&lt;',
-    '>':'&gt;',
-    '"':'&quot;',
-    "'":'&#039;'
-  }[m])
+/[&<>"']/g,
+m=>({
+'&':'&amp;',
+'<':'&lt;',
+'>':'&gt;',
+'"':'&quot;',
+"'":'&#039;'
+}[m])
+);
+
+const dateObj=s=>{
+let [y,m,d]=s.split('-').map(Number);
+return new Date(y,m-1,d,12)
+};
+
+const fmt=s=>dateObj(s).toLocaleDateString(
+'es-MX',
+{day:'numeric',month:'short'}
+);
+
+const money=x=>'$'+n(x).toLocaleString(
+'es-MX',
+{maximumFractionDigits:2}
 );
 
 const DAYS=[
-  'Domingo',
-  'Lunes',
-  'Martes',
-  'Miércoles',
-  'Jueves',
-  'Viernes',
-  'Sábado'
+'Domingo',
+'Lunes',
+'Martes',
+'Miércoles',
+'Jueves',
+'Viernes',
+'Sábado'
 ];
 
-const routineV2=[
+const dayName=s=>DAYS[dateObj(s||today()).getDay()];
 
-  {
-    day:'Lunes',
-    name:'PUSH',
-    focus:'Pecho + hombro + tríceps',
-    ex:[
-      ['Press inclinado con mancuernas','Pecho',3,'6–10','2:00',2],
-      ['Press pecho máquina / Smith plano','Pecho',3,'8–12','2:00',2],
-      ['Elevación lateral en polea unilateral','Hombro',3,'12–20','1:00',1],
-      ['Press hombro máquina / mancuernas','Hombro',2,'8–12','1:30',2],
-      ['Extensión tríceps en polea','Tríceps',2,'10–15','1:00',1],
-      ['Extensión tríceps overhead cuerda','Tríceps',2,'10–15','1:00',1]
-    ]
-  },
+const gymRoutine=[
 
-  {
-    day:'Martes',
-    name:'PULL',
-    focus:'Espalda + deltoide posterior + bíceps',
-    ex:[
-      ['Jalón al pecho agarre neutro/medio','Espalda',3,'6–10','2:00',2],
-      ['Remo con pecho apoyado','Espalda',3,'8–12','2:00',2],
-      ['Jalón unilateral hacia cadera','Espalda',2,'10–15','1:15',1],
-      ['Reverse pec-deck / pájaros','Hombro posterior',3,'12–20','1:00',1],
-      ['Curl inclinado mancuernas','Bíceps',2,'8–12','1:00',1],
-      ['Curl martillo','Bíceps',2,'10–15','1:00',1]
-    ]
-  },
+{
+name:'PUSH',
+focus:'Pecho + hombro + tríceps',
+ex:[
+['Press inclinado con mancuernas',3,'6–10',2],
+['Press pecho máquina / Smith',3,'8–12',2],
+['Elevación lateral en polea',3,'12–20',1],
+['Press hombro máquina / mancuernas',2,'8–12',2],
+['Extensión tríceps polea',2,'10–15',1],
+['Tríceps overhead cuerda',2,'10–15',1]
+]
+},
 
-  {
-    day:'Miércoles',
-    name:'LEGS A',
-    focus:'Cuádriceps + femoral + core',
-    ex:[
-      ['Hack squat / sentadilla Smith','Pierna',3,'6–10','2:30',2],
-      ['Peso muerto rumano','Femoral',3,'6–10','2:00',2],
-      ['Prensa','Cuádriceps',2,'10–15','1:30',2],
-      ['Curl femoral','Femoral',3,'10–15','1:15',1],
-      ['Extensión de cuádriceps','Cuádriceps',2,'12–15','1:00',1],
-      ['Pantorrilla','Pantorrilla',2,'10–15','1:00',1],
-      ['Elevaciones de piernas/rodillas','Core',3,'8–15','1:00',1]
-    ]
-  },
+{
+name:'PULL',
+focus:'Espalda + deltoide posterior + bíceps',
+ex:[
+['Jalón neutro/medio',3,'6–10',2],
+['Remo pecho apoyado',3,'8–12',2],
+['Jalón unilateral a cadera',2,'10–15',1],
+['Reverse pec deck',3,'12–20',1],
+['Curl inclinado',2,'8–12',1],
+['Curl martillo',2,'10–15',1]
+]
+},
 
-  {
-    day:'Jueves',
-    name:'UPPER',
-    focus:'Torso + especialización',
-    ex:[
-      ['Press inclinado Smith','Pecho',3,'8–12','2:00',2],
-      ['Remo sentado polea / máquina','Espalda',3,'8–12','1:30',2],
-      ['Jalón al pecho','Espalda',2,'10–15','1:30',2],
-      ['Elevaciones laterales','Hombro',3,'12–20','1:00',1],
-      ['Curl predicador / máquina','Bíceps',2,'10–15','1:00',1],
-      ['Extensión tríceps polea','Tríceps',2,'10–15','1:00',1]
-    ]
-  },
+{
+name:'LEGS A',
+focus:'Cuádriceps + femoral + core',
+ex:[
+['Hack / Smith squat',3,'6–10',2],
+['Peso muerto rumano',3,'6–10',2],
+['Prensa',2,'10–15',2],
+['Curl femoral',3,'10–15',1],
+['Extensión cuádriceps',2,'12–15',1],
+['Pantorrilla',2,'10–15',1],
+['Elevación piernas/rodillas',3,'8–15',1]
+]
+},
 
-  {
-    day:'Viernes',
-    name:'LEGS B + DELTS/ARMS',
-    focus:'Cadena posterior + estética + core',
-    ex:[
-      ['Hip thrust','Glúteo',3,'6–10','2:00',2],
-      ['Bulgarian split squat','Pierna',2,'8–12','1:30',2],
-      ['Curl femoral','Femoral',3,'10–15','1:15',1],
-      ['Elevación lateral máquina/mancuerna','Hombro',3,'12–20','1:00',1],
-      ['Curl en polea','Bíceps',2,'10–15','1:00',1],
-      ['Extensión tríceps overhead','Tríceps',2,'10–15','1:00',1],
-      ['Crunch en polea','Core',3,'10–15','1:00',1]
-    ]
-  }
+{
+name:'UPPER',
+focus:'Torso + especialización',
+ex:[
+['Press inclinado Smith',3,'8–12',2],
+['Remo sentado',3,'8–12',2],
+['Jalón al pecho',2,'10–15',2],
+['Elevaciones laterales',3,'12–20',1],
+['Curl predicador',2,'10–15',1],
+['Extensión tríceps polea',2,'10–15',1]
+]
+},
+
+{
+name:'LEGS B + DELTS/ARMS',
+focus:'Cadena posterior + estética',
+ex:[
+['Hip thrust',3,'6–10',2],
+['Bulgarian split squat',2,'8–12',2],
+['Curl femoral',3,'10–15',1],
+['Elevación lateral',3,'12–20',1],
+['Curl polea',2,'10–15',1],
+['Tríceps overhead',2,'10–15',1],
+['Crunch polea',3,'10–15',1]
+]
+}
 
 ];
 
-const mealPlan=[
-  [
-    '05:40',
-    'Pre-gym',
-    'Whey 1 scoop + plátano + creatina 5 g + agua. Glutamina según tolerancia GI.'
-  ],
-  [
-    '07:15',
-    'Desayuno',
-    'Verduras 160–170 g + 3 huevos + 2–3 claras + quinoa cocida 140 g + kiwi + crema de almendras.'
-  ],
-  [
-    '11:30',
-    'Comida 2',
-    'Arroz basmati cocido 120–150 g + 1 lata de atún + ½ aguacate.'
-  ],
-  [
-    '14:30',
-    'Comida principal',
-    'Pollo/res cocidos 150–160 g + papa/camote cocido 120–150 g + verduras ~170 g.'
-  ],
-  [
-    '18:30',
-    'Snack',
-    'Yogurt griego + berries + chía + avena opcional según requerimiento.'
-  ],
-  [
-    '21:00',
-    'Cena',
-    'Tilapia o salmón + verduras + carbohidrato según objetivo del día.'
-  ]
+const foods={
+
+whey:{
+name:'Holix Isolean Chocobrownie',
+k:109/35,
+p:26.02/35,
+c:1.14/35,
+f:.12/35
+},
+
+banana:{
+name:'Plátano',
+k:.89,
+p:.011,
+c:.228,
+f:.003
+},
+
+egg:{
+name:'Huevo entero',
+k:1.43,
+p:.126,
+c:.007,
+f:.095
+},
+
+white:{
+name:'Clara de huevo',
+k:.52,
+p:.109,
+c:.007,
+f:.002
+},
+
+veg:{
+name:'Verduras mixtas',
+k:.35,
+p:.02,
+c:.07,
+f:.003
+},
+
+quinoa:{
+name:'Quinoa cocida',
+k:1.20,
+p:.044,
+c:.213,
+f:.019
+},
+
+kiwi:{
+name:'Kiwi',
+k:.61,
+p:.011,
+c:.147,
+f:.005
+},
+
+almond:{
+name:'Crema almendras Kirkland',
+k:6.21,
+p:.21,
+c:.20,
+f:.55
+},
+
+rice:{
+name:'Arroz basmati cocido',
+k:1.30,
+p:.027,
+c:.282,
+f:.003
+},
+
+tuna:{
+name:'Atún en agua drenado',
+k:1.16,
+p:.26,
+c:0,
+f:.01
+},
+
+avocado:{
+name:'Aguacate',
+k:1.60,
+p:.02,
+c:.085,
+f:.147
+},
+
+chicken:{
+name:'Pechuga pollo cocida',
+k:1.65,
+p:.31,
+c:0,
+f:.036
+},
+
+beef:{
+name:'Res magra cocida',
+k:2.10,
+p:.28,
+c:0,
+f:.10
+},
+
+potato:{
+name:'Papa cocida',
+k:.87,
+p:.019,
+c:.20,
+f:.001
+},
+
+yogurt:{
+name:'Yogurt griego Kirkland sin grasa',
+k:.576,
+p:.103,
+c:.036,
+f:0
+},
+
+berries:{
+name:'Berries',
+k:.50,
+p:.01,
+c:.12,
+f:.003
+},
+
+chia:{
+name:'Chía',
+k:4.86,
+p:.165,
+c:.421,
+f:.307
+},
+
+oats:{
+name:'Avena',
+k:3.89,
+p:.169,
+c:.663,
+f:.069
+},
+
+tilapia:{
+name:'Tilapia cocida',
+k:1.28,
+p:.263,
+c:0,
+f:.027
+},
+
+salmon:{
+name:'Salmón cocido',
+k:2.06,
+p:.22,
+c:0,
+f:.12
+},
+
+salmas:{
+name:'Salmas',
+k:3.85,
+p:.08,
+c:.78,
+f:.035
+}
+
+};
+
+const baseMeals=[
+
+{
+id:'pre',
+time:'05:40',
+name:'Pre-gym',
+items:[
+['whey',35],
+['banana',120]
+]
+},
+
+{
+id:'breakfast',
+time:'07:15',
+name:'Desayuno',
+items:[
+['veg',165],
+['egg',150],
+['white',99],
+['quinoa',140],
+['kiwi',75],
+['almond',15]
+]
+},
+
+{
+id:'meal2',
+time:'11:30',
+name:'Comida 2',
+items:[
+['rice',150],
+['tuna',130],
+['avocado',75]
+]
+},
+
+{
+id:'main',
+time:'14:30',
+name:'Comida principal',
+items:[
+['chicken',155],
+['potato',135],
+['veg',170]
+]
+},
+
+{
+id:'snack',
+time:'18:30',
+name:'Snack',
+items:[
+['yogurt',200],
+['berries',100],
+['chia',12]
+]
+},
+
+{
+id:'dinner',
+time:'21:15',
+name:'Cena',
+items:[
+['tilapia',150],
+['salmas',36],
+['veg',150]
+]
+}
+
+];
+
+const payment=[
+'Revolut',
+'Openbank Cinépolis',
+'NU',
+'BBVA Oro',
+'Pluxee',
+'Efectivo',
+'Transferencia'
+];
+
+const financeCats=[
+'Alimentos',
+'Transporte',
+'Entretenimiento',
+'Salud',
+'Compras',
+'Deny',
+'Familia',
+'Viajes',
+'Educación',
+'Servicios',
+'Negocios',
+'Otros'
 ];
 
 function fresh(){
+return{
+version:'2.2-cloud',
+pin:DEFAULT_PIN,
 
-  return{
-    version:2.1,
-    pin:DEFAULT_PIN,
-    gymAttendance:{},
-    workouts:{},
-    progress:[],
-    cardio:{},
-    macroGoal:{
-      calories:2400,
-      protein:155,
-      carbs:275,
-      fats:70
-    },
-    macroLog:{},
-    meals:{},
-    body:{},
-    sleep:{},
-    faith:{},
-    finance:[],
-    budgets:{},
-    settings:{
-      returnPhaseStart:today()
-    }
-  };
+routineState:{
+index:0
+},
 
+gymAttendance:{},
+workouts:[],
+progress:[],
+cardio:{},
+football:{},
+
+macroGoal:{
+kcal:2400,
+p:155,
+c:287,
+f:70
+},
+
+mealLog:{},
+extras:{},
+
+body:{},
+sleep:{},
+
+faith:{},
+confessions:[],
+
+finance:[],
+budgets:{},
+
+reading:{
+books:[],
+sessions:[]
+},
+
+events:[],
+weeklyReviews:{},
+
+sync:{
+queue:[]
+},
+
+settings:{
+mode:'normal'
+}
+}
 }
 
-function migrate(){
+function migrate(x){
 
-  let old={};
+let d=fresh();
 
-  try{
-    old=JSON.parse(
-      localStorage.getItem('nlt-pro')
-    )||{};
-  }
-  catch(e){}
+if(!x)return d;
 
-  const n=fresh();
+d={...d,...x};
 
-  [
-    'gymAttendance',
-    'workouts',
-    'progress',
-    'cardio',
-    'macroLog',
-    'meals',
-    'body',
-    'sleep',
-    'faith',
-    'finance',
-    'budgets'
-  ].forEach(k=>{
-    if(old[k]!==undefined){
-      n[k]=old[k];
-    }
-  });
+d.routineState={
+...fresh().routineState,
+...(x.routineState||{})
+};
 
-  if(old.pin){
-    n.pin=old.pin;
-  }
+d.macroGoal={
+...fresh().macroGoal,
+...(x.macroGoal||{})
+};
 
-  if(old.macroGoal){
-    n.macroGoal=old.macroGoal;
-  }
+d.reading={
+...fresh().reading,
+...(x.reading||{})
+};
 
-  if(old.settings){
-    n.settings={
-      ...n.settings,
-      ...old.settings
-    };
-  }
+d.sync={
+...fresh().sync,
+...(x.sync||{})
+};
 
-  return n;
+d.settings={
+...fresh().settings,
+...(x.settings||{})
+};
 
+if(
+d.macroGoal.kcal===2400 &&
+d.macroGoal.p===155 &&
+d.macroGoal.c===275 &&
+d.macroGoal.f===70
+){
+d.macroGoal.c=287;
 }
 
-let data=migrate();
+d.version='2.2-cloud';
 
-localStorage.setItem(
-  'nlt-pro',
-  JSON.stringify(data)
-);
+return d;
+}
 
-let view=
-  localStorage.getItem('nlt-view-v21')
-  ||
-  'inicio';
+let data;
 
-function save(renderAgain=true){
+try{
+data=migrate(JSON.parse(localStorage.getItem(KEY)||'null'));
+}catch{
+data=fresh();
+}
 
-  localStorage.setItem(
-    'nlt-pro',
-    JSON.stringify(data)
-  );
+let view=localStorage.getItem(VIEW)||'home';
 
-  if(renderAgain){
-    render();
-  }
+function save(renderNow=true){
+localStorage.setItem(KEY,JSON.stringify(data));
+if(renderNow)render();
+}
 
+function go(v){
+view=v;
+localStorage.setItem(VIEW,v);
+render();
+window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function unlocked(){
+return sessionStorage.getItem('nlt-unlocked')==='1';
 }
 
 function val(id){
-  return document.getElementById(id)?.value||'';
+return $(id)?.value||'';
 }
 
-function app(html){
-  document.getElementById('app').innerHTML=html;
+function field(label,id,value='',type='text',placeholder=''){
+return`
+<label>
+<span class="label">${label}</span>
+<input
+id="${id}"
+class="field"
+type="${type}"
+value="${esc(value)}"
+placeholder="${esc(placeholder)}"
+>
+</label>
+`;
 }
 
-function section(title,sub=''){
-
-  return`
-    <div class="mb-5">
-      <h1 class="text-[30px] leading-none font-black tracking-[-.035em]">
-        ${title}
-      </h1>
-
-      ${
-        sub
-        ?
-        `<p class="text-[#7b7d75] text-sm mt-2">${sub}</p>`
-        :
-        ''
-      }
-    </div>
-  `;
-
+function section(title,subtitle=''){
+return`
+<div style="margin-bottom:14px">
+<div class="eyebrow">NATE LIFE TRACKER</div>
+<h1>${title}</h1>
+${subtitle?`<div class="muted small">${subtitle}</div>`:''}
+</div>
+`;
 }
 
-function card(title,value,sub=''){
-
-  return`
-    <div class="premium-card rounded-[26px] p-4">
-      <p class="text-[11px] font-black uppercase tracking-[.12em] text-[#7b7d75]">
-        ${title}
-      </p>
-
-      <p class="text-2xl font-black mt-1 tracking-tight">
-        ${value}
-      </p>
-
-      <p class="text-xs text-[#7b7d75] mt-1">
-        ${sub}
-      </p>
-    </div>
-  `;
-
+function back(){
+return`
+<button
+class="btn light sm"
+style="margin-bottom:14px"
+onclick="go('more')"
+>← Volver</button>
+`;
 }
 
-function input(label,id,value='',type='text',placeholder=''){
-
-  return`
-    <label class="block">
-      <span class="text-[11px] uppercase tracking-[.1em] font-black text-[#7b7d75]">
-        ${label}
-      </span>
-
-      <input
-        id="${id}"
-        type="${type}"
-        value="${esc(value)}"
-        placeholder="${placeholder}"
-        class="mt-1 w-full rounded-2xl border px-4 py-3 outline-none focus:ring-2 focus:ring-[#626a4d]"
-      >
-    </label>
-  `;
-
-}
-
-function pill(text,active,click){
-
-  return`
-    <button
-      onclick="${click}"
-      class="px-4 py-2 rounded-full whitespace-nowrap text-sm font-black ${
-        active
-        ?
-        'bg-[#171915] text-white'
-        :
-        'bg-[#fffdf8] text-[#7b7d75] border border-black/5'
-      }"
-    >
-      ${text}
-    </button>
-  `;
-
-}
-
-function pct(a,b){
-  return b?clamp(Math.round(a/b*100)):0;
-}
-
-function bar(a,b){
-
-  return`
-    <div class="bar mt-2">
-      <span style="width:${pct(a,b)}%"></span>
-    </div>
-  `;
-
-}
-
-function dayName(date=today()){
-
-  const [y,m,d]=date.split('-').map(Number);
-
-  return DAYS[
-    new Date(y,m-1,d).getDay()
-  ];
-
-}
-
-function planFor(date=today()){
-
-  return routineV2.find(
-    r=>r.day===dayName(date)
-  )||null;
-
-}
-
-function isUnlocked(){
-  return sessionStorage.getItem('nlt-unlocked')==='1';
-}
-
-function lock(){
-
-  sessionStorage.removeItem('nlt-unlocked');
-
-  render();
-
-}
-
-function unlock(){
-
-  const pin=val('pin-entry');
-
-  if(pin===String(data.pin||DEFAULT_PIN)){
-
-    sessionStorage.setItem(
-      'nlt-unlocked',
-      '1'
-    );
-
-    render();
-
-  }else{
-
-    const el=document.getElementById('pin-error');
-
-    if(el){
-      el.textContent='PIN incorrecto';
-    }
-
-  }
-
+function menu(title,subtitle,action){
+return`
+<button
+class="card"
+style="text-align:left;width:100%"
+onclick="${action}"
+>
+<div class="row">
+<div>
+<h3>${title}</h3>
+<div class="small muted" style="margin-top:4px">${subtitle}</div>
+</div>
+<div>›</div>
+</div>
+</button>
+`;
 }
 
 function lockScreen(){
 
-  document.getElementById('bottom-nav').classList.add('hide');
+$('nav').classList.add('hide');
 
-  app(`
-    <div class="min-h-[82vh] flex flex-col justify-center items-center px-5">
+$('app').innerHTML=`
+<div class="lock">
+<div style="width:100%">
+<div class="orb">N</div>
 
-      <div class="lock-orb text-white text-3xl font-black">
-        N
-      </div>
+<div style="margin-top:20px">
+<div class="eyebrow">NATE LIFE TRACKER</div>
+<h1 style="margin-top:7px">Bienvenido, Nate.</h1>
+<p class="muted">Planear. Ejecutar. Registrar. Revisar.</p>
+</div>
 
-      <p class="mt-7 text-[11px] tracking-[.24em] font-black text-[#7b7d75]">
-        NATE LIFE TRACKER
-      </p>
+<div class="card stack" style="max-width:340px;margin:24px auto 0">
+${field('PIN','pin-entry','','password')}
+<button class="btn" onclick="unlock()">Entrar</button>
+</div>
+</div>
+</div>
+`;
 
-      <h1 class="text-3xl font-black mt-2 tracking-tight">
-        Bienvenido, Nate.
-      </h1>
-
-      <p class="text-sm text-[#7b7d75] mt-2">
-        Tu sistema personal.
-      </p>
-
-      <div class="w-full max-w-xs mt-8">
-
-        <input
-          id="pin-entry"
-          type="password"
-          inputmode="numeric"
-          maxlength="8"
-          placeholder="PIN"
-          onkeydown="if(event.key==='Enter')unlock()"
-          class="w-full text-center tracking-[.4em] font-black rounded-[22px] border px-4 py-4"
-        >
-
-        <p id="pin-error"
-          class="text-red-600 text-xs text-center h-5 mt-2">
-        </p>
-
-        <button
-          onclick="unlock()"
-          class="w-full hero text-white rounded-[22px] py-4 font-black mt-2">
-          Entrar
-        </button>
-
-      </div>
-
-      <p class="text-xs text-[#9a9b95] mt-8">
-        THE NATE SYSTEM
-      </p>
-
-    </div>
-  `);
-
+setTimeout(()=>{$('pin-entry')?.focus()},100);
 }
 
-function setView(v){
+function unlock(){
 
-  view=v;
-
-  localStorage.setItem(
-    'nlt-view-v21',
-    v
-  );
-
-  render();
-
+if(val('pin-entry')===String(data.pin||DEFAULT_PIN)){
+sessionStorage.setItem('nlt-unlocked','1');
+render();
+}else{
+alert('PIN incorrecto.');
+}
 }
 
-function inicio(){
-
-  const t=today();
-  const plan=planFor(t);
-  const macros=data.macroLog[t]||{};
-  const body=data.body[t]||{};
-  const sleep=data.sleep[t]||{};
-  const faith=data.faith[t]||{};
-  const done=!!data.workouts[t]?.completed;
-
-  app(`
-    <div class="flex items-center justify-between mb-6">
-
-      <div>
-        <p class="text-[11px] tracking-[.18em] font-black text-[#7b7d75]">
-          THE NATE SYSTEM
-        </p>
-
-        <h1 class="text-[32px] font-black tracking-[-.04em]">
-          Hoy.
-        </h1>
-      </div>
-
-      <button
-        onclick="setView('mas')"
-        class="w-11 h-11 rounded-full premium-card font-black">
-        N
-      </button>
-
-    </div>
-
-    <div class="hero text-white rounded-[32px] p-6 mb-4">
-
-      <p class="text-xs text-white/60">
-        ${dayName()} · ${t}
-      </p>
-
-      <h2 class="text-3xl font-black tracking-tight mt-2">
-        ${
-          plan
-          ?
-          plan.name
-          :
-          dayName()==='Domingo'
-          ?
-          'Fútbol + recuperación'
-          :
-          'Recuperación'
-        }
-      </h2>
-
-      <p class="text-sm text-white/65 mt-1">
-        ${
-          plan
-          ?
-          plan.focus
-          :
-          'El sistema sirve a tu vida.'
-        }
-      </p>
-
-      ${
-        plan
-        ?
-        `
-        <button
-          onclick="setView('gym')"
-          class="mt-5 bg-[#f5f2e9] text-[#171915] rounded-2xl px-5 py-3 font-black">
-          ${done?'Ver sesión':'Comenzar entrenamiento'} →
-        </button>
-        `
-        :
-        ''
-      }
-
-    </div>
-
-    <div class="grid grid-cols-2 gap-3">
-
-      ${card(
-        'Gym',
-        done?'Completo':'Pendiente',
-        plan?plan.name:'Descanso'
-      )}
-
-      ${card(
-        'Nutrición',
-        macros.calories?macros.calories+' kcal':'—',
-        'Meta '+data.macroGoal.calories
-      )}
-
-      ${card(
-        'Peso',
-        body.weight?body.weight+' kg':'—',
-        'Tendencia > número'
-      )}
-
-      ${card(
-        'Sueño',
-        sleep.hours?sleep.hours+' h':'—',
-        'Recuperación'
-      )}
-
-    </div>
-
-    <div class="premium-card rounded-[28px] p-5 mt-4">
-
-      <p class="text-[11px] tracking-[.12em] font-black text-[#7b7d75]">
-        HOY
-      </p>
-
-      <div class="mt-3 space-y-3">
-
-        ${homeRow(
-          'Entrenamiento',
-          done
-        )}
-
-        ${homeRow(
-          'Nutrición registrada',
-          !!macros.calories
-        )}
-
-        ${homeRow(
-          'Oración',
-          !!faith.prayed
-        )}
-
-        ${homeRow(
-          'Examen del día',
-          !!faith.exam
-        )}
-
-      </div>
-
-    </div>
-
-    <div class="rounded-[28px] p-5 mt-4 bg-[#e5e1d2]">
-
-      <p class="text-[11px] tracking-[.12em] font-black text-[#626a4d]">
-        NATE CODE
-      </p>
-
-      <p class="font-black text-lg mt-1">
-        Ritmos, no perfección.
-      </p>
-
-      <p class="text-sm text-[#6f7169] mt-1">
-        El sistema sirve a mi vida; mi vida no sirve al sistema.
-      </p>
-
-    </div>
-  `);
-
+function currentRoutine(){
+return gymRoutine[
+Math.max(
+0,
+Math.min(
+gymRoutine.length-1,
+n(data.routineState.index)%gymRoutine.length
+)
+)
+];
 }
 
-function homeRow(label,done){
-
-  return`
-    <div class="flex items-center justify-between py-1">
-
-      <span class="font-semibold">
-        ${label}
-      </span>
-
-      <span class="${
-        done
-        ?
-        'bg-[#626a4d] text-white'
-        :
-        'bg-[#e7e3d8] text-[#7b7d75]'
-      } w-7 h-7 rounded-full grid place-items-center text-xs font-black">
-        ${done?'✓':'○'}
-      </span>
-
-    </div>
-  `;
-
+function completedGymDates(){
+return Object.entries(data.gymAttendance)
+.filter(([_,v])=>v==='completed'||v===true)
+.map(([d])=>d);
 }
 
-function gym(tab='hoy'){
-
-  app(`
-    ${section(
-      'Entrenar',
-      '50 minutos. Calidad, progresión y consistencia.'
-    )}
-
-    <div class="flex gap-2 overflow-x-auto mb-5">
-      ${pill('Hoy',tab==='hoy',"gym('hoy')")}
-      ${pill('Rutina',tab==='rutina',"gym('rutina')")}
-      ${pill('Historial',tab==='historial',"gym('historial')")}
-      ${pill('Cardio',tab==='cardio',"gym('cardio')")}
-    </div>
-
-    <div id="gym-content"></div>
-  `);
-
-  if(tab==='hoy')gymToday();
-  if(tab==='rutina')gymRoutine();
-  if(tab==='historial')gymHistory();
-  if(tab==='cardio')cardio();
-
+function latestBody(){
+let entries=Object.entries(data.body||{})
+.sort((a,b)=>b[0].localeCompare(a[0]));
+return entries[0]||null;
 }
 
-function phaseSets(sets){
+function macroToday(){
 
-  const start=new Date(
-    (data.settings.returnPhaseStart||today())+'T12:00:00'
-  );
+let log=data.mealLog[today()]||{};
+let total={k:0,p:0,c:0,f:0};
 
-  const now=new Date(
-    today()+'T12:00:00'
-  );
+baseMeals.forEach(m=>{
+let x=log[m.id];
+if(x?.done){
+let z=mealMacros(x.items||m.items);
+total.k+=z.k;
+total.p+=z.p;
+total.c+=z.c;
+total.f+=z.f;
+}
+});
 
-  const days=Math.floor(
-    (now-start)/86400000
-  );
+(data.extras[today()]||[]).forEach(x=>{
+total.k+=n(x.k);
+total.p+=n(x.p);
+total.c+=n(x.c);
+total.f+=n(x.f);
+});
 
-  return days<14
-    ?
-    Math.min(2,sets)
-    :
-    sets;
-
+return total;
 }
 
-function gymToday(){
+function home(){
 
-  const t=today();
-  const plan=planFor(t);
-  const w=data.workouts[t]||{
-    entries:[],
-    completed:false
-  };
+let r=currentRoutine();
+let macros=macroToday();
+let b=latestBody();
 
-  const el=document.getElementById('gym-content');
+let activeBook=(data.reading.books||[])
+.find(x=>x.status==='leyendo');
 
-  if(!plan){
+let bookPct=activeBook?.totalPages
+?Math.round(n(activeBook.currentPage)/n(activeBook.totalPages)*100)
+:0;
 
-    el.innerHTML=`
-      <div class="premium-card rounded-[28px] p-5">
+let events=(data.events||[])
+.filter(x=>x.date===today())
+.sort((a,b)=>(a.start||'99:99').localeCompare(b.start||'99:99'));
 
-        <h2 class="text-xl font-black">
-          Sin pesas programadas.
-        </h2>
+$('app').innerHTML=`
 
-        <p class="text-sm text-[#7b7d75] mt-2">
-          ${
-            dayName()==='Domingo'
-            ?
-            'Fútbol + recuperación.'
-            :
-            'Sábado funciona como recuperación opcional si perdiste una sesión.'
-          }
-        </p>
+<div class="hero">
+<div class="eyebrow">${dayName(today())} · ${fmt(today())}</div>
+<h1>Hoy</h1>
+<div style="font-size:16px;line-height:1.45">
+Lo importante tiene un lugar antes de que lo urgente ocupe todo el espacio.
+</div>
+</div>
 
-      </div>
-    `;
+<div class="card" style="margin-top:12px">
+<div class="row">
+<div>
+<div class="eyebrow">SIGUIENTE ENTRENAMIENTO</div>
+<h2 style="margin-top:5px">${r.name}</h2>
+<div class="small muted">${r.focus}</div>
+</div>
+<button class="btn sm" onclick="go('plan')">Entrenar</button>
+</div>
+</div>
 
-    return;
-  }
+<div class="grid2" style="margin-top:11px">
 
-  el.innerHTML=`
-    <div class="hero text-white rounded-[30px] p-5 mb-4">
+<div class="card">
+<div class="eyebrow">NUTRICIÓN</div>
+<div class="metric">${Math.round(macros.k)}</div>
+<div class="small muted">de ${data.macroGoal.kcal} kcal</div>
+<div class="bar" style="margin-top:10px">
+<i style="width:${Math.min(100,macros.k/data.macroGoal.kcal*100)}%"></i>
+</div>
+</div>
 
-      <p class="text-xs text-white/55">
-        ${plan.day}
-      </p>
+<div class="card">
+<div class="eyebrow">PESO</div>
+<div class="metric">${b?n(b[1].weight).toFixed(1):'—'}</div>
+<div class="small muted">${b?'kg · '+fmt(b[0]):'sin registro'}</div>
+</div>
 
-      <h2 class="text-2xl font-black mt-1">
-        ${plan.name}
-      </h2>
+</div>
 
-      <p class="text-sm text-white/60">
-        ${plan.focus}
-      </p>
+${activeBook?`
+<div class="card" style="margin-top:11px">
+<div class="row">
+<div>
+<div class="eyebrow">LECTURA</div>
+<h3 style="margin-top:5px">${esc(activeBook.title)}</h3>
+<div class="small muted">
+Pág. ${activeBook.currentPage||0} / ${activeBook.totalPages||'—'}
+</div>
+</div>
+<b>${bookPct}%</b>
+</div>
+<div class="bar" style="margin-top:11px">
+<i style="width:${bookPct}%"></i>
+</div>
+</div>
+`:''}
 
-      <div class="mt-4 flex gap-2 text-[11px]">
+<div class="card" style="margin-top:11px">
+<div class="row">
+<div>
+<div class="eyebrow">AGENDA</div>
+<h2 style="margin-top:4px">Hoy</h2>
+</div>
+<button class="btn light sm" onclick="calendar()">Calendario</button>
+</div>
 
-        <span class="bg-white/10 rounded-full px-3 py-2">
-          50 min
-        </span>
+<div style="margin-top:10px">
+${events.length
+?events.map(x=>`
+<div class="row small" style="padding:9px 0;border-bottom:1px solid var(--line)">
+<div>
+<b>${esc(x.title)}</b>
+<div class="muted">${x.start||'Todo el día'} · ${esc(x.category||'Personal')}</div>
+</div>
+</div>
+`).join('')
+:'<div class="small muted">Sin eventos personales hoy.</div>'
+}
+</div>
+</div>
 
-        <span class="bg-white/10 rounded-full px-3 py-2">
-          RIR 1–2
-        </span>
-
-        <span class="bg-white/10 rounded-full px-3 py-2">
-          Progresión doble
-        </span>
-
-      </div>
-
-    </div>
-
-    <div class="space-y-3">
-      ${
-        plan.ex.map(
-          (e,i)=>exerciseCard(e,i,w)
-        ).join('')
-      }
-    </div>
-
-    <button
-      onclick="finishWorkout()"
-      class="w-full mt-4 ${
-        w.completed
-        ?
-        'bg-[#626a4d]'
-        :
-        'bg-[#171915]'
-      } text-white rounded-[22px] py-4 font-black">
-
-      ${
-        w.completed
-        ?
-        'Sesión completada ✓'
-        :
-        'Finalizar sesión'
-      }
-
-    </button>
-  `;
-
+<div class="notice small" style="margin-top:11px">
+<span class="syncdot ${cloudUser?'ok':data.sync.queue.length?'pending':''}"></span>
+${cloudUser
+?'Nate Cloud conectado.'
+:'Tus datos se guardan localmente. Conecta Nate Cloud desde Más → Configuración.'
+}
+</div>
+`;
 }
 
-function lastExercise(name){
+function plan(){
 
-  const rows=[];
+let r=currentRoutine();
 
-  Object.entries(data.workouts).forEach(
-    ([date,w])=>{
+$('app').innerHTML=`
+${section(
+'Entrenar',
+'La secuencia avanza únicamente cuando completas la sesión.'
+)}
 
-      const e=(w.entries||[]).find(
-        x=>x.exercise===name
-      );
+<div class="card">
+<div class="eyebrow">HOY TOCA</div>
+<h1 style="margin:5px 0">${r.name}</h1>
+<div class="muted">${r.focus}</div>
+</div>
 
-      if(e){
-        rows.push({
-          date,
-          ...e
-        });
-      }
+<div class="stack" style="margin-top:11px">
+${r.ex.map((e,i)=>exerciseCard(e,i)).join('')}
+</div>
 
-    }
-  );
+<div class="grid2" style="margin-top:12px">
+<button class="btn olive" onclick="completeWorkout()">Completar sesión</button>
+<button class="btn light" onclick="skipWorkout()">Hoy no fui</button>
+</div>
 
-  return rows.sort(
-    (a,b)=>b.date.localeCompare(a.date)
-  )[0];
-
+<div class="card" style="margin-top:11px">
+<div class="eyebrow">REGLA</div>
+<div class="small" style="margin-top:6px">
+Si hoy no entrenas, mañana seguirá apareciendo <b>${r.name}</b>.
+No se pierde la secuencia.
+</div>
+</div>
+`;
 }
 
-function exerciseCard(e,i,w){
+function exerciseCard(e,i){
 
-  const [
-    name,
-    muscle,
-    sets,
-    reps,
-    rest,
-    rir
-  ]=e;
+let [name,sets,reps,rir]=e;
 
-  const effectiveSets=phaseSets(sets);
+let previous=[...data.progress]
+.reverse()
+.find(x=>x.exercise===name);
 
-  const entry=(w.entries||[]).find(
-    x=>x.exercise===name
-  );
+return`
+<div class="card">
+<div class="row">
+<div>
+<h3>${name}</h3>
+<div class="small muted">${sets} series · ${reps} reps · RIR ${rir}</div>
+</div>
+${previous?`
+<div class="tiny muted" style="text-align:right">
+Anterior<br>
+${previous.weight||'—'} kg
+</div>
+`:''}
+</div>
 
-  const last=lastExercise(name);
-
-  return`
-    <div class="premium-card rounded-[26px] p-4">
-
-      <div class="flex justify-between gap-4">
-
-        <div>
-
-          <p class="text-[10px] tracking-[.12em] font-black text-[#626a4d] uppercase">
-            ${muscle}
-          </p>
-
-          <h3 class="font-black mt-1">
-            ${name}
-          </h3>
-
-          <p class="text-xs text-[#7b7d75] mt-1">
-            ${effectiveSets} × ${reps}
-            · ${rest}
-            · RIR ${
-              effectiveSets<sets?3:rir
-            }
-          </p>
-
-        </div>
-
-        ${
-          last
-          ?
-          `
-          <div class="text-right shrink-0">
-
-            <p class="text-[10px] text-[#7b7d75]">
-              ÚLTIMO
-            </p>
-
-            <p class="font-black">
-              ${last.weight||'—'} kg
-            </p>
-
-          </div>
-          `
-          :
-          ''
-        }
-
-      </div>
-
-      <div class="grid grid-cols-3 gap-2 mt-4">
-
-        ${input(
-          'Peso',
-          `w-${i}`,
-          entry?.weight||'',
-          'number'
-        )}
-
-        ${input(
-          'Reps',
-          `r-${i}`,
-          entry?.reps||'',
-          'text',
-          '10, 9, 8'
-        )}
-
-        ${input(
-          'RIR',
-          `rir-${i}`,
-          entry?.rir??(effectiveSets<sets?3:rir),
-          'number'
-        )}
-
-      </div>
-
-      <button
-        onclick="saveExercise(${i})"
-        class="w-full bg-[#ebe7dc] rounded-2xl py-2.5 mt-3 text-sm font-black">
-        Guardar ejercicio
-      </button>
-
-    </div>
-  `;
-
+<div id="sets-${i}">
+${Array.from({length:sets},(_,s)=>`
+<div class="setrow">
+<div class="setnum">${s+1}</div>
+${field('kg',`w-${i}-${s}`,'','number')}
+${field('reps',`r-${i}-${s}`,'','number')}
+${field('RIR',`rir-${i}-${s}`,rir,'number')}
+</div>
+`).join('')}
+</div>
+</div>
+`;
 }
 
-function saveExercise(i){
+function completeWorkout(){
 
-  const t=today();
-  const plan=planFor(t);
-  const e=plan.ex[i];
+let r=currentRoutine();
+let entries=[];
 
-  data.workouts[t]=data.workouts[t]||{
-    entries:[],
-    completed:false
-  };
+r.ex.forEach((e,i)=>{
+let [name,sets]=e;
 
-  data.workouts[t].entries=
-    data.workouts[t].entries||[];
+for(let s=0;s<sets;s++){
+let weight=n(val(`w-${i}-${s}`));
+let reps=n(val(`r-${i}-${s}`));
+let rir=n(val(`rir-${i}-${s}`));
 
-  const entry={
-    exercise:e[0],
-    muscle:e[1],
-    weight:val(`w-${i}`),
-    reps:val(`r-${i}`),
-    rir:val(`rir-${i}`),
-    sets:phaseSets(e[2]),
-    targetReps:e[3],
-    rest:e[4]
-  };
+if(weight||reps){
+entries.push({
+id:crypto.randomUUID?.()||Date.now()+Math.random(),
+date:today(),
+routine:r.name,
+exercise:name,
+set:s+1,
+weight,
+reps,
+rir
+});
+}
+}
+});
 
-  data.workouts[t].entries=
-    data.workouts[t].entries.filter(
-      x=>x.exercise!==e[0]
-    );
+data.progress.push(...entries);
 
-  data.workouts[t].entries.push(entry);
+data.workouts.push({
+id:crypto.randomUUID?.()||Date.now().toString(),
+date:today(),
+routine:r.name,
+status:'completed'
+});
 
-  save(false);
-  gym('hoy');
+data.gymAttendance[today()]='completed';
 
+data.routineState.index=
+(n(data.routineState.index)+1)%gymRoutine.length;
+
+save();
+
+alert(
+`Sesión ${r.name} completada. Siguiente: ${currentRoutine().name}`
+);
 }
 
-function finishWorkout(){
+function skipWorkout(){
 
-  const t=today();
+data.gymAttendance[today()]='skipped';
 
-  data.workouts[t]=data.workouts[t]||{
-    entries:[]
-  };
+data.workouts.push({
+id:crypto.randomUUID?.()||Date.now().toString(),
+date:today(),
+routine:currentRoutine().name,
+status:'skipped'
+});
 
-  data.workouts[t].completed=
-    !data.workouts[t].completed;
+save();
 
-  data.gymAttendance[t]=
-    data.workouts[t].completed;
-
-  save(false);
-  gym('hoy');
-
+alert(
+`Registrado. La próxima sesión sigue siendo ${currentRoutine().name}.`
+);
 }
 
-function gymRoutine(){
+function mealMacros(items){
 
-  document.getElementById('gym-content').innerHTML=
-    routineV2.map(r=>`
-      <div class="premium-card rounded-[28px] p-5 mb-4">
+let z={k:0,p:0,c:0,f:0};
 
-        <p class="text-[10px] tracking-[.12em] font-black text-[#626a4d]">
-          ${r.day.toUpperCase()}
-        </p>
+(items||[]).forEach(([id,g])=>{
+let x=foods[id];
+if(!x)return;
 
-        <h2 class="text-xl font-black mt-1">
-          ${r.name}
-        </h2>
+z.k+=x.k*n(g);
+z.p+=x.p*n(g);
+z.c+=x.c*n(g);
+z.f+=x.f*n(g);
+});
 
-        <p class="text-sm text-[#7b7d75] mb-3">
-          ${r.focus}
-        </p>
-
-        ${
-          r.ex.map(e=>`
-            <div class="py-3 border-t border-black/5">
-
-              <p class="font-bold text-sm">
-                ${e[0]}
-              </p>
-
-              <p class="text-xs text-[#7b7d75] mt-1">
-                ${e[2]}×${e[3]}
-                · descanso ${e[4]}
-                · RIR ${e[5]}
-              </p>
-
-            </div>
-          `).join('')
-        }
-
-      </div>
-    `).join('');
-
+return z;
 }
 
-function gymHistory(){
+function food(){
 
-  const rows=Object.entries(data.workouts)
-    .sort((a,b)=>b[0].localeCompare(a[0]));
+let log=data.mealLog[today()]||{};
+let total=macroToday();
 
-  document.getElementById('gym-content').innerHTML=
-    rows.length
-    ?
-    rows.map(([d,w])=>`
-      <div class="premium-card rounded-[26px] p-4 mb-3">
+$('app').innerHTML=`
+${section(
+'Nutrición',
+'Marca lo planeado y NLT calcula el día automáticamente.'
+)}
 
-        <div class="flex justify-between">
+<div class="card">
+<div class="row">
+<div>
+<div class="eyebrow">HOY</div>
+<div class="metric">${Math.round(total.k)} kcal</div>
+</div>
+<div class="small" style="text-align:right">
+<b>${Math.round(total.p)} P</b><br>
+${Math.round(total.c)} C · ${Math.round(total.f)} G
+</div>
+</div>
 
-          <div>
-            <p class="font-black">
-              ${planFor(d)?.name||'Sesión'}
-            </p>
+<div class="bar" style="margin-top:12px">
+<i style="width:${Math.min(100,total.k/data.macroGoal.kcal*100)}%"></i>
+</div>
 
-            <p class="text-xs text-[#7b7d75]">
-              ${d}
-            </p>
-          </div>
+<div class="small muted" style="margin-top:8px">
+Meta: ${data.macroGoal.kcal} kcal ·
+${data.macroGoal.p} P ·
+${data.macroGoal.c} C ·
+${data.macroGoal.f} G
+</div>
+</div>
 
-          <span class="font-black text-[#626a4d]">
-            ${w.completed?'✓':''}
-          </span>
+<div class="stack" style="margin-top:11px">
+${baseMeals.map(m=>mealCard(m,log[m.id])).join('')}
+</div>
 
-        </div>
+<div class="card stack" style="margin-top:11px">
+<h2>Fuera del plan</h2>
+<div class="small muted">
+Agrega algo adicional sin tener que rehacer el día.
+</div>
 
-        ${
-          (w.entries||[]).map(x=>`
-            <div class="text-xs text-[#7b7d75] mt-2">
-              ${x.exercise}
-              · ${x.weight||'—'} kg
-              · ${x.reps||'—'}
-              · RIR ${x.rir||'—'}
-            </div>
-          `).join('')
-        }
+${field('Alimento','extra-name','','text','Ej. pastel')}
+${field('Calorías','extra-k','','number')}
+${field('Proteína','extra-p','','number')}
+${field('Carbohidratos','extra-c','','number')}
+${field('Grasas','extra-f','','number')}
 
-      </div>
-    `).join('')
-    :
-    `<div class="premium-card rounded-[26px] p-5">Aún no hay sesiones.</div>`;
-
+<button class="btn light" onclick="addExtra()">
+Agregar al día
+</button>
+</div>
+`;
 }
 
-function cardio(){
+function mealCard(m,x){
 
-  const c=data.cardio[today()]||{};
+let items=x?.items||m.items;
+let z=mealMacros(items);
 
-  document.getElementById('gym-content').innerHTML=`
-    <div class="premium-card rounded-[28px] p-5">
+return`
+<div class="card">
+<div class="row">
+<div>
+<div class="eyebrow">${m.time}</div>
+<h3 style="margin-top:4px">${m.name}</h3>
+<div class="small muted">
+${Math.round(z.k)} kcal ·
+${Math.round(z.p)}P ·
+${Math.round(z.c)}C ·
+${Math.round(z.f)}G
+</div>
+</div>
 
-      <h2 class="text-xl font-black">
-        Cardio
-      </h2>
+<button
+class="check ${x?.done?'on':''}"
+onclick="toggleMeal('${m.id}')"
+>${x?.done?'✓':'○'}</button>
+</div>
 
-      <p class="text-sm text-[#7b7d75] mt-1 mb-4">
-        1–2 sesiones de 25–30 min + fútbol.
-      </p>
+<div class="divider"></div>
 
-      <div class="space-y-3">
+${items.map(([id,g],i)=>`
+<div class="row small" style="padding:5px 0">
+<span>${esc(foods[id]?.name||id)}</span>
+<span>
+<input
+style="width:65px;text-align:right"
+class="field"
+type="number"
+value="${g}"
+onchange="changeMealQty('${m.id}',${i},this.value)"
+> g
+</span>
+</div>
+`).join('')}
 
-        ${input(
-          'Minutos',
-          'c-min',
-          c.minutes||'',
-          'number'
-        )}
-
-        ${input(
-          'Actividad',
-          'c-type',
-          c.type||'',
-          'text',
-          'Caminadora / bici / fútbol'
-        )}
-
-        ${input(
-          'Intensidad 1–10',
-          'c-int',
-          c.intensity||'',
-          'number'
-        )}
-
-        <button
-          onclick="saveCardio()"
-          class="w-full bg-[#171915] text-white rounded-2xl py-3 font-black">
-          Guardar cardio
-        </button>
-
-      </div>
-
-    </div>
-  `;
-
+<div style="margin-top:10px">
+<input
+class="field"
+placeholder="Nota: hoy no hubo verduras..."
+value="${esc(x?.note||'')}"
+onchange="mealNote('${m.id}',this.value)"
+>
+</div>
+</div>
+`;
 }
 
-function saveCardio(){
+function ensureMeal(id){
 
-  data.cardio[today()]={
-    minutes:val('c-min'),
-    type:val('c-type'),
-    intensity:val('c-int')
-  };
+let m=baseMeals.find(x=>x.id===id);
 
-  save(false);
-  gym('cardio');
+data.mealLog[today()]??={};
 
+data.mealLog[today()][id]??={
+done:false,
+items:JSON.parse(JSON.stringify(m.items)),
+note:''
+};
+
+return data.mealLog[today()][id];
 }
 
-function nutricion(tab='hoy'){
-
-  app(`
-    ${section(
-      'Nutrición',
-      'Recomposición. Consistencia antes que precisión falsa.'
-    )}
-
-    <div class="flex gap-2 overflow-x-auto mb-5">
-      ${pill('Hoy',tab==='hoy',"nutricion('hoy')")}
-      ${pill('Plan',tab==='plan',"nutricion('plan')")}
-      ${pill('Metas',tab==='metas',"nutricion('metas')")}
-    </div>
-
-    <div id="nutrition-content"></div>
-  `);
-
-  if(tab==='hoy')nutritionToday();
-  if(tab==='plan')nutritionPlan();
-  if(tab==='metas')nutritionGoals();
-
+function toggleMeal(id){
+let x=ensureMeal(id);
+x.done=!x.done;
+save();
 }
 
-function macroCard(label,value,goal,unit=''){
-
-  return`
-    <div class="premium-card rounded-[25px] p-4">
-
-      <p class="text-[10px] tracking-[.1em] font-black text-[#7b7d75]">
-        ${label}
-      </p>
-
-      <p class="text-xl font-black mt-1">
-        ${value||0}${unit}
-      </p>
-
-      <p class="text-[10px] text-[#9a9b95]">
-        / ${goal}${unit}
-      </p>
-
-      ${bar(num(value),num(goal))}
-
-    </div>
-  `;
-
+function changeMealQty(id,i,v){
+let x=ensureMeal(id);
+x.items[i][1]=n(v);
+save();
 }
 
-function nutritionToday(){
-
-  const e=data.macroLog[today()]||{};
-
-  document.getElementById('nutrition-content').innerHTML=`
-    <div class="grid grid-cols-2 gap-3">
-
-      ${macroCard(
-        'CALORÍAS',
-        e.calories,
-        data.macroGoal.calories
-      )}
-
-      ${macroCard(
-        'PROTEÍNA',
-        e.protein,
-        data.macroGoal.protein,
-        'g'
-      )}
-
-      ${macroCard(
-        'CARBS',
-        e.carbs,
-        data.macroGoal.carbs,
-        'g'
-      )}
-
-      ${macroCard(
-        'GRASAS',
-        e.fats,
-        data.macroGoal.fats,
-        'g'
-      )}
-
-    </div>
-
-    <div class="premium-card rounded-[28px] p-5 mt-4">
-
-      <h2 class="font-black text-xl">
-        Cierre del día
-      </h2>
-
-      <div class="grid grid-cols-2 gap-3 mt-4">
-
-        ${input(
-          'Calorías',
-          'm-cal',
-          e.calories||'',
-          'number'
-        )}
-
-        ${input(
-          'Proteína g',
-          'm-pro',
-          e.protein||'',
-          'number'
-        )}
-
-        ${input(
-          'Carbs g',
-          'm-carb',
-          e.carbs||'',
-          'number'
-        )}
-
-        ${input(
-          'Grasas g',
-          'm-fat',
-          e.fats||'',
-          'number'
-        )}
-
-      </div>
-
-      <button
-        onclick="saveMacros()"
-        class="w-full bg-[#171915] text-white rounded-2xl py-3 mt-3 font-black">
-        Guardar día
-      </button>
-
-    </div>
-  `;
-
+function mealNote(id,v){
+let x=ensureMeal(id);
+x.note=v;
+save(false);
 }
 
-function saveMacros(){
+function addExtra(){
 
-  data.macroLog[today()]={
-    ...(data.macroLog[today()]||{}),
-    calories:val('m-cal'),
-    protein:val('m-pro'),
-    carbs:val('m-carb'),
-    fats:val('m-fat'),
-    done:true
-  };
+let x={
+id:crypto.randomUUID?.()||Date.now().toString(),
+name:val('extra-name'),
+k:n(val('extra-k')),
+p:n(val('extra-p')),
+c:n(val('extra-c')),
+f:n(val('extra-f'))
+};
 
-  save(false);
-  nutricion('hoy');
+data.extras[today()]??=[];
+data.extras[today()].push(x);
 
+save();
 }
 
-function nutritionPlan(){
+function progressView(){
 
-  document.getElementById('nutrition-content').innerHTML=`
-    <div class="rounded-[26px] p-4 bg-[#e5e1d2] mb-4">
+let b=latestBody();
 
-      <p class="font-black">
-        Plan de recomposición
-      </p>
+$('app').innerHTML=`
+${section(
+'Progreso',
+'Observa tendencias. No conviertas tu cuerpo en una puntuación.'
+)}
 
-      <p class="text-sm text-[#6f7169] mt-1">
-        Las cantidades son un punto de partida.
-        Ajustamos con peso, cintura y rendimiento.
-      </p>
+<div class="grid2">
 
-    </div>
+<div class="card">
+<div class="eyebrow">PESO</div>
+<div class="metric">${b?n(b[1].weight).toFixed(1):'—'}</div>
+<div class="small muted">kg</div>
+</div>
 
-    ${
-      mealPlan.map(m=>`
-        <div class="premium-card rounded-[25px] p-4 mb-3">
+<div class="card">
+<div class="eyebrow">CINTURA</div>
+<div class="metric">${b?n(b[1].waist).toFixed(1):'—'}</div>
+<div class="small muted">cm</div>
+</div>
 
-          <div class="flex gap-3">
+</div>
 
-            <span class="bg-[#ebe7dc] rounded-full px-3 py-2 text-xs font-black h-fit">
-              ${m[0]}
-            </span>
+<div class="card stack" style="margin-top:11px">
+<h2>Registrar cuerpo</h2>
 
-            <div>
+${field('Peso kg','body-weight','','number')}
+${field('Cintura ombligo cm','body-waist','','number')}
+${field('Abdomen cm','body-abdomen','','number')}
+${field('Pecho cm','body-chest','','number')}
+${field('Cadera cm','body-hips','','number')}
 
-              <h3 class="font-black">
-                ${m[1]}
-              </h3>
+<div class="grid2">
+${field('Brazo izquierdo','body-la','','number')}
+${field('Brazo derecho','body-ra','','number')}
+</div>
 
-              <p class="text-sm text-[#7b7d75] mt-1">
-                ${m[2]}
-              </p>
+<div class="grid2">
+${field('Muslo izquierdo','body-lt','','number')}
+${field('Muslo derecho','body-rt','','number')}
+</div>
 
-            </div>
+${field('Nota','body-note')}
 
-          </div>
+<button class="btn" onclick="saveBody()">
+Guardar medición
+</button>
+</div>
 
-        </div>
-      `).join('')
-    }
-  `;
+<div class="card" style="margin-top:11px">
+<h2>Historial</h2>
 
-}
+${Object.entries(data.body||{})
+.sort((a,b)=>b[0].localeCompare(a[0]))
+.slice(0,10)
+.map(([d,x])=>`
+<div class="row small" style="padding:10px 0;border-bottom:1px solid var(--line)">
+<div>
+<b>${fmt(d)}</b>
+<div class="muted">
+Cintura ${x.waist||'—'} cm
+</div>
+</div>
+<b>${x.weight||'—'} kg</b>
+</div>
+`).join('')||'<p class="small muted">Sin mediciones todavía.</p>'}
 
-function nutritionGoals(){
-
-  const g=data.macroGoal;
-
-  document.getElementById('nutrition-content').innerHTML=`
-    <div class="premium-card rounded-[28px] p-5">
-
-      <h2 class="text-xl font-black">
-        Objetivos iniciales
-      </h2>
-
-      <p class="text-sm text-[#7b7d75] mt-1 mb-4">
-        Editables conforme respondas.
-      </p>
-
-      <div class="grid grid-cols-2 gap-3">
-
-        ${input(
-          'Calorías',
-          'g-cal',
-          g.calories,
-          'number'
-        )}
-
-        ${input(
-          'Proteína',
-          'g-pro',
-          g.protein,
-          'number'
-        )}
-
-        ${input(
-          'Carbs',
-          'g-carb',
-          g.carbs,
-          'number'
-        )}
-
-        ${input(
-          'Grasas',
-          'g-fat',
-          g.fats,
-          'number'
-        )}
-
-      </div>
-
-      <button
-        onclick="saveGoals()"
-        class="w-full bg-[#171915] text-white rounded-2xl py-3 mt-3 font-black">
-        Guardar metas
-      </button>
-
-    </div>
-  `;
-
-}
-
-function saveGoals(){
-
-  data.macroGoal={
-    calories:num(val('g-cal')),
-    protein:num(val('g-pro')),
-    carbs:num(val('g-carb')),
-    fats:num(val('g-fat'))
-  };
-
-  save(false);
-  nutricion('metas');
-
-}
-
-function salud(tab='cuerpo'){
-
-  app(`
-    ${section(
-      'Progreso',
-      'Mide tendencias. No conviertas tu vida en una hoja de cálculo.'
-    )}
-
-    <div class="flex gap-2 overflow-x-auto mb-5">
-      ${pill('Cuerpo',tab==='cuerpo',"salud('cuerpo')")}
-      ${pill('Sueño',tab==='sueno',"salud('sueno')")}
-      ${pill('Tendencia',tab==='tendencia',"salud('tendencia')")}
-    </div>
-
-    <div id="health-content"></div>
-  `);
-
-  if(tab==='cuerpo')body();
-  if(tab==='sueno')sleep();
-  if(tab==='tendencia')trend();
-
-}
-
-function body(){
-
-  const b=data.body[today()]||{};
-
-  document.getElementById('health-content').innerHTML=`
-    <div class="premium-card rounded-[28px] p-5">
-
-      <h2 class="font-black text-xl">
-        Composición corporal
-      </h2>
-
-      <p class="text-sm text-[#7b7d75] mt-1 mb-4">
-        Peso frecuente · cintura semanal · fotos cada 4 semanas.
-      </p>
-
-      <div class="space-y-3">
-
-        ${input(
-          'Peso kg',
-          'b-weight',
-          b.weight||'',
-          'number'
-        )}
-
-        ${input(
-          'Cintura cm',
-          'b-waist',
-          b.waist||'',
-          'number'
-        )}
-
-        ${input(
-          'Nota',
-          'b-note',
-          b.note||'',
-          'text',
-          'Fotos / sensación / observaciones'
-        )}
-
-        <button
-          onclick="saveBody()"
-          class="w-full bg-[#171915] text-white rounded-2xl py-3 font-black">
-          Guardar
-        </button>
-
-      </div>
-
-    </div>
-  `;
-
+</div>
+`;
 }
 
 function saveBody(){
 
-  data.body[today()]={
-    weight:val('b-weight'),
-    waist:val('b-waist'),
-    note:val('b-note')
-  };
+data.body[today()]={
+weight:n(val('body-weight')),
+waist:n(val('body-waist')),
+abdomen:n(val('body-abdomen')),
+chest:n(val('body-chest')),
+hips:n(val('body-hips')),
+leftArm:n(val('body-la')),
+rightArm:n(val('body-ra')),
+leftThigh:n(val('body-lt')),
+rightThigh:n(val('body-rt')),
+note:val('body-note')
+};
 
-  save(false);
-  salud('cuerpo');
-
+save();
 }
 
-function sleep(){
+function more(){
 
-  const s=data.sleep[today()]||{};
+$('app').innerHTML=`
+${section(
+'Más',
+'Las demás áreas de tu sistema.'
+)}
 
-  document.getElementById('health-content').innerHTML=`
-    <div class="premium-card rounded-[28px] p-5">
+<div class="stack">
 
-      <h2 class="font-black text-xl">
-        Sueño
-      </h2>
+${menu(
+'Calendario',
+'Agenda personal + ritmos del sistema.',
+"calendar()"
+)}
 
-      <p class="text-sm text-[#7b7d75] mt-1 mb-4">
-        Recuperación primero.
-      </p>
+${menu(
+'Fe',
+'Oración, Misa, Rosario, Santísimo y confesión.',
+"faith()"
+)}
 
-      <div class="space-y-3">
+${menu(
+'Actividad',
+'Fútbol y cardio.',
+"activity()"
+)}
 
-        ${input(
-          'Horas dormidas',
-          's-hours',
-          s.hours||'',
-          'number'
-        )}
+${menu(
+'Lectura',
+'Libros, páginas y sesiones.',
+"reading()"
+)}
 
-        ${input(
-          'Hora de dormir',
-          's-bed',
-          s.bed||'',
-          'time'
-        )}
+${menu(
+'Finanzas',
+'Registros + Nate Cloud.',
+"finance()"
+)}
 
-        ${input(
-          'Calidad 1–5',
-          's-quality',
-          s.quality||'',
-          'number'
-        )}
+${menu(
+'Weekly Reset',
+'Revisar la semana y corregir dirección.',
+"weekly()"
+)}
 
-        <button
-          onclick="saveSleep()"
-          class="w-full bg-[#171915] text-white rounded-2xl py-3 font-black">
-          Guardar
-        </button>
+${menu(
+'Datos & Backup',
+'Excel, JSON y restauración.',
+"backup()"
+)}
 
-      </div>
+${menu(
+'Configuración',
+'Nube, PIN y seguridad.',
+"settings()"
+)}
 
-    </div>
-  `;
-
+</div>
+`;
 }
 
-function saveSleep(){
+function calendar(){
 
-  data.sleep[today()]={
-    hours:val('s-hours'),
-    bed:val('s-bed'),
-    quality:val('s-quality')
-  };
+let now=dateObj(today());
+let y=now.getFullYear();
+let m=now.getMonth();
 
-  save(false);
-  salud('sueno');
+let first=new Date(y,m,1,12);
+let last=new Date(y,m+1,0,12);
 
+let blanks=first.getDay();
+let cells=[];
+
+for(let i=0;i<blanks;i++)cells.push(null);
+
+for(let d=1;d<=last.getDate();d++){
+let dt=new Date(y,m,d,12);
+cells.push(dt.toLocaleDateString('en-CA'));
 }
 
-function trend(){
+let monthName=now.toLocaleDateString(
+'es-MX',
+{month:'long',year:'numeric'}
+);
 
-  const entries=Object.entries(data.body)
-    .filter(([,b])=>b.weight)
-    .sort((a,b)=>a[0].localeCompare(b[0]));
+$('app').innerHTML=`
+${back()}
+${section(
+'Calendario',
+'Agenda tu vida aquí: fiestas, voluntariado, citas, Misa, actividades y compromisos.'
+)}
 
-  const recent=entries.slice(-7);
+<div class="card">
+<div class="row">
+<h2 style="text-transform:capitalize">${monthName}</h2>
+<button class="btn sm" onclick="newEvent()">+ Evento</button>
+</div>
 
-  const avg=recent.length
-    ?
-    (
-      recent.reduce(
-        (s,[,b])=>s+num(b.weight),
-        0
-      )/recent.length
-    ).toFixed(1)
-    :
-    '—';
+<div class="calgrid small muted" style="margin-top:15px;margin-bottom:6px">
+${['D','L','M','M','J','V','S']
+.map(x=>`<div style="text-align:center">${x}</div>`)
+.join('')}
+</div>
 
-  const waistEntry=[...entries]
-    .reverse()
-    .find(([,b])=>b.waist);
+<div class="calgrid">
+${cells.map(d=>{
+if(!d)return '<div class="calday blank"></div>';
 
-  const waist=waistEntry?.[1]?.waist||'—';
+let has=data.events.some(x=>x.date===d);
 
-  document.getElementById('health-content').innerHTML=`
-    <div class="grid grid-cols-2 gap-3">
+return`
+<button
+class="calday ${d===today()?'today':''} ${has?'has':''}"
+onclick="dayEvents('${d}')"
+>
+${dateObj(d).getDate()}
+</button>
+`;
+}).join('')}
+</div>
+</div>
 
-      ${card(
-        'PESO PROM.',
-        avg==='—'?'—':avg+' kg',
-        recent.length+' registros'
-      )}
+<div class="card" style="margin-top:11px">
+<h2>Próximos</h2>
 
-      ${card(
-        'CINTURA',
-        waist==='—'?'—':waist+' cm',
-        'Último registro'
-      )}
+${data.events
+.filter(x=>x.date>=today())
+.sort((a,b)=>
+(a.date+(a.start||''))
+.localeCompare(b.date+(b.start||''))
+)
+.slice(0,10)
+.map(x=>`
+<div class="row small" style="padding:10px 0;border-bottom:1px solid var(--line)">
+<div>
+<b>${esc(x.title)}</b>
+<div class="muted">
+${fmt(x.date)} · ${x.start||'Todo el día'} · ${esc(x.category||'Personal')}
+</div>
+</div>
+</div>
+`).join('')||'<p class="small muted">Sin eventos próximos.</p>'}
 
-    </div>
-
-    <div class="premium-card rounded-[28px] p-5 mt-4">
-
-      <h2 class="font-black text-xl">
-        Historial
-      </h2>
-
-      <div class="mt-3">
-
-        ${
-          entries.length
-          ?
-          entries.slice(-15).reverse().map(([d,b])=>`
-            <div class="flex justify-between py-3 border-t border-black/5">
-
-              <span class="text-sm text-[#7b7d75]">
-                ${d}
-              </span>
-
-              <b class="text-sm">
-                ${b.weight} kg
-                ${b.waist?' · '+b.waist+' cm':''}
-              </b>
-
-            </div>
-          `).join('')
-          :
-          `<p class="text-sm text-[#7b7d75]">Sin datos todavía.</p>`
-        }
-
-      </div>
-
-    </div>
-  `;
-
+</div>
+`;
 }
 
-function mas(){
+function newEvent(date=today()){
 
-  app(`
-    ${section(
-      'Más',
-      'Fe, dinero, datos y configuración.'
-    )}
+$('app').innerHTML=`
+${back()}
+${section('Nuevo evento')}
 
-    <div class="space-y-3">
+<div class="card stack">
 
-      ${menuCard(
-        'Fe',
-        'Oración, Misa, Rosario y notas.',
-        "faith()"
-      )}
+${field('Título','ev-title','','text','Fiesta de...')}
+${field('Fecha','ev-date',date,'date')}
 
-      ${menuCard(
-        'Finanzas',
-        'Movimientos y registro personal.',
-        "finance()"
-      )}
+<div class="grid2">
+${field('Inicio','ev-start','','time')}
+${field('Fin','ev-end','','time')}
+</div>
 
-      ${menuCard(
-        'Datos & Backup',
-        'Excel, respaldo y restauración.',
-        "backupScreen()"
-      )}
+<label>
+<span class="label">Categoría</span>
+<select id="ev-cat" class="field">
+<option>Dios</option>
+<option>Familia / Amor</option>
+<option>Salud</option>
+<option>Trabajo</option>
+<option>Crecimiento</option>
+<option>Social</option>
+<option>Servicio</option>
+<option>Personal</option>
+</select>
+</label>
 
-      ${menuCard(
-        'Seguridad',
-        'Cambiar PIN y bloquear sesión.',
-        "securityScreen()"
-      )}
+${field('Notas','ev-note')}
 
-    </div>
-  `);
+<button class="btn" onclick="saveEvent()">
+Guardar evento
+</button>
 
+</div>
+`;
 }
 
-function menuCard(title,sub,click){
+function saveEvent(){
 
-  return`
-    <button
-      onclick="${click}"
-      class="premium-card rounded-[26px] p-5 w-full text-left flex justify-between items-center">
+let title=val('ev-title').trim();
 
-      <div>
+if(!title)return alert('Pon un título.');
 
-        <h2 class="font-black">
-          ${title}
-        </h2>
+data.events.push({
+id:crypto.randomUUID?.()||Date.now().toString(),
+title,
+date:val('ev-date')||today(),
+start:val('ev-start'),
+end:val('ev-end'),
+category:val('ev-cat'),
+note:val('ev-note'),
+status:'scheduled'
+});
 
-        <p class="text-sm text-[#7b7d75] mt-1">
-          ${sub}
-        </p>
-
-      </div>
-
-      <span class="text-xl">
-        →
-      </span>
-
-    </button>
-  `;
-
+save(false);
+calendar();
 }
 
-function backButton(){
+function dayEvents(d){
 
-  return`
-    <button
-      onclick="setView('mas')"
-      class="text-sm font-black text-[#626a4d] mb-5">
-      ← Más
-    </button>
-  `;
+let rows=data.events
+.filter(x=>x.date===d)
+.sort((a,b)=>(a.start||'').localeCompare(b.start||''));
 
+$('app').innerHTML=`
+${back()}
+${section(fmt(d))}
+
+<div class="stack">
+
+${rows.map(x=>`
+<div class="card">
+<div class="row">
+<div>
+<h3>${esc(x.title)}</h3>
+<div class="small muted">
+${x.start||'Todo el día'}${x.end?' – '+x.end:''} · ${esc(x.category||'Personal')}
+</div>
+</div>
+
+<button class="btn danger sm" onclick="deleteEvent('${x.id}','${d}')">
+Eliminar
+</button>
+</div>
+
+${x.note?`<div class="small" style="margin-top:9px">${esc(x.note)}</div>`:''}
+</div>
+`).join('')||'<div class="card small muted">Sin eventos.</div>'}
+
+<button class="btn" onclick="newEvent('${d}')">
++ Agregar evento
+</button>
+
+</div>
+`;
+}
+
+function deleteEvent(id,d){
+
+if(!confirm('¿Eliminar evento?'))return;
+
+data.events=data.events.filter(x=>x.id!==id);
+
+save(false);
+dayEvents(d);
 }
 
 function faith(){
 
-  const e=data.faith[today()]||{};
+let x=data.faith[today()]||{};
 
-  app(`
-    ${backButton()}
-    ${section(
-      'Fe',
-      'Prácticas como medios para permanecer cerca de Dios.'
-    )}
+let last=[...data.confessions]
+.sort()
+.reverse()[0];
 
-    <div class="premium-card rounded-[28px] p-5 space-y-2">
+let days=last
+?Math.floor((dateObj(today())-dateObj(last))/86400000)
+:null;
 
-      ${faithButton('prayed','Oración personal',e.prayed)}
-      ${faithButton('exam','Examen / oración nocturna',e.exam)}
-      ${faithButton('mass','Misa',e.mass)}
-      ${faithButton('rosary','Rosario',e.rosary)}
-      ${faithButton('adoration','Santísimo',e.adoration)}
+$('app').innerHTML=`
+${back()}
+${section(
+'Fe',
+'Registrar para recordar y cuidar el ritmo; no para convertirlo en una puntuación.'
+)}
 
-    </div>
+<div class="card">
+<div class="eyebrow">CONFESIÓN</div>
+<div class="metric" style="font-size:21px">
+${last?`Hace ${days} días`:'Sin registro'}
+</div>
+<div class="small muted">
+${last?fmt(last):'Registra tu próxima confesión cuando ocurra.'}
+</div>
 
-    <div class="rounded-[28px] p-5 bg-[#e5e1d2] mt-4">
+<button
+class="btn light sm"
+style="margin-top:12px"
+onclick="addConfession()"
+>
+Registrar confesión hoy
+</button>
+</div>
 
-      <p class="text-[10px] tracking-[.12em] font-black text-[#626a4d]">
-        RITMO
-      </p>
-
-      <p class="text-sm mt-2">
-        Misa lunes 20:00 · jueves 20:00 con Deny · domingo.
-      </p>
-
-      <p class="text-sm mt-1">
-        Rosario con mamá lunes ~21:00.
-      </p>
-
-      <p class="text-sm mt-1">
-        Confesión aproximadamente cada 3 semanas · servicio mensual.
-      </p>
-
-    </div>
-
-    <div class="premium-card rounded-[28px] p-5 mt-4">
-
-      <textarea
-        id="faith-note"
-        class="w-full rounded-2xl border p-4 min-h-28"
-        placeholder="Gratitud, examen, intención..."
-      >${esc(e.note||'')}</textarea>
-
-      <button
-        onclick="saveFaithNote()"
-        class="w-full bg-[#171915] text-white rounded-2xl py-3 mt-3 font-black">
-        Guardar nota
-      </button>
-
-    </div>
-  `);
-
+<div class="card stack" style="margin-top:11px">
+${faithToggle('prayed','Oración')}
+${faithToggle('examen','Examen de conciencia')}
+${faithToggle('mass','Misa')}
+${faithToggle('rosary','Rosario')}
+${faithToggle('adoration','Santísimo')}
+</div>
+`;
 }
 
-function faithButton(key,label,done){
+function faithToggle(k,label){
 
-  return`
-    <button
-      onclick="toggleFaith('${key}')"
-      class="w-full flex justify-between items-center rounded-2xl px-4 py-3 ${
-        done
-        ?
-        'bg-[#e5eadb] text-[#465037]'
-        :
-        'bg-[#f2efe6]'
-      }">
+let x=data.faith[today()]||{};
 
-      <b>
-        ${label}
-      </b>
-
-      <span>
-        ${done?'✓':'○'}
-      </span>
-
-    </button>
-  `;
-
+return`
+<div class="row">
+<div>
+<b>${label}</b>
+</div>
+<button
+class="check ${x[k]?'on':''}"
+onclick="toggleFaith('${k}')"
+>${x[k]?'✓':'○'}</button>
+</div>
+`;
 }
 
-function toggleFaith(key){
+function toggleFaith(k){
 
-  const t=today();
+data.faith[today()]??={};
+data.faith[today()][k]=!data.faith[today()][k];
 
-  data.faith[t]=data.faith[t]||{};
-
-  data.faith[t][key]=
-    !data.faith[t][key];
-
-  save(false);
-  faith();
-
+save(false);
+faith();
 }
 
-function saveFaithNote(){
+function addConfession(){
 
-  const t=today();
+if(
+data.confessions.includes(today()) ||
+!confirm('¿Registrar confesión hoy?')
+)return;
 
-  data.faith[t]=data.faith[t]||{};
+data.confessions.push(today());
 
-  data.faith[t].note=
-    val('faith-note');
+save(false);
+faith();
+}
 
-  save(false);
-  faith();
+function activity(){
 
+let f=data.football[today()]||{};
+let c=data.cardio[today()]||{};
+
+$('app').innerHTML=`
+${back()}
+${section(
+'Actividad',
+'Fútbol y cardio fuera de la rutina de fuerza.'
+)}
+
+<div class="card stack">
+<h2>Fútbol</h2>
+
+<label>
+<span class="label">Estado</span>
+<select id="football-status" class="field">
+<option value="">Sin registrar</option>
+<option value="played" ${f.status==='played'?'selected':''}>Fui</option>
+<option value="missed" ${f.status==='missed'?'selected':''}>No fui</option>
+<option value="planned" ${f.status==='planned'?'selected':''}>Programado</option>
+</select>
+</label>
+
+${field('Minutos','football-min',f.minutes||'','number')}
+
+<button class="btn light" onclick="saveFootball()">
+Guardar fútbol
+</button>
+</div>
+
+<div class="card stack" style="margin-top:11px">
+<h2>Cardio</h2>
+
+<label>
+<span class="label">Tipo</span>
+<select id="cardio-type" class="field">
+<option>Caminadora</option>
+<option>Bicicleta</option>
+<option>Elíptica</option>
+<option>Caminata</option>
+<option>Correr</option>
+<option>Otro</option>
+</select>
+</label>
+
+${field('Minutos','cardio-min',c.minutes||'','number')}
+
+<label>
+<span class="label">Intensidad</span>
+<select id="cardio-int" class="field">
+<option>Baja</option>
+<option>Media</option>
+<option>Alta</option>
+</select>
+</label>
+
+<button class="btn light" onclick="saveCardio()">
+Guardar cardio
+</button>
+</div>
+`;
+}
+
+function saveFootball(){
+
+data.football[today()]={
+status:val('football-status'),
+minutes:n(val('football-min'))
+};
+
+save(false);
+activity();
+}
+
+function saveCardio(){
+
+data.cardio[today()]={
+type:val('cardio-type'),
+minutes:n(val('cardio-min')),
+intensity:val('cardio-int')
+};
+
+save(false);
+activity();
+}
+
+function reading(){
+
+let books=data.reading.books||[];
+let active=books.find(x=>x.status==='leyendo');
+
+$('app').innerHTML=`
+${back()}
+${section(
+'Lectura',
+'Leer también es una forma de construir.'
+)}
+
+${active?`
+<div class="card">
+<div class="eyebrow">LIBRO ACTUAL</div>
+<h2 style="margin-top:5px">${esc(active.title)}</h2>
+<div class="small muted">${esc(active.author||'')}</div>
+
+<div class="row" style="margin-top:14px">
+<div>
+<div class="metric">
+${active.totalPages
+?Math.round(n(active.currentPage)/n(active.totalPages)*100)
+:0}%
+</div>
+<div class="small muted">
+Pág. ${active.currentPage||0} / ${active.totalPages||'—'}
+</div>
+</div>
+
+<button class="btn sm" onclick="readingSession('${active.id}')">
+Registrar lectura
+</button>
+</div>
+</div>
+`:`
+<div class="notice small">
+No tienes un libro activo.
+</div>
+`}
+
+<div class="card stack" style="margin-top:11px">
+<h2>Agregar libro</h2>
+
+${field('Título','book-title')}
+${field('Autor','book-author')}
+${field('Páginas totales','book-pages','','number')}
+
+<button class="btn light" onclick="addBook()">
+Agregar
+</button>
+</div>
+
+<div class="card" style="margin-top:11px">
+<h2>Biblioteca</h2>
+
+${books.map(b=>`
+<div class="row small" style="padding:10px 0;border-bottom:1px solid var(--line)">
+<div>
+<b>${esc(b.title)}</b>
+<div class="muted">
+${esc(b.author||'')} · ${b.currentPage||0}/${b.totalPages||'—'}
+</div>
+</div>
+
+${b.status!=='leyendo'
+?`<button class="btn light sm" onclick="activateBook('${b.id}')">Leer</button>`
+:'<b>Actual</b>'
+}
+</div>
+`).join('')||'<p class="small muted">Sin libros todavía.</p>'}
+
+</div>
+`;
+}
+
+function addBook(){
+
+let title=val('book-title').trim();
+
+if(!title)return alert('Pon el título.');
+
+let hasActive=data.reading.books.some(x=>x.status==='leyendo');
+
+data.reading.books.push({
+id:crypto.randomUUID?.()||Date.now().toString(),
+title,
+author:val('book-author'),
+totalPages:n(val('book-pages')),
+currentPage:0,
+status:hasActive?'pendiente':'leyendo',
+startedDate:hasActive?'':today()
+});
+
+save(false);
+reading();
+}
+
+function activateBook(id){
+
+data.reading.books.forEach(x=>{
+if(x.status==='leyendo')x.status='pausado';
+});
+
+let b=data.reading.books.find(x=>x.id===id);
+
+if(b){
+b.status='leyendo';
+b.startedDate ||= today();
+}
+
+save(false);
+reading();
+}
+
+function readingSession(id){
+
+let b=data.reading.books.find(x=>x.id===id);
+
+if(!b)return;
+
+$('app').innerHTML=`
+${back()}
+${section('Registrar lectura',esc(b.title))}
+
+<div class="card stack">
+
+<div class="notice small">
+Página actual: <b>${b.currentPage||0}</b>
+</div>
+
+${field('Nueva página','read-page',b.currentPage||0,'number')}
+${field('Minutos leídos','read-min','','number')}
+${field('Nota','read-note')}
+
+<button class="btn" onclick="saveReading('${id}')">
+Guardar sesión
+</button>
+
+</div>
+`;
+}
+
+function saveReading(id){
+
+let b=data.reading.books.find(x=>x.id===id);
+
+if(!b)return;
+
+let old=n(b.currentPage);
+let page=n(val('read-page'));
+
+if(page<old)return alert('La página no puede ser menor a la actual.');
+
+let pages=page-old;
+
+data.reading.sessions.push({
+id:crypto.randomUUID?.()||Date.now().toString(),
+bookId:id,
+date:today(),
+startPage:old,
+endPage:page,
+pages,
+minutes:n(val('read-min')),
+note:val('read-note')
+});
+
+b.currentPage=page;
+
+if(b.totalPages && page>=b.totalPages){
+b.currentPage=b.totalPages;
+b.status='terminado';
+b.finishedDate=today();
+}
+
+save(false);
+reading();
 }
 
 function finance(){
 
-  const rows=[...data.finance].reverse();
+let rows=[...(data.finance||[])]
+.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
 
-  app(`
-    ${backButton()}
-    ${section(
-      'Finanzas',
-      'Registro simple. El dinero es un medio.'
-    )}
+let month=today().slice(0,7);
 
-    <div class="premium-card rounded-[28px] p-5">
+let monthRows=rows.filter(x=>(x.date||'').startsWith(month));
 
-      <div class="space-y-3">
+let expenses=monthRows
+.filter(x=>x.type==='gasto')
+.reduce((s,x)=>s+n(x.amount),0);
 
-        ${input(
-          'Concepto',
-          'f-concept',
-          '',
-          'text',
-          'Ej. Supermercado'
-        )}
+let income=monthRows
+.filter(x=>x.type==='ingreso')
+.reduce((s,x)=>s+n(x.amount),0);
 
-        <div class="grid grid-cols-2 gap-3">
+$('app').innerHTML=`
+${back()}
+${section(
+'Finanzas',
+'Captura una vez. Nate Cloud conserva el registro y prepara tu análisis.'
+)}
 
-          ${input(
-            'Monto',
-            'f-amount',
-            '',
-            'number'
-          )}
+<div class="grid2">
 
-          <label>
-            <span class="text-[11px] uppercase tracking-[.1em] font-black text-[#7b7d75]">
-              Tipo
-            </span>
+<div class="card">
+<div class="eyebrow">INGRESOS MES</div>
+<div class="metric">${money(income)}</div>
+</div>
 
-            <select
-              id="f-type"
-              class="mt-1 w-full rounded-2xl border px-4 py-3">
-              <option value="Gasto">Gasto</option>
-              <option value="Ingreso">Ingreso</option>
-            </select>
-          </label>
+<div class="card">
+<div class="eyebrow">GASTOS MES</div>
+<div class="metric">${money(expenses)}</div>
+</div>
 
-        </div>
+</div>
 
-        ${input(
-          'Categoría',
-          'f-category',
-          '',
-          'text',
-          'Comida / Deny / Transporte...'
-        )}
+<div class="card stack" style="margin-top:11px">
 
-        <button
-          onclick="addFinance()"
-          class="w-full bg-[#171915] text-white rounded-2xl py-3 font-black">
-          Agregar movimiento
-        </button>
+<h2>Nuevo movimiento</h2>
 
-      </div>
+<label>
+<span class="label">Tipo</span>
+<select id="fin-type" class="field">
+<option value="gasto">Gasto</option>
+<option value="ingreso">Ingreso</option>
+</select>
+</label>
 
-    </div>
+${field('Fecha','fin-date',today(),'date')}
 
-    <div class="premium-card rounded-[28px] p-5 mt-4">
+${field(
+'Concepto',
+'fin-concept',
+'',
+'text',
+'Ej. Gasolina'
+)}
 
-      <h2 class="font-black text-xl">
-        Movimientos
-      </h2>
+${field(
+'Subconcepto',
+'fin-sub',
+'',
+'text',
+'Ej. Transporte'
+)}
 
-      <div class="mt-3">
+${field(
+'Monto',
+'fin-amount',
+'',
+'number',
+'0.00'
+)}
 
-        ${
-          rows.length
-          ?
-          rows.slice(0,30).map(x=>`
-            <div class="flex justify-between gap-3 py-3 border-t border-black/5">
+<label>
+<span class="label">Método / cuenta</span>
+<select id="fin-payment" class="field">
+${payment.map(x=>`
+<option value="${esc(x)}">${esc(x)}</option>
+`).join('')}
+</select>
+</label>
 
-              <div>
+${field(
+'MSI / número de pagos',
+'fin-msi',
+1,
+'number'
+)}
 
-                <p class="font-bold text-sm">
-                  ${esc(x.concept||x.description||'Movimiento')}
-                </p>
+${field(
+'Nota',
+'fin-note',
+'',
+'text',
+'Opcional'
+)}
 
-                <p class="text-xs text-[#7b7d75]">
-                  ${x.date||''}
-                  · ${esc(x.category||'Sin categoría')}
-                </p>
+<button class="btn" onclick="addFinance()">
+Guardar movimiento
+</button>
 
-              </div>
+</div>
 
-              <b class="${
-                x.type==='Ingreso'
-                ?
-                'text-[#626a4d]'
-                :
-                ''
-              }">
-                ${x.type==='Ingreso'?'+':'-'}$${num(x.amount).toLocaleString('es-MX')}
-              </b>
+<div class="card" style="margin-top:11px">
 
-            </div>
-          `).join('')
-          :
-          `<p class="text-sm text-[#7b7d75]">Sin movimientos.</p>`
-        }
+<div class="row">
+<div>
+<div class="eyebrow">HISTORIAL</div>
+<h2 style="margin-top:4px">Movimientos</h2>
+</div>
 
-      </div>
+<div class="small muted">
+${cloudUser
+?'<span class="good">● Cloud</span>'
+:'<span class="warn">● Local</span>'
+}
+</div>
+</div>
 
-    </div>
-  `);
+<div style="margin-top:8px">
+
+${rows.slice(0,30).map(x=>`
+<div
+class="row small"
+style="padding:11px 0;border-bottom:1px solid var(--line)"
+>
+<div>
+<b>${esc(x.concept)}</b>
+
+<div class="muted">
+${fmt(x.date)} ·
+${esc(x.paymentMethod||'—')}
+${x.subcategory?' · '+esc(x.subcategory):''}
+</div>
+
+${x.syncStatus==='pending'
+?'<div class="tiny warn">⟳ pendiente de sincronizar</div>'
+:x.syncStatus==='error'
+?'<div class="tiny bad">! error de sincronización</div>'
+:x.syncStatus==='synced'
+?'<div class="tiny good">✓ sincronizado</div>'
+:''
+}
+</div>
+
+<b class="${x.type==='gasto'?'bad':'good'}">
+${x.type==='gasto'?'-':'+'}${money(x.amount)}
+</b>
+</div>
+`).join('')||`
+<p class="small muted">
+Todavía no hay movimientos.
+</p>
+`}
+
+</div>
+</div>
+`;
+}
+
+async function addFinance(){
+
+let amount=n(val('fin-amount'));
+let concept=val('fin-concept').trim();
+
+if(!concept){
+return alert('Escribe el concepto.');
+}
+
+if(!amount || amount<=0){
+return alert('Escribe un monto válido.');
+}
+
+let paymentMethod=val('fin-payment');
+
+let movement={
+
+id:crypto.randomUUID
+?crypto.randomUUID()
+:Date.now().toString(),
+
+date:val('fin-date')||today(),
+
+type:val('fin-type'),
+
+concept,
+
+subcategory:val('fin-sub').trim(),
+
+amount,
+
+paymentMethod,
+
+accountCard:paymentMethod,
+
+installments:
+Math.max(1,n(val('fin-msi'))||1),
+
+note:val('fin-note').trim(),
+
+createdAt:new Date().toISOString(),
+
+syncStatus:
+cloudUser
+?'pending'
+:'local'
+
+};
+
+data.finance.push(movement);
+
+save(false);
+
+if(cloudUser){
+
+let ok=await pushFinance(movement);
+
+movement.syncStatus=
+ok
+?'synced'
+:'error';
+
+save(false);
 
 }
 
-function addFinance(){
+finance();
+}
 
-  data.finance.push({
-    date:today(),
-    concept:val('f-concept'),
-    amount:num(val('f-amount')),
-    type:val('f-type'),
-    category:val('f-category')
-  });
+async function pushFinance(x){
 
-  save(false);
-  finance();
+if(!sb || !cloudUser){
+return false;
+}
+
+try{
+
+const {error}=await sb
+.from('finance')
+.upsert({
+
+id:x.id,
+
+user_id:cloudUser.id,
+
+transaction_date:x.date,
+
+transaction_type:x.type,
+
+concept:x.concept,
+
+subcategory:x.subcategory||null,
+
+amount:n(x.amount),
+
+payment_method:x.paymentMethod||null,
+
+account_card:x.accountCard||null,
+
+installments:
+Math.max(1,n(x.installments)||1),
+
+note:x.note||null,
+
+source:'NLT',
+
+updated_at:new Date().toISOString()
+
+},{
+onConflict:'id'
+});
+
+if(error){
+console.error(error);
+return false;
+}
+
+return true;
+
+}catch(err){
+
+console.error(err);
+return false;
+
+}
+}
+
+async function retryFinanceSync(){
+
+if(!cloudUser){
+return alert('Primero conecta Nate Cloud.');
+}
+
+let pending=(data.finance||[])
+.filter(x=>
+x.syncStatus!=='synced'
+);
+
+if(!pending.length){
+return alert('No hay movimientos pendientes.');
+}
+
+let success=0;
+let failed=0;
+
+for(const x of pending){
+
+let ok=await pushFinance(x);
+
+if(ok){
+x.syncStatus='synced';
+success++;
+}else{
+x.syncStatus='error';
+failed++;
+}
 
 }
 
-function backupScreen(){
+save(false);
 
-  app(`
-    ${backButton()}
-    ${section(
-      'Datos & Backup',
-      'Tus registros permanecen en este dispositivo hasta que los exportas.'
-    )}
+alert(
+`Sincronización terminada.\n\n`+
+`Correctos: ${success}\n`+
+`Con error: ${failed}`
+);
 
-    <div class="space-y-3">
-
-      ${menuCard(
-        'Exportar Excel',
-        'Genera un .xlsx con hojas separadas.',
-        'exportExcel()'
-      )}
-
-      ${menuCard(
-        'Backup JSON',
-        'Copia completa para restaurar la app.',
-        'exportJSON()'
-      )}
-
-      <div class="premium-card rounded-[26px] p-5">
-
-        <h2 class="font-black">
-          Restaurar backup
-        </h2>
-
-        <p class="text-sm text-[#7b7d75] mt-1">
-          Selecciona un archivo JSON exportado por Nate Life Tracker.
-        </p>
-
-        <input
-          type="file"
-          accept=".json,application/json"
-          onchange="importJSON(event)"
-          class="mt-4 w-full"
-        >
-
-      </div>
-
-    </div>
-  `);
-
+settings();
 }
 
-function securityScreen(){
+async function pullFinance(){
 
-  app(`
-    ${backButton()}
-    ${section(
-      'Seguridad',
-      'PIN local de acceso.'
-    )}
-
-    <div class="premium-card rounded-[28px] p-5">
-
-      ${input(
-        'Nuevo PIN',
-        'new-pin',
-        '',
-        'password',
-        '4–8 dígitos'
-      )}
-
-      <button
-        onclick="changePin()"
-        class="w-full bg-[#171915] text-white rounded-2xl py-3 mt-3 font-black">
-        Cambiar PIN
-      </button>
-
-      <button
-        onclick="lock()"
-        class="w-full bg-[#ebe7dc] rounded-2xl py-3 mt-3 font-black">
-        Bloquear ahora
-      </button>
-
-    </div>
-
-    <p class="text-xs text-[#7b7d75] mt-4 px-2">
-      El PIN protege la interfaz local, pero no es cifrado de seguridad bancaria.
-    </p>
-  `);
-
+if(!cloudUser){
+return alert('Primero conecta Nate Cloud.');
 }
 
-function changePin(){
+try{
 
-  const p=val('new-pin').trim();
+const {data:rows,error}=await sb
+.from('finance')
+.select('*')
+.eq('user_id',cloudUser.id)
+.order('transaction_date',{
+ascending:false
+});
 
-  if(!/^\d{4,8}$/.test(p)){
-    alert('Usa un PIN de 4 a 8 dígitos.');
-    return;
-  }
+if(error){
+console.error(error);
+return alert(
+'No se pudieron descargar los movimientos.'
+);
+}
 
-  data.pin=p;
+let localMap=new Map(
+(data.finance||[])
+.map(x=>[x.id,x])
+);
 
-  save(false);
+(rows||[]).forEach(r=>{
 
-  alert('PIN actualizado.');
+localMap.set(r.id,{
 
-  securityScreen();
+id:r.id,
 
+date:r.transaction_date,
+
+type:r.transaction_type,
+
+concept:r.concept,
+
+subcategory:r.subcategory||'',
+
+amount:n(r.amount),
+
+paymentMethod:
+r.payment_method||'',
+
+accountCard:
+r.account_card||'',
+
+installments:
+n(r.installments)||1,
+
+note:r.note||'',
+
+createdAt:r.created_at,
+
+syncStatus:'synced'
+
+});
+
+});
+
+data.finance=[
+...localMap.values()
+];
+
+save(false);
+
+alert(
+`Nate Cloud actualizado: ${rows?.length||0} movimientos encontrados.`
+);
+
+finance();
+
+}catch(err){
+
+console.error(err);
+
+alert(
+'Error al descargar Nate Cloud.'
+);
+
+}
+}
+
+function weekly(){
+
+let d=dateObj(today());
+
+let diff=
+(d.getDay()+6)%7;
+
+let monday=
+new Date(
+d.getFullYear(),
+d.getMonth(),
+d.getDate()-diff,
+12
+);
+
+let weekStart=
+monday.toLocaleDateString('en-CA');
+
+let weekEndObj=
+new Date(
+monday.getFullYear(),
+monday.getMonth(),
+monday.getDate()+6,
+12
+);
+
+let weekEnd=
+weekEndObj.toLocaleDateString('en-CA');
+
+let gymCount=
+Object.entries(data.gymAttendance||{})
+.filter(([date,status])=>
+date>=weekStart &&
+date<=weekEnd &&
+(status==='completed'||status===true)
+).length;
+
+let cardioMin=
+Object.entries(data.cardio||{})
+.filter(([date])=>
+date>=weekStart &&
+date<=weekEnd
+)
+.reduce((s,[_,x])=>
+s+n(x.minutes),0
+);
+
+let football=
+Object.entries(data.football||{})
+.filter(([date,x])=>
+date>=weekStart &&
+date<=weekEnd &&
+x.status==='played'
+).length;
+
+let readingMin=
+(data.reading.sessions||[])
+.filter(x=>
+x.date>=weekStart &&
+x.date<=weekEnd
+)
+.reduce((s,x)=>s+n(x.minutes),0);
+
+let readingPages=
+(data.reading.sessions||[])
+.filter(x=>
+x.date>=weekStart &&
+x.date<=weekEnd
+)
+.reduce((s,x)=>s+n(x.pages),0);
+
+let review=
+data.weeklyReviews[weekStart]||{};
+
+$('app').innerHTML=`
+${back()}
+${section(
+'Weekly Reset',
+`${fmt(weekStart)} – ${fmt(weekEnd)}`
+)}
+
+<div class="grid2">
+
+<div class="card">
+<div class="eyebrow">GYM</div>
+<div class="metric">${gymCount}</div>
+<div class="small muted">sesiones</div>
+</div>
+
+<div class="card">
+<div class="eyebrow">CARDIO</div>
+<div class="metric">${cardioMin}</div>
+<div class="small muted">minutos</div>
+</div>
+
+<div class="card">
+<div class="eyebrow">FÚTBOL</div>
+<div class="metric">${football}</div>
+<div class="small muted">sesiones</div>
+</div>
+
+<div class="card">
+<div class="eyebrow">LECTURA</div>
+<div class="metric">${readingPages}</div>
+<div class="small muted">${readingMin} min</div>
+</div>
+
+</div>
+
+<div class="card stack" style="margin-top:11px">
+
+<label>
+<span class="label">Modo de la próxima semana</span>
+
+<select id="wr-mode" class="field">
+
+<option value="ideal"
+${review.mode==='ideal'?'selected':''}>
+Ideal
+</option>
+
+<option value="normal"
+${(!review.mode||review.mode==='normal')?'selected':''}>
+Normal
+</option>
+
+<option value="minimum"
+${review.mode==='minimum'?'selected':''}>
+Mínimo
+</option>
+
+</select>
+</label>
+
+<label>
+<span class="label">Victorias</span>
+<textarea
+id="wr-wins"
+class="field"
+rows="3"
+>${esc(review.wins||'')}</textarea>
+</label>
+
+<label>
+<span class="label">Dificultades</span>
+<textarea
+id="wr-difficulties"
+class="field"
+rows="3"
+>${esc(review.difficulties||'')}</textarea>
+</label>
+
+<label>
+<span class="label">Qué aprendí</span>
+<textarea
+id="wr-lessons"
+class="field"
+rows="3"
+>${esc(review.lessons||'')}</textarea>
+</label>
+
+<label>
+<span class="label">
+¿Qué es verdaderamente importante esta semana?
+</span>
+
+<textarea
+id="wr-priority"
+class="field"
+rows="3"
+>${esc(review.priority||'')}</textarea>
+</label>
+
+<button
+class="btn"
+onclick="saveWeekly('${weekStart}')"
+>
+Guardar Weekly Reset
+</button>
+
+</div>
+`;
+}
+
+function saveWeekly(weekStart){
+
+data.weeklyReviews[weekStart]={
+
+mode:val('wr-mode'),
+
+wins:val('wr-wins'),
+
+difficulties:
+val('wr-difficulties'),
+
+lessons:
+val('wr-lessons'),
+
+priority:
+val('wr-priority'),
+
+savedAt:
+new Date().toISOString()
+
+};
+
+data.settings.mode=
+val('wr-mode');
+
+save(false);
+
+alert(
+'Weekly Reset guardado.'
+);
+
+weekly();
+}
+
+function backup(){
+
+$('app').innerHTML=`
+${back()}
+${section(
+'Datos & Backup',
+'Tus datos locales siguen siendo tuyos aunque Nate Cloud esté conectado.'
+)}
+
+<div class="card stack">
+
+<h2>Backup completo</h2>
+
+<div class="small muted">
+Descarga una copia JSON de Nate Life Tracker.
+Guárdala en iCloud Drive, OneDrive o donde prefieras.
+</div>
+
+<button
+class="btn"
+onclick="exportJSON()"
+>
+Descargar JSON
+</button>
+
+<label>
+<span class="label">
+Restaurar JSON
+</span>
+
+<input
+id="restore-file"
+class="field"
+type="file"
+accept=".json,application/json"
+onchange="restoreJSON(this.files[0])"
+>
+</label>
+
+</div>
+
+<div class="card stack" style="margin-top:11px">
+
+<h2>Excel</h2>
+
+<div class="small muted">
+Genera un libro con las principales áreas de Nate Life Tracker.
+</div>
+
+<button
+class="btn light"
+onclick="exportExcel()"
+>
+Exportar Excel
+</button>
+
+</div>
+`;
+}
+
+function downloadBlob(
+blob,
+filename
+){
+
+let url=
+URL.createObjectURL(blob);
+
+let a=
+document.createElement('a');
+
+a.href=url;
+a.download=filename;
+
+document.body.appendChild(a);
+
+a.click();
+a.remove();
+
+setTimeout(
+()=>URL.revokeObjectURL(url),
+1000
+);
 }
 
 function exportJSON(){
 
-  const blob=new Blob(
-    [JSON.stringify(data,null,2)],
-    {type:'application/json'}
-  );
+let payload={
+exportedAt:
+new Date().toISOString(),
 
-  downloadBlob(
-    blob,
-    `Nate_Life_Tracker_Backup_${today()}.json`
-  );
+app:
+'Nate Life Tracker',
+
+version:
+data.version,
+
+data
+};
+
+downloadBlob(
+new Blob(
+[
+JSON.stringify(
+payload,
+null,
+2
+)
+],
+{
+type:'application/json'
+}
+),
+`Nate_Life_Tracker_${today()}.json`
+);
+}
+
+function restoreJSON(file){
+
+if(!file)return;
+
+if(
+!confirm(
+'Esto reemplazará los datos locales actuales por el backup seleccionado. ¿Continuar?'
+)
+)return;
+
+let reader=
+new FileReader();
+
+reader.onload=()=>{
+
+try{
+
+let parsed=
+JSON.parse(reader.result);
+
+let incoming=
+parsed.data||parsed;
+
+data=
+migrate(incoming);
+
+save(false);
+
+alert(
+'Backup restaurado.'
+);
+
+go('home');
+
+}catch(err){
+
+console.error(err);
+
+alert(
+'El archivo no parece ser un backup válido.'
+);
 
 }
 
-function importJSON(event){
+};
 
-  const file=event.target.files?.[0];
-
-  if(!file)return;
-
-  const reader=new FileReader();
-
-  reader.onload=()=>{
-
-    try{
-
-      const imported=JSON.parse(reader.result);
-
-      if(!imported||typeof imported!=='object'){
-        throw new Error();
-      }
-
-      if(!confirm(
-        'Esto reemplazará los datos actuales de Nate Life Tracker. ¿Continuar?'
-      )){
-        return;
-      }
-
-      data={
-        ...fresh(),
-        ...imported
-      };
-
-      save(false);
-
-      alert('Backup restaurado.');
-
-      setView('inicio');
-
-    }catch(e){
-
-      alert('El archivo no es un backup válido.');
-
-    }
-
-  };
-
-  reader.readAsText(file);
-
-}
-
-function downloadBlob(blob,name){
-
-  const a=document.createElement('a');
-
-  a.href=URL.createObjectURL(blob);
-  a.download=name;
-
-  document.body.appendChild(a);
-
-  a.click();
-
-  setTimeout(()=>{
-    URL.revokeObjectURL(a.href);
-    a.remove();
-  },500);
-
+reader.readAsText(file);
 }
 
 function exportExcel(){
 
-  if(typeof XLSX==='undefined'){
+if(
+typeof XLSX==='undefined'
+){
 
-    alert(
-      'No se pudo cargar el módulo de Excel. Revisa tu conexión a internet.'
-    );
+return alert(
+'No se pudo cargar el módulo de Excel. Revisa tu conexión a internet.'
+);
 
-    return;
-  }
+}
 
-  const wb=XLSX.utils.book_new();
+let wb=
+XLSX.utils.book_new();
 
-  const summary=[
-    ['Nate Life Tracker 2.1'],
-    ['Exportado',today()],
-    [],
-    ['Objetivo calorías',data.macroGoal.calories],
-    ['Objetivo proteína',data.macroGoal.protein],
-    ['Objetivo carbohidratos',data.macroGoal.carbs],
-    ['Objetivo grasas',data.macroGoal.fats]
-  ];
+let financeRows=
+(data.finance||[])
+.map(x=>({
 
-  XLSX.utils.book_append_sheet(
-    wb,
-    XLSX.utils.aoa_to_sheet(summary),
-    'Resumen'
-  );
+Fecha:x.date,
 
-  const gymRows=[];
+Tipo:x.type,
 
-  Object.entries(data.workouts).forEach(
-    ([date,w])=>{
+Concepto:x.concept,
 
-      gymRows.push({
-        Fecha:date,
-        Dia:dayName(date),
-        Rutina:planFor(date)?.name||'',
-        Completada:w.completed?'Sí':'No'
-      });
+Subconcepto:
+x.subcategory||'',
 
-    }
-  );
+Monto:
+n(x.amount),
 
-  XLSX.utils.book_append_sheet(
-    wb,
-    XLSX.utils.json_to_sheet(gymRows),
-    'Gym Sesiones'
-  );
+Metodo:
+x.paymentMethod||'',
 
-  const setRows=[];
+Cuenta_Tarjeta:
+x.accountCard||'',
 
-  Object.entries(data.workouts).forEach(
-    ([date,w])=>{
+MSI:
+x.installments||1,
 
-      (w.entries||[]).forEach(x=>{
+Nota:
+x.note||'',
 
-        setRows.push({
-          Fecha:date,
-          Rutina:planFor(date)?.name||'',
-          Ejercicio:x.exercise||'',
-          Musculo:x.muscle||'',
-          PesoKg:x.weight||'',
-          Reps:x.reps||'',
-          RIR:x.rir||'',
-          Series:x.sets||'',
-          ObjetivoReps:x.targetReps||'',
-          Descanso:x.rest||''
-        });
+Sincronizacion:
+x.syncStatus||''
 
-      });
+}));
 
-    }
-  );
+XLSX.utils.book_append_sheet(
+wb,
+XLSX.utils.json_to_sheet(
+financeRows.length
+?financeRows
+:[{
+Fecha:'',
+Tipo:'',
+Concepto:'',
+Monto:''
+}]
+),
+'Finanzas'
+);
 
-  XLSX.utils.book_append_sheet(
-    wb,
-    XLSX.utils.json_to_sheet(setRows),
-    'Gym Ejercicios'
-  );
+let gymRows=
+(data.workouts||[])
+.map(x=>({
 
-  const cardioRows=Object.entries(data.cardio).map(
-    ([date,x])=>({
-      Fecha:date,
-      Minutos:x.minutes||'',
-      Actividad:x.type||'',
-      Intensidad:x.intensity||''
-    })
-  );
+Fecha:x.date,
 
-  XLSX.utils.book_append_sheet(
-    wb,
-    XLSX.utils.json_to_sheet(cardioRows),
-    'Cardio'
-  );
+Rutina:x.routine,
 
-  const nutritionRows=Object.entries(data.macroLog).map(
-    ([date,x])=>({
-      Fecha:date,
-      Calorias:x.calories||'',
-      Proteina:x.protein||'',
-      Carbohidratos:x.carbs||'',
-      Grasas:x.fats||''
-    })
-  );
+Estado:x.status
 
-  XLSX.utils.book_append_sheet(
-    wb,
-    XLSX.utils.json_to_sheet(nutritionRows),
-    'Nutricion'
-  );
+}));
 
-  const bodyRows=Object.entries(data.body).map(
-    ([date,x])=>({
-      Fecha:date,
-      PesoKg:x.weight||'',
-      CinturaCm:x.waist||'',
-      Nota:x.note||''
-    })
-  );
+XLSX.utils.book_append_sheet(
+wb,
+XLSX.utils.json_to_sheet(
+gymRows.length
+?gymRows
+:[{
+Fecha:'',
+Rutina:'',
+Estado:''
+}]
+),
+'Gym Sesiones'
+);
 
-  XLSX.utils.book_append_sheet(
-    wb,
-    XLSX.utils.json_to_sheet(bodyRows),
-    'Cuerpo'
-  );
+let sets=
+(data.progress||[])
+.map(x=>({
 
-  const sleepRows=Object.entries(data.sleep).map(
-    ([date,x])=>({
-      Fecha:date,
-      Horas:x.hours||'',
-      HoraDormir:x.bed||'',
-      Calidad:x.quality||''
-    })
-  );
+Fecha:x.date,
 
-  XLSX.utils.book_append_sheet(
-    wb,
-    XLSX.utils.json_to_sheet(sleepRows),
-    'Sueño'
-  );
+Rutina:x.routine,
 
-  const faithRows=Object.entries(data.faith).map(
-    ([date,x])=>({
-      Fecha:date,
-      Oracion:x.prayed?'Sí':'No',
-      Examen:x.exam?'Sí':'No',
-      Misa:x.mass?'Sí':'No',
-      Rosario:x.rosary?'Sí':'No',
-      Santisimo:x.adoration?'Sí':'No',
-      Nota:x.note||''
-    })
-  );
+Ejercicio:x.exercise,
 
-  XLSX.utils.book_append_sheet(
-    wb,
-    XLSX.utils.json_to_sheet(faithRows),
-    'Fe'
-  );
+Serie:x.set,
 
-  const financeRows=data.finance.map(x=>({
-    Fecha:x.date||'',
-    Tipo:x.type||'',
-    Concepto:x.concept||x.description||'',
-    Categoria:x.category||'',
-    Monto:num(x.amount)
-  }));
+Peso_kg:x.weight,
 
-  XLSX.utils.book_append_sheet(
-    wb,
-    XLSX.utils.json_to_sheet(financeRows),
-    'Finanzas'
-  );
+Repeticiones:x.reps,
 
-  XLSX.writeFile(
-    wb,
-    `Nate_Life_Tracker_${today()}.xlsx`
-  );
+RIR:x.rir
 
+}));
+
+XLSX.utils.book_append_sheet(
+wb,
+XLSX.utils.json_to_sheet(
+sets.length
+?sets
+:[{
+Fecha:'',
+Ejercicio:'',
+Peso_kg:''
+}]
+),
+'Gym Ejercicios'
+);
+
+let bodyRows=
+Object.entries(data.body||{})
+.map(([date,x])=>({
+
+Fecha:date,
+
+Peso_kg:x.weight,
+
+Cintura_cm:x.waist,
+
+Abdomen_cm:x.abdomen,
+
+Pecho_cm:x.chest,
+
+Cadera_cm:x.hips,
+
+Brazo_Izq_cm:x.leftArm,
+
+Brazo_Der_cm:x.rightArm,
+
+Muslo_Izq_cm:x.leftThigh,
+
+Muslo_Der_cm:x.rightThigh,
+
+Nota:x.note||''
+
+}));
+
+XLSX.utils.book_append_sheet(
+wb,
+XLSX.utils.json_to_sheet(
+bodyRows.length
+?bodyRows
+:[{
+Fecha:'',
+Peso_kg:'',
+Cintura_cm:''
+}]
+),
+'Cuerpo'
+);
+
+let faithRows=
+Object.entries(data.faith||{})
+.map(([date,x])=>({
+
+Fecha:date,
+
+Oracion:
+!!x.prayed,
+
+Examen:
+!!x.examen,
+
+Misa:
+!!x.mass,
+
+Rosario:
+!!x.rosary,
+
+Santisimo:
+!!x.adoration
+
+}));
+
+XLSX.utils.book_append_sheet(
+wb,
+XLSX.utils.json_to_sheet(
+faithRows.length
+?faithRows
+:[{
+Fecha:'',
+Misa:''
+}]
+),
+'Fe'
+);
+
+let books=
+(data.reading.books||[])
+.map(x=>({
+
+Titulo:x.title,
+
+Autor:x.author||'',
+
+Paginas_Totales:
+x.totalPages||'',
+
+Pagina_Actual:
+x.currentPage||0,
+
+Estado:x.status,
+
+Inicio:
+x.startedDate||'',
+
+Fin:
+x.finishedDate||''
+
+}));
+
+XLSX.utils.book_append_sheet(
+wb,
+XLSX.utils.json_to_sheet(
+books.length
+?books
+:[{
+Titulo:'',
+Autor:''
+}]
+),
+'Lectura'
+);
+
+let eventRows=
+(data.events||[])
+.map(x=>({
+
+Fecha:x.date,
+
+Inicio:x.start||'',
+
+Fin:x.end||'',
+
+Evento:x.title,
+
+Categoria:x.category||'',
+
+Estado:x.status||'',
+
+Nota:x.note||''
+
+}));
+
+XLSX.utils.book_append_sheet(
+wb,
+XLSX.utils.json_to_sheet(
+eventRows.length
+?eventRows
+:[{
+Fecha:'',
+Evento:''
+}]
+),
+'Calendario'
+);
+
+XLSX.writeFile(
+wb,
+`Nate_Life_Tracker_${today()}.xlsx`
+);
+}
+
+function settings(){
+
+$('app').innerHTML=`
+${back()}
+${section(
+'Configuración',
+'Nate Cloud, seguridad y preferencias.'
+)}
+
+<div class="card stack">
+
+<div class="row">
+<div>
+<div class="eyebrow">NATE CLOUD</div>
+<h2 style="margin-top:4px">
+${cloudUser
+?'Conectado'
+:'Sin conectar'
+}
+</h2>
+</div>
+
+<span
+class="syncdot ${cloudUser?'ok':'pending'}"
+style="width:12px;height:12px"
+></span>
+</div>
+
+${cloudUser
+?`
+<div class="notice small">
+<b>${esc(cloudUser.email||'Usuario Nate')}</b><br>
+Tus nuevos movimientos financieros pueden sincronizarse con Supabase.
+</div>
+
+<button
+class="btn light"
+onclick="retryFinanceSync()"
+>
+Sincronizar pendientes
+</button>
+
+<button
+class="btn light"
+onclick="pullFinance()"
+>
+Descargar movimientos de Nate Cloud
+</button>
+
+<button
+class="btn danger"
+onclick="cloudLogout()"
+>
+Cerrar sesión de Nate Cloud
+</button>
+`
+:`
+<div class="small muted">
+Inicia sesión con el usuario que creaste en Supabase.
+La contraseña no se guarda dentro de Nate Life Tracker.
+</div>
+
+${field(
+'Correo',
+'cloud-email',
+'',
+'email',
+'tu correo'
+)}
+
+${field(
+'Contraseña',
+'cloud-password',
+'',
+'password',
+'Contraseña Nate Cloud'
+)}
+
+<button
+class="btn"
+onclick="cloudLogin()"
+>
+Conectar Nate Cloud
+</button>
+`
+}
+
+</div>
+
+<div class="card stack" style="margin-top:11px">
+
+<h2>PIN local</h2>
+
+<div class="small muted">
+Este PIN protege la interfaz en este dispositivo.
+No sustituye la autenticación de Nate Cloud.
+</div>
+
+${field(
+'PIN nuevo',
+'new-pin',
+'',
+'password',
+'4 o más dígitos'
+)}
+
+<button
+class="btn light"
+onclick="changePin()"
+>
+Cambiar PIN
+</button>
+
+</div>
+
+<div class="card" style="margin-top:11px">
+
+<div class="eyebrow">
+ESTADO
+</div>
+
+<div
+class="small"
+style="margin-top:8px;line-height:1.7"
+>
+Versión:
+<b>${esc(data.version)}</b><br>
+
+Supabase:
+<b>${cloudUser?'conectado':'desconectado'}</b><br>
+
+Movimientos locales:
+<b>${data.finance.length}</b><br>
+
+Pendientes:
+<b>${
+data.finance.filter(
+x=>x.syncStatus!=='synced'
+).length
+}</b>
+</div>
+
+</div>
+`;
+}
+
+async function initCloud(){
+
+if(!sb)return;
+
+try{
+
+const {
+data:{
+session
+}
+}=await sb.auth.getSession();
+
+cloudUser=
+session?.user||null;
+
+sb.auth.onAuthStateChange(
+(_event,session)=>{
+
+cloudUser=
+session?.user||null;
+
+if(unlocked()){
+render();
+}
+
+}
+);
+
+}catch(err){
+
+console.error(
+'Cloud init:',
+err
+);
+
+}
+}
+
+async function cloudLogin(){
+
+if(!sb){
+return alert(
+'No se pudo inicializar Nate Cloud.'
+);
+}
+
+let email=
+val('cloud-email').trim();
+
+let password=
+val('cloud-password');
+
+if(!email || !password){
+return alert(
+'Escribe correo y contraseña.'
+);
+}
+
+try{
+
+const {
+data:result,
+error
+}=await sb.auth.signInWithPassword({
+email,
+password
+});
+
+if(error){
+console.error(error);
+
+return alert(
+'No se pudo iniciar sesión. Revisa correo y contraseña.'
+);
+}
+
+cloudUser=
+result.user;
+
+await ensureProfile();
+
+alert(
+'Nate Cloud conectado.'
+);
+
+settings();
+
+}catch(err){
+
+console.error(err);
+
+alert(
+'Error al conectar Nate Cloud.'
+);
+
+}
+}
+
+async function ensureProfile(){
+
+if(
+!sb ||
+!cloudUser
+)return;
+
+try{
+
+const {error}=await sb
+.from('profiles')
+.upsert({
+
+user_id:
+cloudUser.id,
+
+display_name:
+'Nate',
+
+timezone:
+TZ,
+
+updated_at:
+new Date().toISOString()
+
+},{
+onConflict:
+'user_id'
+});
+
+if(error){
+console.error(
+'Profile:',
+error
+);
+}
+
+}catch(err){
+
+console.error(err);
+
+}
+}
+
+async function cloudLogout(){
+
+if(!sb)return;
+
+if(
+!confirm(
+'¿Cerrar la sesión de Nate Cloud en este dispositivo?'
+)
+)return;
+
+await sb.auth.signOut();
+
+cloudUser=null;
+
+settings();
+}
+
+function changePin(){
+
+let pin=
+val('new-pin').trim();
+
+if(
+!pin ||
+pin.length<4 ||
+!/^\d+$/.test(pin)
+){
+return alert(
+'Usa un PIN numérico de al menos 4 dígitos.'
+);
+}
+
+data.pin=pin;
+
+save(false);
+
+alert(
+'PIN actualizado.'
+);
+
+settings();
+}
+
+function navState(){
+
+[
+'home',
+'plan',
+'food',
+'progress',
+'more'
+].forEach(v=>{
+
+let el=$('n-'+v);
+
+if(el){
+el.classList.toggle(
+'on',
+view===v
+);
+}
+
+});
 }
 
 function render(){
 
-  if(!isUnlocked()){
-
-    lockScreen();
-
-    return;
-
-  }
-
-  document
-    .getElementById('bottom-nav')
-    .classList.remove('hide');
-
-  document
-    .querySelectorAll('.nav')
-    .forEach(b=>{
-      b.className=
-        'nav rounded-2xl py-2 text-[10px] font-bold tab-inactive';
-    });
-
-  const active=
-    document.getElementById(
-      'nav-'+view
-    );
-
-  if(active){
-
-    active.className=
-      'nav rounded-2xl py-2 text-[10px] font-bold tab-active';
-
-  }
-
-  if(view==='inicio')inicio();
-  if(view==='gym')gym();
-  if(view==='nutricion')nutricion();
-  if(view==='salud')salud();
-  if(view==='mas')mas();
-
+if(!unlocked()){
+lockScreen();
+return;
 }
 
-render();
+$('nav').classList.remove('hide');
+
+navState();
+
+switch(view){
+
+case 'home':
+home();
+break;
+
+case 'plan':
+plan();
+break;
+
+case 'food':
+food();
+break;
+
+case 'progress':
+progressView();
+break;
+
+case 'more':
+more();
+break;
+
+default:
+home();
+break;
+
+}
+}
+
+initCloud().then(
+()=>render()
+);
 
 </script>
-
 </body>
 </html>

@@ -8,818 +8,2383 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Nate Life Tracker" />
-  <title>Nate Life Tracker</title>
+  <title>Nate Life Tracker 2.0</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
-    * { -webkit-tap-highlight-color: transparent; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif; }
-    .safe-bottom { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
-    .glass { background: rgba(255,255,255,.84); backdrop-filter: blur(18px); }
-    .tab-active { background:#0f172a; color:white; }
-    .tab-inactive { background:white; color:#64748b; }
-    input, select, textarea { font-size:16px; }
-    .hide { display:none !important; }
+    *{-webkit-tap-highlight-color:transparent}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif
+    }
+    .safe-bottom{
+      padding-bottom:calc(92px + env(safe-area-inset-bottom))
+    }
+    .glass{
+      background:rgba(255,255,255,.88);
+      backdrop-filter:blur(18px)
+    }
+    .tab-active{
+      background:#0f172a;
+      color:#fff
+    }
+    .tab-inactive{
+      background:white;
+      color:#64748b
+    }
+    input,select,textarea{
+      font-size:16px
+    }
+    .bar{
+      height:8px;
+      border-radius:999px;
+      background:#e2e8f0;
+      overflow:hidden
+    }
+    .bar>span{
+      display:block;
+      height:100%;
+      background:#0f172a;
+      border-radius:999px
+    }
   </style>
 </head>
 
 <body class="bg-slate-100 text-slate-950">
-  <main class="max-w-md mx-auto min-h-screen safe-bottom px-4 pt-5">
-    <section id="app"></section>
-  </main>
 
-  <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 glass border-t border-slate-200">
-    <div class="max-w-md mx-auto grid grid-cols-5 gap-1 px-2 pt-2 pb-[calc(10px+env(safe-area-inset-bottom))]">
-      <button onclick="setView('inicio')" id="nav-inicio" class="nav rounded-2xl py-2 text-xs font-bold">Inicio</button>
-      <button onclick="setView('gym')" id="nav-gym" class="nav rounded-2xl py-2 text-xs font-bold">Gym</button>
-      <button onclick="setView('macros')" id="nav-macros" class="nav rounded-2xl py-2 text-xs font-bold">Macros</button>
-      <button onclick="setView('finanzas')" id="nav-finanzas" class="nav rounded-2xl py-2 text-xs font-bold">Dinero</button>
-      <button onclick="setView('fe')" id="nav-fe" class="nav rounded-2xl py-2 text-xs font-bold">Fe</button>
-    </div>
-  </nav>
+<main class="max-w-md mx-auto min-h-screen safe-bottom px-4 pt-5">
+  <section id="app"></section>
+</main>
+
+<nav class="fixed bottom-0 left-0 right-0 glass border-t border-slate-200 z-50">
+  <div class="max-w-md mx-auto grid grid-cols-5 gap-1 px-2 pt-2 pb-[calc(10px+env(safe-area-inset-bottom))]">
+
+    <button onclick="setView('inicio')" id="nav-inicio"
+      class="nav rounded-2xl py-2 text-[11px] font-bold">
+      Inicio
+    </button>
+
+    <button onclick="setView('gym')" id="nav-gym"
+      class="nav rounded-2xl py-2 text-[11px] font-bold">
+      Gym
+    </button>
+
+    <button onclick="setView('nutricion')" id="nav-nutricion"
+      class="nav rounded-2xl py-2 text-[11px] font-bold">
+      Nutrición
+    </button>
+
+    <button onclick="setView('salud')" id="nav-salud"
+      class="nav rounded-2xl py-2 text-[11px] font-bold">
+      Salud
+    </button>
+
+    <button onclick="setView('fe')" id="nav-fe"
+      class="nav rounded-2xl py-2 text-[11px] font-bold">
+      Fe
+    </button>
+
+  </div>
+</nav>
 
 <script>
+
+const TZ='America/Mexico_City';
+
+const today=()=>new Date().toLocaleDateString(
+  'en-CA',
+  {timeZone:TZ}
+);
+
+const esc=s=>String(s??'').replace(
+  /[&<>"']/g,
+  m=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#039;'
+  }[m])
+);
+
+const num=x=>Number(x||0);
+
+const clamp=x=>Math.max(0,Math.min(100,x));
+
+const DAYS=[
+  'Domingo',
+  'Lunes',
+  'Martes',
+  'Miércoles',
+  'Jueves',
+  'Viernes',
+  'Sábado'
+];
+
+
 /* =========================
-   CONFIGURACIÓN GENERAL
+   RUTINA NATE Q4
 ========================= */
-const TZ = 'America/Mexico_City';
-const DEFAULT_PIN = '2943';
 
-const today = () => new Date().toLocaleDateString('en-CA', { timeZone: TZ });
+const routineV2=[
 
-const monthKey = () => {
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: TZ,
-    year: 'numeric',
-    month: '2-digit'
-  }).formatToParts(new Date());
-  const year = parts.find(p => p.type === 'year').value;
-  const month = parts.find(p => p.type === 'month').value;
-  return `${year}-${month}`;
-};
+{
+  day:'Lunes',
+  name:'PUSH',
+  focus:'Pecho + hombro + tríceps',
+  ex:[
+    ['Press inclinado con mancuernas','Pecho',3,'6–10','2:00',2],
+    ['Press pecho máquina / Smith plano','Pecho',3,'8–12','2:00',2],
+    ['Elevación lateral en polea unilateral','Hombro',3,'12–20','1:00',1],
+    ['Press hombro máquina / mancuernas','Hombro',2,'8–12','1:30',2],
+    ['Extensión tríceps en polea','Tríceps',2,'10–15','1:00',1],
+    ['Extensión tríceps overhead cuerda','Tríceps',2,'10–15','1:00',1]
+  ]
+},
 
-const money = n => '$' + Number(n || 0).toLocaleString('es-MX');
-const id = () => crypto.randomUUID ? crypto.randomUUID() : String(Date.now()+Math.random());
+{
+  day:'Martes',
+  name:'PULL',
+  focus:'Espalda + deltoide posterior + bíceps',
+  ex:[
+    ['Jalón al pecho agarre neutro/medio','Espalda',3,'6–10','2:00',2],
+    ['Remo con pecho apoyado','Espalda',3,'8–12','2:00',2],
+    ['Jalón unilateral hacia cadera','Espalda',2,'10–15','1:15',1],
+    ['Reverse pec-deck / pájaros','Hombro posterior',3,'12–20','1:00',1],
+    ['Curl inclinado mancuernas','Bíceps',2,'8–12','1:00',1],
+    ['Curl martillo','Bíceps',2,'10–15','1:00',1]
+  ]
+},
 
-function formatDatePretty(dateStr) {
-  const [y,m,d] = dateStr.split('-').map(Number);
-  const date = new Date(y, m - 1, d);
-  return date.toLocaleDateString('es-MX', {
-    timeZone: TZ,
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  });
+{
+  day:'Miércoles',
+  name:'LEGS A',
+  focus:'Cuádriceps + femoral + core',
+  ex:[
+    ['Hack squat / sentadilla Smith','Pierna',3,'6–10','2:30',2],
+    ['Peso muerto rumano','Femoral',3,'6–10','2:00',2],
+    ['Prensa','Cuádriceps',2,'10–15','1:30',2],
+    ['Curl femoral','Femoral',3,'10–15','1:15',1],
+    ['Extensión de cuádriceps','Cuádriceps',2,'12–15','1:00',1],
+    ['Pantorrilla','Pantorrilla',2,'10–15','1:00',1],
+    ['Elevaciones de piernas/rodillas','Core',3,'8–15','1:00',1]
+  ]
+},
+
+{
+  day:'Jueves',
+  name:'UPPER',
+  focus:'Torso + especialización',
+  ex:[
+    ['Press inclinado Smith','Pecho',3,'8–12','2:00',2],
+    ['Remo sentado polea / máquina','Espalda',3,'8–12','1:30',2],
+    ['Jalón al pecho','Espalda',2,'10–15','1:30',2],
+    ['Elevaciones laterales','Hombro',3,'12–20','1:00',1],
+    ['Curl predicador / máquina','Bíceps',2,'10–15','1:00',1],
+    ['Extensión tríceps polea','Tríceps',2,'10–15','1:00',1]
+  ]
+},
+
+{
+  day:'Viernes',
+  name:'LEGS B + DELTS/ARMS',
+  focus:'Cadena posterior + estética + core',
+  ex:[
+    ['Hip thrust','Glúteo',3,'6–10','2:00',2],
+    ['Bulgarian split squat','Pierna',2,'8–12','1:30',2],
+    ['Curl femoral','Femoral',3,'10–15','1:15',1],
+    ['Elevación lateral máquina/mancuerna','Hombro',3,'12–20','1:00',1],
+    ['Curl en polea','Bíceps',2,'10–15','1:00',1],
+    ['Extensión tríceps overhead','Tríceps',2,'10–15','1:00',1],
+    ['Crunch en polea','Core',3,'10–15','1:00',1]
+  ]
 }
 
-function getMonthName() {
-  const [y,m] = monthKey().split('-').map(Number);
-  return new Date(y, m - 1, 1).toLocaleDateString('es-MX', {
-    timeZone: TZ,
-    month: 'long',
-    year: 'numeric'
-  });
-}
+];
+
 
 /* =========================
    DATOS
 ========================= */
-let view = localStorage.getItem('nlt-view') || 'inicio';
 
-let data = JSON.parse(localStorage.getItem('nlt-pro')) || {
-  pin: DEFAULT_PIN,
-  gymAttendance:{},
-  routine:[
-    {id:id(), day:'Push', exercise:'Press banca', muscle:'Pecho'},
-    {id:id(), day:'Push', exercise:'Press militar', muscle:'Hombro'},
-    {id:id(), day:'Pull', exercise:'Remo', muscle:'Espalda'},
-    {id:id(), day:'Legs', exercise:'Sentadilla', muscle:'Pierna'}
-  ],
-  progress:[],
-  macroGoal:{calories:2800, protein:150, carbs:330, fats:80},
-  macroLog:{},
-  finance:[],
-  budgets:{},
-  faith:{}
-};
+function fresh(){
+  return {
+    version:2,
 
-if (!data.pin) data.pin = DEFAULT_PIN;
-if (!data.budgets) data.budgets = {};
-if (!data.finance) data.finance = [];
-if (!data.faith) data.faith = {};
-if (!data.macroLog) data.macroLog = {};
-if (!data.gymAttendance) data.gymAttendance = {};
+    gymAttendance:{},
 
-const EXPENSE_CATEGORIES = [
-  'Transporte',
-  'Gym',
-  'Servicios',
-  'Alimentación',
-  'Cuidado Personal',
-  'Relación',
-  'Social',
-  'Antojos',
-  'Fútbol',
-  'Salud',
-  'Suplementos/Vitaminas',
-  'Otros'
-];
+    routineV2,
 
-const INCOME_CATEGORIES = [
-  'Sueldo',
-  'Chocolates',
-  'Otros'
-];
+    workouts:{},
 
-function save(){
-  localStorage.setItem('nlt-pro', JSON.stringify(data));
-  render();
+    progress:[],
+
+    macroGoal:{
+      calories:2400,
+      protein:155,
+      carbs:275,
+      fats:70
+    },
+
+    macroLog:{},
+
+    meals:{},
+
+    body:{},
+
+    sleep:{},
+
+    cardio:{},
+
+    faith:{},
+
+    finance:[],
+
+    budgets:{},
+
+    settings:{
+      returnPhaseStart:today()
+    }
+  };
 }
 
-function setView(v){
-  view=v;
-  localStorage.setItem('nlt-view', v);
-  render();
-}
-
-function app(html){
-  document.getElementById('app').innerHTML = html;
-}
 
 /* =========================
-   PIN / LOCKSCREEN
+   MIGRACIÓN V1 → V2
 ========================= */
-function isUnlocked() {
-  return sessionStorage.getItem('nlt-unlocked') === 'true';
-}
 
-function lockScreen() {
-  document.getElementById('bottom-nav').classList.add('hide');
-  app(`
-    <div class="min-h-[85vh] flex flex-col justify-center">
-      <div class="bg-slate-950 text-white rounded-[2rem] p-7 shadow-xl">
-        <div class="w-16 h-16 rounded-3xl bg-white/10 flex items-center justify-center text-3xl font-black mb-5">N</div>
-        <p class="text-slate-300 text-sm">Nate Life Tracker</p>
-        <h1 class="text-3xl font-black mt-1">Bienvenido Nate</h1>
-        <p class="text-slate-400 text-sm mt-2">Ingresa tu PIN para acceder a tu dashboard personal.</p>
+function migrate(){
 
-        <input id="pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="••••"
-          class="mt-6 w-full rounded-2xl bg-white text-slate-950 px-4 py-4 text-center tracking-[0.6em] font-black outline-none" />
+  let old={};
 
-        <button onclick="unlock()" class="mt-4 w-full rounded-2xl bg-white text-slate-950 py-4 font-black">
-          Entrar
-        </button>
+  try{
+    old=JSON.parse(
+      localStorage.getItem('nlt-pro')
+    )||{};
+  }
+  catch(e){}
 
-      </div>
-    </div>
-  `);
+  if(old.version===2){
+    return old;
+  }
 
-  setTimeout(() => {
-    const pin = document.getElementById('pin-input');
-    if (pin) {
-      pin.focus();
-      pin.addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+  let n=fresh();
+
+  [
+    'gymAttendance',
+    'progress',
+    'macroLog',
+    'finance',
+    'budgets',
+    'faith'
+  ].forEach(k=>{
+    if(old[k]){
+      n[k]=old[k];
     }
-  }, 100);
+  });
+
+  if(old.macroGoal){
+    n.oldMacroGoal=old.macroGoal;
+  }
+
+  return n;
 }
 
-function unlock() {
-  const pin = document.getElementById('pin-input')?.value || '';
-  if (pin === String(data.pin || DEFAULT_PIN)) {
-    sessionStorage.setItem('nlt-unlocked', 'true');
+
+let data=migrate();
+
+localStorage.setItem(
+  'nlt-pro',
+  JSON.stringify(data)
+);
+
+let view=
+  localStorage.getItem('nlt-view-v2')
+  ||
+  'inicio';
+
+
+/* =========================
+   SISTEMA
+========================= */
+
+function save(renderAgain=true){
+
+  localStorage.setItem(
+    'nlt-pro',
+    JSON.stringify(data)
+  );
+
+  if(renderAgain){
     render();
-  } else {
-    alert('PIN incorrecto');
   }
 }
 
-function logout() {
-  sessionStorage.removeItem('nlt-unlocked');
+
+function setView(v){
+
+  view=v;
+
+  localStorage.setItem(
+    'nlt-view-v2',
+    v
+  );
+
   render();
 }
 
+
+function app(html){
+
+  document.getElementById('app').innerHTML=html;
+
+}
+
+
 /* =========================
-   COMPONENTES UI
+   UI
 ========================= */
-function card(title, value, sub){
+
+function section(title,sub=''){
+
+  return `
+    <div class="mb-4">
+
+      <h1 class="text-3xl font-black tracking-tight">
+        ${title}
+      </h1>
+
+      ${
+        sub
+        ?
+        `<p class="text-slate-500 text-sm mt-1">
+          ${sub}
+        </p>`
+        :
+        ''
+      }
+
+    </div>
+  `;
+}
+
+
+function card(title,value,sub){
+
   return `
     <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200">
-      <p class="text-xs font-bold text-slate-500">${title}</p>
-      <p class="text-2xl font-black mt-1">${value}</p>
-      <p class="text-xs text-slate-500 mt-1">${sub}</p>
-    </div>`;
+
+      <p class="text-xs font-bold text-slate-500">
+        ${title}
+      </p>
+
+      <p class="text-2xl font-black mt-1">
+        ${value}
+      </p>
+
+      <p class="text-xs text-slate-500 mt-1">
+        ${sub}
+      </p>
+
+    </div>
+  `;
 }
 
-function input(label, name, value='', type='text', placeholder=''){
+
+function input(label,name,value='',type='text',placeholder=''){
+
   return `
     <label>
-      <span class="text-xs font-bold text-slate-500">${label}</span>
-      <input id="${name}" type="${type}" value="${value ?? ''}" placeholder="${placeholder}"
-        class="mt-1 w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-slate-900 bg-white">
-    </label>`;
+
+      <span class="text-xs font-bold text-slate-500">
+        ${label}
+      </span>
+
+      <input
+        id="${name}"
+        type="${type}"
+        value="${esc(value)}"
+        placeholder="${placeholder}"
+        class="mt-1 w-full rounded-2xl border border-slate-200 px-4 py-3 bg-white outline-none focus:ring-2 focus:ring-slate-900"
+      >
+
+    </label>
+  `;
 }
 
-function select(label, name, opts, value){
+
+function pill(text,active,click){
+
   return `
-    <label>
-      <span class="text-xs font-bold text-slate-500">${label}</span>
-      <select id="${name}" class="mt-1 w-full rounded-2xl border border-slate-200 px-4 py-3 bg-white outline-none focus:ring-2 focus:ring-slate-900">
-        ${opts.map(o=>`<option ${o===value?'selected':''}>${o}</option>`).join('')}
-      </select>
-    </label>`;
+    <button
+      onclick="${click}"
+      class="px-4 py-2 rounded-full whitespace-nowrap text-sm font-black ${
+        active
+        ?
+        'bg-slate-950 text-white'
+        :
+        'bg-white text-slate-500 border border-slate-200'
+      }"
+    >
+      ${text}
+    </button>
+  `;
 }
 
-function section(title, sub=''){
-  return `
-    <div class="mb-4 flex items-start justify-between gap-3">
-      <div>
-        <h1 class="text-3xl font-black tracking-tight">${title}</h1>
-        ${sub?`<p class="text-slate-500 text-sm mt-1">${sub}</p>`:''}
-      </div>
-      <button onclick="logout()" class="text-xs font-black bg-white border border-slate-200 rounded-2xl px-3 py-2 text-slate-500">Salir</button>
-    </div>`;
-}
-
-function pill(text, active, click){
-  return `<button onclick="${click}" class="px-4 py-2 rounded-full text-sm font-black ${active?'bg-slate-950 text-white':'bg-white text-slate-500 border border-slate-200'}">${text}</button>`;
-}
-
-function habit(label, done){
-  return `
-    <div class="flex justify-between items-center bg-white/10 rounded-2xl px-4 py-3">
-      <span class="font-semibold">${label}</span>
-      <span>${done?'✅':'○'}</span>
-    </div>`;
-}
 
 function val(x){
-  return document.getElementById(x)?.value || '';
+
+  return document.getElementById(x)?.value||'';
+
 }
 
-/* =========================
-   FECHAS / MÉTRICAS
-========================= */
-function monthDates(){
-  const [year, month] = monthKey().split('-').map(Number);
-  const days = new Date(year, month, 0).getDate();
 
-  return Array.from({length:days},(_,i)=>{
-    const d = String(i+1).padStart(2,'0');
-    return `${year}-${String(month).padStart(2,'0')}-${d}`;
-  });
+function dayName(date=today()){
+
+  const [y,m,d]=date
+    .split('-')
+    .map(Number);
+
+  return DAYS[
+    new Date(y,m-1,d).getDay()
+  ];
+
 }
 
-function getWeekRange(dateStr = today()) {
-  const [y,m,d] = dateStr.split('-').map(Number);
-  const date = new Date(y, m - 1, d);
-  const day = date.getDay(); // 0 domingo, 1 lunes
-  const diffToMonday = day === 0 ? -6 : 1 - day;
-  const monday = new Date(date);
-  monday.setDate(date.getDate() + diffToMonday);
 
-  return Array.from({length:7}, (_,i) => {
-    const x = new Date(monday);
-    x.setDate(monday.getDate() + i);
-    return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;
-  });
+function planFor(date=today()){
+
+  return routineV2.find(
+    r=>r.day===dayName(date)
+  )||null;
+
 }
 
-function gymWeekCount() {
-  return getWeekRange().filter(d => data.gymAttendance[d]).length;
+
+function pct(a,b){
+
+  return b
+    ?
+    clamp(Math.round(a/b*100))
+    :
+    0;
+
 }
 
-function gymWeekFire() {
-  const c = gymWeekCount();
-  return c >= 5 ? `🔥 5/5 cumplido` : `${c}/5 esta semana`;
-}
 
-function weekFinanceStats() {
-  const days = getWeekRange();
-  const income = data.finance
-    .filter(e => days.includes(e.date) && e.type === 'Ingreso')
-    .reduce((s,e)=>s+Number(e.amount||0),0);
-
-  const expenses = data.finance
-    .filter(e => days.includes(e.date) && e.type === 'Gasto')
-    .reduce((s,e)=>s+Number(e.amount||0),0);
-
-  return {income, expenses};
-}
-
-function barChart(income, expenses) {
-  const max = Math.max(income, expenses, 1);
-  const incomeHeight = Math.max(8, Math.round((income / max) * 100));
-  const expenseHeight = Math.max(8, Math.round((expenses / max) * 100));
+function bar(a,b){
 
   return `
-    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm">
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <h2 class="font-black text-xl">Ingresos vs gastos</h2>
-          <p class="text-sm text-slate-500">Semana actual</p>
-        </div>
-        <span class="text-xs font-black bg-slate-100 px-3 py-2 rounded-full">7 días</span>
-      </div>
+    <div class="bar mt-2">
+      <span style="width:${pct(a,b)}%"></span>
+    </div>
+  `;
 
-      <div class="flex gap-5 items-end h-36 px-3 pt-4">
-        <div class="flex-1 flex flex-col justify-end items-center h-full">
-          <div class="w-full rounded-t-2xl bg-emerald-500" style="height:${incomeHeight}%"></div>
-        </div>
-        <div class="flex-1 flex flex-col justify-end items-center h-full">
-          <div class="w-full rounded-t-2xl bg-rose-500" style="height:${expenseHeight}%"></div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4 mt-3 text-center">
-        <div>
-          <p class="text-xs text-slate-500">Ingresos</p>
-          <p class="font-black">${money(income)}</p>
-        </div>
-        <div>
-          <p class="text-xs text-slate-500">Gastos</p>
-          <p class="font-black">${money(expenses)}</p>
-        </div>
-      </div>
-    </div>`;
 }
+
+
+function habit(label,done){
+
+  return `
+    <div class="flex justify-between bg-slate-50 rounded-2xl px-4 py-3">
+
+      <span class="font-semibold">
+        ${label}
+      </span>
+
+      <span>
+        ${done?'✓':'○'}
+      </span>
+
+    </div>
+  `;
+
+}
+
 
 /* =========================
    INICIO
 ========================= */
+
 function inicio(){
-  const dates=monthDates(), t=today(), m=monthKey();
-  const gymDays=dates.filter(d=>data.gymAttendance[d]).length;
-  const macroDays=dates.filter(d=>data.macroLog[d]?.done).length;
-  const faithDays=dates.filter(d=>data.faith[d]?.prayed).length;
-  const incomeMonth=data.finance.filter(e=>e.date?.startsWith(m)&&e.type==='Ingreso').reduce((s,e)=>s+Number(e.amount||0),0);
-  const expensesMonth=data.finance.filter(e=>e.date?.startsWith(m)&&e.type==='Gasto').reduce((s,e)=>s+Number(e.amount||0),0);
-  const gymPct=Math.round(gymDays/dates.length*100);
-  const week = weekFinanceStats();
+
+  const t=today();
+
+  const plan=planFor(t);
+
+  const ml=data.macroLog[t]||{};
+
+  const body=data.body[t]||{};
+
+  const sl=data.sleep[t]||{};
+
+  const f=data.faith[t]||{};
+
+  const completed=
+    data.workouts[t]?.completed;
+
 
   app(`
-    ${section('Nate Life Tracker','Tu sistema personal de disciplina: cuerpo, comida, dinero y alma.')}
 
-    <div class="grid grid-cols-2 gap-3 mb-5">
-      ${card('Gym', gymPct+'%', `${gymDays}/${dates.length} días · ${gymWeekFire()}`)}
-      ${card('Macros', macroDays, 'días cumplidos este mes')}
-      ${card('Ahorro', money(incomeMonth-expensesMonth), 'estimado del mes')}
-      ${card('Oración', faithDays, 'días de oración este mes')}
+    ${section(
+      'Nate Life Tracker',
+      'The Nate System · dirección, no perfección.'
+    )}
+
+
+    <div class="bg-slate-950 text-white rounded-[2rem] p-5 shadow-lg mb-4">
+
+      <p class="text-sm text-slate-300">
+        Hoy · ${dayName()} · ${t}
+      </p>
+
+      <h2 class="text-2xl font-black mt-1">
+        ${
+          plan
+          ?
+          plan.name
+          :
+          (
+            dayName()==='Domingo'
+            ?
+            'Fútbol + recuperación'
+            :
+            'Recuperación / vida'
+          )
+        }
+      </h2>
+
+      <p class="text-sm text-slate-300 mt-1">
+        ${
+          plan
+          ?
+          plan.focus
+          :
+          'El sistema sirve a tu vida.'
+        }
+      </p>
+
+      ${
+        plan
+        ?
+        `
+        <button
+          onclick="setView('gym')"
+          class="mt-4 bg-white text-slate-950 rounded-2xl px-4 py-3 font-black w-full"
+        >
+          Abrir entrenamiento
+        </button>
+        `
+        :
+        ''
+      }
+
     </div>
 
-    <div class="bg-slate-950 text-white rounded-[2rem] p-5 shadow-lg mb-5">
-      <p class="text-sm text-slate-300">Hoy · ${formatDatePretty(t)}</p>
-      <h2 class="text-2xl font-black mt-1">Checklist diario</h2>
-      <div class="mt-4 space-y-3">
-        ${habit('Fui al gym', !!data.gymAttendance[t])}
-        ${habit('Cumplí macros', !!data.macroLog[t]?.done)}
-        ${habit('Hice oración', !!data.faith[t]?.prayed)}
-        ${habit('Fui a misa', !!data.faith[t]?.mass)}
+
+    <div class="grid grid-cols-2 gap-3 mb-4">
+
+      ${card(
+        'Entrenamiento',
+        completed?'Hecho':'Pendiente',
+        plan?plan.name:'—'
+      )}
+
+      ${card(
+        'Nutrición',
+        ml.calories
+          ?
+          ml.calories+' kcal'
+          :
+          '—',
+        `meta ${data.macroGoal.calories} kcal`
+      )}
+
+      ${card(
+        'Peso',
+        body.weight
+          ?
+          body.weight+' kg'
+          :
+          '—',
+        'promedio semanal en Salud'
+      )}
+
+      ${card(
+        'Sueño',
+        sl.hours
+          ?
+          sl.hours+' h'
+          :
+          '—',
+        'objetivo ~7–8 h'
+      )}
+
+    </div>
+
+
+    <div class="bg-white rounded-3xl p-5 border border-slate-200 mb-4">
+
+      <h2 class="font-black text-xl">
+        Hoy
+      </h2>
+
+      <div class="mt-3 space-y-2">
+
+        ${habit(
+          'Entrenamiento',
+          !!completed
+        )}
+
+        ${habit(
+          'Nutrición registrada',
+          !!ml.calories
+        )}
+
+        ${habit(
+          'Oración',
+          !!f.prayed
+        )}
+
+        ${habit(
+          'Examen / oración nocturna',
+          !!f.exam
+        )}
+
       </div>
+
     </div>
 
-    ${barChart(week.income, week.expenses)}
 
-    <div class="mt-5 bg-white rounded-3xl p-5 border border-slate-200 shadow-sm">
-      <h2 class="font-black text-xl">Acciones rápidas</h2>
-      <div class="grid grid-cols-2 gap-3 mt-4">
-        <button onclick="setView('gym')" class="rounded-2xl bg-slate-950 text-white py-3 font-black">Gym</button>
-        <button onclick="setView('finanzas')" class="rounded-2xl bg-slate-100 text-slate-950 py-3 font-black">Gasto</button>
-      </div>
+    <div class="bg-white rounded-3xl p-5 border border-slate-200">
+
+      <p class="text-xs font-black text-slate-500">
+        REGLA DEL SISTEMA
+      </p>
+
+      <p class="font-black mt-1">
+        Ritmos, no perfección.
+      </p>
+
+      <p class="text-sm text-slate-500 mt-1">
+        Si una semana se complica, ajusta.
+        No reinicies tu vida el lunes.
+      </p>
+
     </div>
+
   `);
+
 }
+
 
 /* =========================
    GYM
 ========================= */
-function gym(tab='rutina'){
-  const dates=monthDates(); const t=today();
+
+function gym(tab='hoy'){
+
   app(`
-    ${section('Gym','Rutina, asistencia y progreso por ejercicio.')}
+
+    ${section(
+      'Gym',
+      '5 días L–V · 50 min · sábado recuperación opcional.'
+    )}
+
     <div class="flex gap-2 mb-5 overflow-x-auto">
-      ${pill('Rutina', tab==='rutina', `gym('rutina')`)}
-      ${pill('Asistencia', tab==='asistencia', `gym('asistencia')`)}
-      ${pill('Progreso', tab==='progreso', `gym('progreso')`)}
+
+      ${pill(
+        'Hoy',
+        tab==='hoy',
+        "gym('hoy')"
+      )}
+
+      ${pill(
+        'Rutina',
+        tab==='rutina',
+        "gym('rutina')"
+      )}
+
+      ${pill(
+        'Historial',
+        tab==='historial',
+        "gym('historial')"
+      )}
+
+      ${pill(
+        'Cardio',
+        tab==='cardio',
+        "gym('cardio')"
+      )}
+
     </div>
+
     <div id="gym-content"></div>
+
   `);
-  if(tab==='rutina') gymRoutine();
-  if(tab==='asistencia') gymAttendance(dates,t);
-  if(tab==='progreso') gymProgress();
+
+
+  if(tab==='hoy'){
+    gymToday();
+  }
+
+  if(tab==='rutina'){
+    gymRoutine();
+  }
+
+  if(tab==='historial'){
+    gymHistory();
+  }
+
+  if(tab==='cardio'){
+    cardio();
+  }
+
 }
 
-function gymRoutine(){
-  document.getElementById('gym-content').innerHTML=`
-    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm mb-4">
-      <h2 class="font-black text-xl mb-3">Agregar ejercicio</h2>
-      <div class="grid gap-3">
-        ${select('Día','r-day',['Push','Pull','Legs','Upper','Lower','Full Body'],'Push')}
-        ${input('Ejercicio','r-ex','','text','Press banca')}
-        ${input('Músculo','r-muscle','','text','Pecho')}
-        <button onclick="addRoutine()" class="bg-slate-950 text-white rounded-2xl py-3 font-black">Agregar</button>
+
+function phaseSets(exSets){
+
+  const start=
+    new Date(
+      data.settings.returnPhaseStart+
+      'T12:00:00'
+    );
+
+  const now=
+    new Date(
+      today()+
+      'T12:00:00'
+    );
+
+  const days=
+    Math.floor(
+      (now-start)/86400000
+    );
+
+  return days<14
+    ?
+    Math.min(2,exSets)
+    :
+    exSets;
+
+}
+
+
+function gymToday(){
+
+  const t=today();
+
+  const plan=planFor(t);
+
+  const w=
+    data.workouts[t]
+    ||
+    {
+      sets:{},
+      completed:false
+    };
+
+  const el=
+    document.getElementById(
+      'gym-content'
+    );
+
+
+  if(!plan){
+
+    el.innerHTML=`
+
+      <div class="bg-white rounded-3xl p-5 border">
+
+        <h2 class="font-black text-xl">
+          Sin pesas programadas
+        </h2>
+
+        <p class="text-slate-500 mt-1">
+
+          ${
+            dayName()==='Domingo'
+            ?
+            'Fútbol + recuperación.'
+            :
+            'Sábado es recuperación de una sesión perdida si aplica.'
+          }
+
+        </p>
+
       </div>
-    </div>
-    <div class="space-y-3">
-      ${data.routine.map(r=>`
-        <div class="bg-white rounded-3xl p-4 border border-slate-200 flex justify-between items-center">
-          <div>
-            <p class="font-black">${r.exercise}</p>
-            <p class="text-sm text-slate-500">${r.day} · ${r.muscle}</p>
-          </div>
-          <button onclick="deleteRoutine('${r.id}')" class="text-red-500 font-black text-xl">×</button>
-        </div>`).join('')}
-    </div>`;
-}
+    `;
 
-function addRoutine(){
-  const ex = val('r-ex').trim();
-  if(!ex) return alert('Escribe el ejercicio');
-  data.routine.push({id:id(), day:val('r-day'), exercise:ex, muscle:val('r-muscle')});
-  save();
-  gym('rutina');
-}
+    return;
 
-function deleteRoutine(x){
-  data.routine=data.routine.filter(r=>r.id!==x);
-  save();
-  gym('rutina');
-}
+  }
 
-function gymAttendance(dates,t){
-  document.getElementById('gym-content').innerHTML=`
-    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm">
-      <div class="flex items-center justify-between mb-4">
+
+  el.innerHTML=`
+
+    <div class="bg-white rounded-3xl p-5 border border-slate-200 mb-4">
+
+      <div class="flex justify-between">
+
         <div>
-          <h2 class="font-black text-xl capitalize">${getMonthName()}</h2>
-          <p class="text-sm text-slate-500">${gymWeekFire()}</p>
+
+          <p class="text-xs font-black text-slate-500">
+            ${plan.day}
+          </p>
+
+          <h2 class="font-black text-2xl">
+            ${plan.name}
+          </h2>
+
+          <p class="text-sm text-slate-500">
+            ${plan.focus}
+          </p>
+
         </div>
+
+        <span class="text-xs font-black bg-slate-100 rounded-full h-fit px-3 py-2">
+          RIR 1–2*
+        </span>
+
       </div>
 
-      <button onclick="toggleGym('${t}')" class="w-full rounded-2xl py-4 mb-5 text-white font-black ${data.gymAttendance[t]?'bg-green-600':'bg-slate-950'}">
-        ${data.gymAttendance[t]?'Sí fui hoy':'Marcar asistencia de hoy'}
-      </button>
+      <p class="text-xs text-slate-500 mt-3">
+        *Primeras 2 semanas:
+        2 series por ejercicio y RIR ~3.
+      </p>
 
-      <div class="grid grid-cols-7 gap-2 text-center text-xs font-black text-slate-400 mb-2">
-        <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
-      </div>
+    </div>
 
-      ${calendarGrid(dates)}
-    </div>`;
+
+    <div class="space-y-3">
+
+      ${
+        plan.ex
+          .map(
+            (e,i)=>exerciseCard(e,i,w)
+          )
+          .join('')
+      }
+
+    </div>
+
+
+    <button
+      onclick="finishWorkout()"
+      class="mt-4 w-full ${
+        w.completed
+        ?
+        'bg-green-600'
+        :
+        'bg-slate-950'
+      } text-white rounded-2xl py-4 font-black"
+    >
+
+      ${
+        w.completed
+        ?
+        'Entrenamiento completado ✓'
+        :
+        'Finalizar entrenamiento'
+      }
+
+    </button>
+
+  `;
+
 }
 
-function calendarGrid(dates){
-  const first = dates[0];
-  const [y,m,d] = first.split('-').map(Number);
-  const firstDay = new Date(y, m-1, d).getDay();
-  const blanks = firstDay === 0 ? 6 : firstDay - 1;
+
+function lastExercise(exercise){
+
+  const rows=[];
+
+  Object.entries(
+    data.workouts
+  ).forEach(
+    ([date,w])=>{
+
+      const x=
+        w.entries?.find(
+          a=>a.exercise===exercise
+        );
+
+      if(x){
+        rows.push({
+          date,
+          ...x
+        });
+      }
+
+    }
+  );
+
+  return rows
+    .sort(
+      (a,b)=>
+        b.date.localeCompare(a.date)
+    )[0];
+
+}
+
+
+function exerciseCard(e,i,w){
+
+  const [
+    name,
+    muscle,
+    sets,
+    reps,
+    rest,
+    rir
+  ]=e;
+
+  const n=
+    phaseSets(sets);
+
+  const entry=
+    w.entries?.find(
+      x=>x.exercise===name
+    );
+
+  const last=
+    lastExercise(name);
+
 
   return `
-    <div class="grid grid-cols-7 gap-2">
-      ${Array.from({length:blanks},()=>`<div></div>`).join('')}
-      ${dates.map(date=>`
-        <button onclick="toggleGym('${date}')" class="aspect-square rounded-2xl text-xs font-black ${data.gymAttendance[date]?'bg-slate-950 text-white':'bg-slate-100 text-slate-500'} ${date===today()?'ring-2 ring-slate-950':''}">
-          ${Number(date.slice(-2))}
-        </button>
-      `).join('')}
-    </div>`;
-}
 
-function toggleGym(d){
-  data.gymAttendance[d]=!data.gymAttendance[d];
-  save();
-  gym('asistencia');
-}
+    <div class="bg-white rounded-3xl p-4 border border-slate-200">
 
-function gymProgress(){
-  const filter = localStorage.getItem('nlt-progress-filter') || '';
-  const list = data.progress.filter(p => !filter || p.date === filter);
+      <div class="flex justify-between gap-3">
 
-  document.getElementById('gym-content').innerHTML=`
-    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm mb-4">
-      <h2 class="font-black text-xl mb-3">Registrar sesión</h2>
-      <div class="grid gap-3">
-        ${input('Fecha','p-date',today(),'date')}
-        ${input('Ejercicio','p-ex','','text','Press banca')}
-        ${input('Peso kg','p-weight','','number')}
-        <div class="grid grid-cols-2 gap-3">
-          ${input('Series','p-sets','','number')}
-          ${input('Reps','p-reps','','number')}
+        <div>
+
+          <h3 class="font-black">
+            ${name}
+          </h3>
+
+          <p class="text-xs text-slate-500">
+            ${muscle}
+            · ${n}×${reps}
+            · descanso ${rest}
+            · RIR ${
+              phaseSets(sets)<sets
+              ?
+              3
+              :
+              rir
+            }
+          </p>
+
         </div>
-        <button onclick="addProgress()" class="bg-slate-950 text-white rounded-2xl py-3 font-black">Guardar progreso</button>
-      </div>
-    </div>
 
-    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm mb-4">
-      <h2 class="font-black text-xl mb-3">Buscar por fecha</h2>
-      <input type="date" value="${filter}" onchange="setProgressFilter(this.value)" class="w-full rounded-2xl border border-slate-200 px-4 py-3">
-      <button onclick="setProgressFilter('')" class="mt-3 w-full rounded-2xl bg-slate-100 py-3 font-black">Ver todo</button>
-    </div>
 
-    <div class="space-y-3">
-      ${list.map(p=>`
-        <div class="bg-white rounded-3xl p-4 border border-slate-200">
-          <p class="font-black">${p.exercise}</p>
-          <p class="text-sm text-slate-500">${formatDatePretty(p.date)} · ${p.weight} kg · ${p.sets}x${p.reps}</p>
-        </div>`).join('') || '<p class="text-sm text-slate-500 text-center py-4">No hay registros para esta fecha.</p>'}
-    </div>`;
-}
-
-function setProgressFilter(v){
-  localStorage.setItem('nlt-progress-filter', v);
-  gym('progreso');
-}
-
-function addProgress(){
-  const ex = val('p-ex').trim();
-  if(!ex) return alert('Escribe el ejercicio');
-  data.progress.unshift({id:id(),date:val('p-date'),exercise:ex,weight:val('p-weight'),sets:val('p-sets'),reps:val('p-reps')});
-  save();
-  gym('progreso');
-}
-
-/* =========================
-   MACROS
-========================= */
-function macros(){
-  const selected = localStorage.getItem('nlt-macro-date') || today();
-  const e=data.macroLog[selected]||{calories:'',protein:'',carbs:'',fats:'',done:false};
-
-  app(`
-    ${section('Macros','Meta diaria, registro, búsqueda por fecha y cumplimiento.')}
-    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm mb-4">
-      <h2 class="font-black text-xl mb-3">Meta diaria</h2>
-      <div class="grid grid-cols-2 gap-3">
-        ${input('Calorías','g-cal',data.macroGoal.calories,'number')}
-        ${input('Proteína','g-pro',data.macroGoal.protein,'number')}
-        ${input('Carbs','g-carb',data.macroGoal.carbs,'number')}
-        ${input('Grasas','g-fat',data.macroGoal.fats,'number')}
-      </div>
-      <button onclick="saveMacroGoal()" class="mt-3 w-full bg-slate-950 text-white rounded-2xl py-3 font-black">Guardar meta</button>
-    </div>
-
-    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm mb-4">
-      <h2 class="font-black text-xl mb-3">Fecha del registro</h2>
-      <input type="date" value="${selected}" onchange="setMacroDate(this.value)" class="w-full rounded-2xl border border-slate-200 px-4 py-3">
-    </div>
-
-    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm">
-      <h2 class="font-black text-xl mb-3">Registro · ${formatDatePretty(selected)}</h2>
-      <div class="grid grid-cols-2 gap-3 mb-3">
-        ${input('Calorías','m-cal',e.calories,'number')}
-        ${input('Proteína','m-pro',e.protein,'number')}
-        ${input('Carbs','m-carb',e.carbs,'number')}
-        ${input('Grasas','m-fat',e.fats,'number')}
-      </div>
-      <button onclick="saveMacros(false)" class="w-full bg-slate-950 text-white rounded-2xl py-3 font-black mb-2">Guardar registro</button>
-      <button onclick="saveMacros(true)" class="w-full ${e.done?'bg-green-600 text-white':'bg-slate-200 text-slate-950'} rounded-2xl py-3 font-black">${e.done?'Macros cumplidos':'Marcar como cumplidos'}</button>
-    </div>
-
-    <div class="mt-4 bg-white rounded-3xl p-5 border border-slate-200 shadow-sm">
-      <h2 class="font-black text-xl">Resumen del día</h2>
-      <p class="text-sm text-slate-500 mt-1">Meta: ${data.macroGoal.calories} kcal · ${data.macroGoal.protein}g proteína · ${data.macroGoal.carbs}g carbs · ${data.macroGoal.fats}g grasas</p>
-      <p class="text-sm text-slate-500 mt-1">Registro: ${e.calories||0} kcal · ${e.protein||0}g · ${e.carbs||0}g · ${e.fats||0}g</p>
-    </div>
-  `);
-}
-
-function setMacroDate(v){
-  localStorage.setItem('nlt-macro-date', v || today());
-  macros();
-}
-
-function saveMacroGoal(){
-  data.macroGoal={calories:val('g-cal'),protein:val('g-pro'),carbs:val('g-carb'),fats:val('g-fat')};
-  save();
-}
-
-function saveMacros(toggle){
-  const selected = localStorage.getItem('nlt-macro-date') || today();
-  const old=data.macroLog[selected]||{};
-  data.macroLog[selected]={
-    calories:val('m-cal'),
-    protein:val('m-pro'),
-    carbs:val('m-carb'),
-    fats:val('m-fat'),
-    done:toggle?!old.done:!!old.done
-  };
-  save();
-}
-
-/* =========================
-   FINANZAS
-========================= */
-function finanzas(){
-  const m=monthKey();
-  const filterDate = localStorage.getItem('nlt-finance-filter') || '';
-  const baseEntries=data.finance.filter(e=>e.date?.startsWith(m));
-  const entries=baseEntries.filter(e=>!filterDate || e.date === filterDate);
-
-  const inc=baseEntries.filter(e=>e.type==='Ingreso').reduce((s,e)=>s+Number(e.amount||0),0);
-  const exp=baseEntries.filter(e=>e.type==='Gasto').reduce((s,e)=>s+Number(e.amount||0),0);
-
-  app(`
-    ${section('Finanzas','Ingresos, gastos, categorías, filtro y exportación.')}
-    <div class="grid grid-cols-2 gap-3 mb-4">
-      ${card('Ingresos',money(inc),'este mes')}
-      ${card('Gastos',money(exp),'este mes')}
-    </div>
-
-    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm mb-4">
-      <h2 class="font-black text-xl mb-3">Nuevo movimiento</h2>
-      <div class="grid gap-3">
-        ${input('Fecha','f-date',today(),'date')}
-        ${select('Tipo','f-type',['Gasto','Ingreso'],'Gasto')}
-        <div id="category-wrap">
-          ${select('Categoría','f-cat',EXPENSE_CATEGORIES,EXPENSE_CATEGORIES[0])}
-        </div>
-        ${input('Monto','f-amount','','number')}
-        ${input('Nota','f-note','','text','Concepto')}
-        <button onclick="addFinance()" class="bg-slate-950 text-white rounded-2xl py-3 font-black">Guardar</button>
-      </div>
-    </div>
-
-    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm mb-4">
-      <h2 class="font-black text-xl mb-3">Buscar movimientos</h2>
-      <input type="date" value="${filterDate}" onchange="setFinanceFilter(this.value)" class="w-full rounded-2xl border border-slate-200 px-4 py-3">
-      <div class="grid grid-cols-2 gap-3 mt-3">
-        <button onclick="setFinanceFilter('')" class="rounded-2xl bg-slate-100 py-3 font-black">Ver mes</button>
-        <button onclick="exportCSV()" class="rounded-2xl bg-slate-950 text-white py-3 font-black">Exportar CSV</button>
-      </div>
-      <button onclick="exportJSON()" class="mt-3 w-full rounded-2xl bg-slate-100 py-3 font-black">Exportar backup JSON</button>
-    </div>
-
-    <div class="space-y-3">
-      ${entries.map(e=>`
-        <div class="bg-white rounded-3xl p-4 border border-slate-200 flex justify-between gap-3">
-          <div>
-            <p class="font-black">${e.type}: ${money(e.amount)}</p>
-            <p class="text-sm text-slate-500">${formatDatePretty(e.date)} · ${e.category} · ${e.note||''}</p>
+        ${
+          last
+          ?
+          `
+          <div class="text-right text-[11px] text-slate-500">
+            Último
+            <br>
+            <b>
+              ${esc(last.weight||'—')} kg
+            </b>
           </div>
-          <button onclick="deleteFinance('${e.id}')" class="text-red-500 font-black text-xl">×</button>
-        </div>`).join('') || '<p class="text-sm text-slate-500 text-center py-4">No hay movimientos para esta fecha.</p>'}
-    </div>`);
+          `
+          :
+          ''
+        }
 
-  const typeSelect = document.getElementById('f-type');
-  if (typeSelect) {
-    typeSelect.addEventListener('change', () => {
-      const opts = typeSelect.value === 'Ingreso' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
-      document.getElementById('category-wrap').innerHTML = select('Categoría','f-cat',opts,opts[0]);
-    });
+      </div>
+
+
+      <div class="grid grid-cols-3 gap-2 mt-3">
+
+        ${input(
+          'Peso kg',
+          `w-${i}`,
+          entry?.weight||'',
+          'number'
+        )}
+
+        ${input(
+          'Reps',
+          `r-${i}`,
+          entry?.reps||'',
+          'text',
+          '10,9,8'
+        )}
+
+        ${input(
+          'RIR',
+          `i-${i}`,
+          entry?.rir??
+          (
+            phaseSets(sets)<sets
+            ?
+            3
+            :
+            rir
+          ),
+          'number'
+        )}
+
+      </div>
+
+
+      <button
+        onclick="saveExercise(${i})"
+        class="mt-3 w-full bg-slate-100 rounded-xl py-2 text-sm font-black"
+      >
+        Guardar ejercicio
+      </button>
+
+    </div>
+
+  `;
+
+}
+
+
+function saveExercise(i){
+
+  const t=today();
+
+  const plan=
+    planFor(t);
+
+  const e=
+    plan.ex[i];
+
+
+  data.workouts[t]=
+    data.workouts[t]
+    ||
+    {
+      entries:[],
+      completed:false
+    };
+
+
+  data.workouts[t].entries=
+    data.workouts[t].entries
+    ||
+    [];
+
+
+  const x={
+
+    exercise:e[0],
+
+    weight:
+      val(`w-${i}`),
+
+    reps:
+      val(`r-${i}`),
+
+    rir:
+      val(`i-${i}`),
+
+    target:
+      `${phaseSets(e[2])}×${e[3]}`,
+
+    rest:e[4]
+
+  };
+
+
+  data.workouts[t].entries=
+    data.workouts[t].entries.filter(
+      z=>z.exercise!==e[0]
+    );
+
+
+  data.workouts[t].entries.push(x);
+
+
+  save(false);
+
+  gym('hoy');
+
+}
+
+
+function finishWorkout(){
+
+  const t=today();
+
+
+  data.workouts[t]=
+    data.workouts[t]
+    ||
+    {
+      entries:[]
+    };
+
+
+  data.workouts[t].completed=
+    !data.workouts[t].completed;
+
+
+  data.gymAttendance[t]=
+    data.workouts[t].completed;
+
+
+  save(false);
+
+  gym('hoy');
+
+}
+
+
+function gymRoutine(){
+
+  document.getElementById(
+    'gym-content'
+  ).innerHTML=
+
+  routineV2
+    .map(
+      r=>`
+
+        <div class="bg-white rounded-3xl p-5 border mb-4">
+
+          <p class="text-xs font-black text-slate-500">
+            ${r.day}
+          </p>
+
+          <h2 class="font-black text-xl">
+            ${r.name}
+          </h2>
+
+          <p class="text-sm text-slate-500 mb-3">
+            ${r.focus}
+          </p>
+
+          ${
+            r.ex
+              .map(
+                e=>`
+
+                  <div class="py-2 border-t border-slate-100">
+
+                    <p class="font-bold text-sm">
+                      ${e[0]}
+                    </p>
+
+                    <p class="text-xs text-slate-500">
+                      ${e[2]}×${e[3]}
+                      · ${e[4]}
+                      · RIR ${e[5]}
+                    </p>
+
+                  </div>
+
+                `
+              )
+              .join('')
+          }
+
+        </div>
+
+      `
+    )
+    .join('');
+
+}
+
+
+function gymHistory(){
+
+  const rows=
+    Object.entries(
+      data.workouts
+    )
+    .sort(
+      (a,b)=>
+        b[0].localeCompare(a[0])
+    );
+
+
+  document.getElementById(
+    'gym-content'
+  ).innerHTML=
+
+  rows.length
+  ?
+  rows
+    .map(
+      ([d,w])=>`
+
+        <div class="bg-white rounded-3xl p-4 border mb-3">
+
+          <div class="flex justify-between">
+
+            <b>
+              ${d}
+              · ${planFor(d)?.name||'Sesión'}
+            </b>
+
+            <span>
+              ${w.completed?'✓':''}
+            </span>
+
+          </div>
+
+
+          ${
+            (w.entries||[])
+              .map(
+                x=>`
+
+                  <p class="text-xs text-slate-500 mt-1">
+                    ${x.exercise}:
+                    ${x.weight||'—'} kg
+                    · ${x.reps||'—'}
+                    · RIR ${x.rir||'—'}
+                  </p>
+
+                `
+              )
+              .join('')
+          }
+
+        </div>
+
+      `
+    )
+    .join('')
+  :
+  `
+    <div class="bg-white rounded-3xl p-5 border">
+      Aún no hay sesiones registradas.
+    </div>
+  `;
+
+}
+
+
+function cardio(){
+
+  const t=today();
+
+  const c=
+    data.cardio[t]
+    ||
+    {};
+
+
+  document.getElementById(
+    'gym-content'
+  ).innerHTML=`
+
+    <div class="bg-white rounded-3xl p-5 border">
+
+      <h2 class="font-black text-xl">
+        Cardio / fútbol
+      </h2>
+
+      <p class="text-sm text-slate-500 mb-4">
+        Base: 1–2 sesiones de 25–30 min
+        + fútbol domingo.
+      </p>
+
+
+      <div class="grid gap-3">
+
+        ${input(
+          'Minutos',
+          'c-min',
+          c.minutes||'',
+          'number'
+        )}
+
+        ${input(
+          'Actividad',
+          'c-type',
+          c.type||'',
+          'text',
+          'Caminadora / bici / fútbol'
+        )}
+
+        ${input(
+          'Intensidad (1–10)',
+          'c-int',
+          c.intensity||'',
+          'number'
+        )}
+
+
+        <button
+          onclick="saveCardio()"
+          class="bg-slate-950 text-white rounded-2xl py-3 font-black"
+        >
+          Guardar
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+function saveCardio(){
+
+  data.cardio[today()]={
+
+    minutes:
+      val('c-min'),
+
+    type:
+      val('c-type'),
+
+    intensity:
+      val('c-int')
+
+  };
+
+
+  save(false);
+
+  gym('cardio');
+
+}
+
+
+/* =========================
+   NUTRICIÓN
+========================= */
+
+const mealPlan=[
+
+[
+  '05:40',
+  'Pre-gym',
+  'Whey 1 scoop (23 g proteína) + 1 plátano + creatina 5 g + agua. Glutamina según tolerancia/uso GI.'
+],
+
+[
+  '07:15',
+  'Desayuno',
+  'Verduras 160–170 g + 3 huevos + 2–3 claras + quinoa cocida 140 g + kiwi. Crema de almendras: probar 15 g.'
+],
+
+[
+  '11:30',
+  'Comida 2',
+  'Arroz basmati cocido 120–150 g + 1 lata de atún + ½ aguacate.'
+],
+
+[
+  '14:30',
+  'Comida principal',
+  'Pollo/res cocidos 150–160 g + papa/camote cocido 120–150 g + verduras ~170 g.'
+],
+
+[
+  '18:30',
+  'Snack',
+  'Yogurt griego + berries + chía. Avena 30–40 g si se necesita carbohidrato. Elegir nueces O crema de almendras.'
+],
+
+[
+  '21:00',
+  'Cena',
+  'Tilapia 130–160 g o salmón 150–160 g + verduras ~170 g + carbohidrato según objetivo del día.'
+]
+
+];
+
+
+function nutricion(tab='hoy'){
+
+  app(`
+
+    ${section(
+      'Nutrición',
+      'Recomposición · alimentos pesados cocidos/listos para comer.'
+    )}
+
+    <div class="flex gap-2 mb-5 overflow-x-auto">
+
+      ${pill(
+        'Hoy',
+        tab==='hoy',
+        "nutricion('hoy')"
+      )}
+
+      ${pill(
+        'Plan',
+        tab==='plan',
+        "nutricion('plan')"
+      )}
+
+      ${pill(
+        'Metas',
+        tab==='metas',
+        "nutricion('metas')"
+      )}
+
+    </div>
+
+    <div id="nutri"></div>
+
+  `);
+
+
+  if(tab==='hoy'){
+    nutriToday();
   }
+
+  if(tab==='plan'){
+    nutriPlan();
+  }
+
+  if(tab==='metas'){
+    nutriGoals();
+  }
+
 }
 
-function setFinanceFilter(v){
-  localStorage.setItem('nlt-finance-filter', v || '');
-  finanzas();
+
+function nutriToday(){
+
+  const t=today();
+
+  const e=
+    data.macroLog[t]
+    ||
+    {
+      calories:'',
+      protein:'',
+      carbs:'',
+      fats:'',
+      done:false
+    };
+
+
+  document.getElementById(
+    'nutri'
+  ).innerHTML=`
+
+    <div class="grid grid-cols-2 gap-3 mb-4">
+
+      ${macroCard(
+        'Kcal',
+        e.calories,
+        data.macroGoal.calories
+      )}
+
+      ${macroCard(
+        'Proteína',
+        e.protein,
+        data.macroGoal.protein,
+        'g'
+      )}
+
+      ${macroCard(
+        'Carbs',
+        e.carbs,
+        data.macroGoal.carbs,
+        'g'
+      )}
+
+      ${macroCard(
+        'Grasas',
+        e.fats,
+        data.macroGoal.fats,
+        'g'
+      )}
+
+    </div>
+
+
+    <div class="bg-white rounded-3xl p-5 border">
+
+      <h2 class="font-black text-xl mb-3">
+        Registro del día
+      </h2>
+
+
+      <div class="grid grid-cols-2 gap-3">
+
+        ${input(
+          'Calorías',
+          'm-cal',
+          e.calories,
+          'number'
+        )}
+
+        ${input(
+          'Proteína g',
+          'm-pro',
+          e.protein,
+          'number'
+        )}
+
+        ${input(
+          'Carbs g',
+          'm-carb',
+          e.carbs,
+          'number'
+        )}
+
+        ${input(
+          'Grasas g',
+          'm-fat',
+          e.fats,
+          'number'
+        )}
+
+      </div>
+
+
+      <button
+        onclick="saveMacros()"
+        class="mt-3 w-full bg-slate-950 text-white rounded-2xl py-3 font-black"
+      >
+        Guardar
+      </button>
+
+    </div>
+
+  `;
+
 }
 
-function addFinance(){
-  const amount = val('f-amount');
-  if(!amount) return alert('Agrega un monto');
-  data.finance.unshift({
-    id:id(),
-    date:val('f-date'),
-    type:val('f-type'),
-    category:val('f-cat'),
-    amount:amount,
-    note:val('f-note')
-  });
-  save();
+
+function macroCard(label,value,goal,unit=''){
+
+  return `
+
+    <div class="bg-white rounded-3xl p-4 border">
+
+      <p class="text-xs font-bold text-slate-500">
+        ${label}
+      </p>
+
+      <p class="text-xl font-black">
+
+        ${value||0}${unit}
+
+        <span class="text-xs text-slate-400">
+          / ${goal}${unit}
+        </span>
+
+      </p>
+
+      ${bar(
+        num(value),
+        num(goal)
+      )}
+
+    </div>
+
+  `;
+
 }
 
-function deleteFinance(x){
-  data.finance=data.finance.filter(e=>e.id!==x);
-  save();
+
+function saveMacros(){
+
+  const t=today();
+
+
+  data.macroLog[t]={
+
+    ...(data.macroLog[t]||{}),
+
+    calories:
+      val('m-cal'),
+
+    protein:
+      val('m-pro'),
+
+    carbs:
+      val('m-carb'),
+
+    fats:
+      val('m-fat'),
+
+    done:true
+
+  };
+
+
+  save(false);
+
+  nutricion('hoy');
+
 }
 
-function exportCSV() {
-  const rows = [];
-  rows.push(['SECCION','FECHA','TIPO','CATEGORIA/EJERCICIO','MONTO/PESO','SERIES','REPS','CALORIAS','PROTEINA','CARBS','GRASAS','NOTA']);
 
-  data.finance.forEach(e => {
-    rows.push(['Finanzas', e.date, e.type, e.category, e.amount, '', '', '', '', '', '', e.note || '']);
-  });
+function nutriPlan(){
 
-  data.progress.forEach(e => {
-    rows.push(['Gym Progreso', e.date, '', e.exercise, e.weight, e.sets, e.reps, '', '', '', '', '']);
-  });
+  document.getElementById(
+    'nutri'
+  ).innerHTML=
 
-  Object.entries(data.macroLog).forEach(([date,e]) => {
-    rows.push(['Macros', date, e.done ? 'Cumplido' : 'No cumplido', '', '', '', '', e.calories || '', e.protein || '', e.carbs || '', e.fats || '', '']);
-  });
+  `
 
-  Object.entries(data.faith).forEach(([date,e]) => {
-    rows.push(['Fe', date, '', e.type || '', '', '', '', '', '', '', '', `oracion:${!!e.prayed}; misa:${!!e.mass}; rosario:${!!e.rosary}; nota:${e.note || ''}`]);
-  });
+    <div class="bg-amber-50 border border-amber-200 rounded-3xl p-4 mb-4">
 
-  Object.entries(data.gymAttendance).forEach(([date,done]) => {
-    rows.push(['Gym Asistencia', date, done ? 'Sí' : 'No', '', '', '', '', '', '', '', '', '']);
-  });
+      <p class="font-black">
+        Dieta v1 · pendiente de cierre fino
+      </p>
 
-  const csv = rows
-    .map(row => row.map(cell => `"${String(cell ?? '').replaceAll('"','""')}"`).join(','))
-    .join('\n');
+      <p class="text-sm text-amber-900 mt-1">
+        Las cantidades finales y macros se ajustarán
+        con tu respuesta de peso, cintura y rendimiento
+        durante 2–3 semanas.
+      </p>
 
-  downloadFile(csv, `nate-life-tracker-${today()}.csv`, 'text/csv;charset=utf-8;');
+    </div>
+
+  `
+
+  +
+
+  mealPlan
+    .map(
+      m=>`
+
+        <div class="bg-white rounded-3xl p-4 border mb-3">
+
+          <div class="flex gap-3">
+
+            <span class="text-xs font-black bg-slate-100 rounded-full px-3 py-2 h-fit">
+              ${m[0]}
+            </span>
+
+            <div>
+
+              <h3 class="font-black">
+                ${m[1]}
+              </h3>
+
+              <p class="text-sm text-slate-500 mt-1">
+                ${m[2]}
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      `
+    )
+    .join('');
+
 }
 
-function exportJSON() {
-  downloadFile(JSON.stringify(data, null, 2), `nate-life-tracker-backup-${today()}.json`, 'application/json');
+
+function nutriGoals(){
+
+  const g=
+    data.macroGoal;
+
+
+  document.getElementById(
+    'nutri'
+  ).innerHTML=`
+
+    <div class="bg-white rounded-3xl p-5 border">
+
+      <h2 class="font-black text-xl">
+        Metas iniciales
+      </h2>
+
+      <p class="text-sm text-slate-500 mt-1 mb-4">
+        Punto de partida,
+        no números sagrados.
+      </p>
+
+
+      <div class="grid grid-cols-2 gap-3">
+
+        ${input(
+          'Calorías',
+          'g-cal',
+          g.calories,
+          'number'
+        )}
+
+        ${input(
+          'Proteína g',
+          'g-pro',
+          g.protein,
+          'number'
+        )}
+
+        ${input(
+          'Carbs g',
+          'g-carb',
+          g.carbs,
+          'number'
+        )}
+
+        ${input(
+          'Grasas g',
+          'g-fat',
+          g.fats,
+          'number'
+        )}
+
+      </div>
+
+
+      <button
+        onclick="saveGoals()"
+        class="mt-3 w-full bg-slate-950 text-white rounded-2xl py-3 font-black"
+      >
+        Guardar metas
+      </button>
+
+    </div>
+
+  `;
+
 }
 
-function downloadFile(content, filename, type) {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
+
+function saveGoals(){
+
+  data.macroGoal={
+
+    calories:
+      num(val('g-cal')),
+
+    protein:
+      num(val('g-pro')),
+
+    carbs:
+      num(val('g-carb')),
+
+    fats:
+      num(val('g-fat'))
+
+  };
+
+
+  save(false);
+
+  nutricion('metas');
+
 }
+
+
+/* =========================
+   SALUD
+========================= */
+
+function salud(tab='cuerpo'){
+
+  app(`
+
+    ${section(
+      'Salud',
+      'Mide lo que cambia decisiones.'
+    )}
+
+    <div class="flex gap-2 mb-5 overflow-x-auto">
+
+      ${pill(
+        'Cuerpo',
+        tab==='cuerpo',
+        "salud('cuerpo')"
+      )}
+
+      ${pill(
+        'Sueño',
+        tab==='sueno',
+        "salud('sueno')"
+      )}
+
+      ${pill(
+        'Tendencia',
+        tab==='tendencia',
+        "salud('tendencia')"
+      )}
+
+    </div>
+
+    <div id="health"></div>
+
+  `);
+
+
+  if(tab==='cuerpo'){
+    body();
+  }
+
+  if(tab==='sueno'){
+    sleep();
+  }
+
+  if(tab==='tendencia'){
+    trend();
+  }
+
+}
+
+
+function body(){
+
+  const t=today();
+
+  const b=
+    data.body[t]
+    ||
+    {};
+
+
+  document.getElementById(
+    'health'
+  ).innerHTML=`
+
+    <div class="bg-white rounded-3xl p-5 border">
+
+      <h2 class="font-black text-xl">
+        Registro físico
+      </h2>
+
+      <p class="text-sm text-slate-500 mb-4">
+        Peso frecuente;
+        cintura ~1×/semana;
+        fotos cada 4 semanas.
+      </p>
+
+
+      <div class="grid gap-3">
+
+        ${input(
+          'Peso kg',
+          'b-w',
+          b.weight||'',
+          'number'
+        )}
+
+        ${input(
+          'Cintura cm',
+          'b-waist',
+          b.waist||'',
+          'number'
+        )}
+
+        ${input(
+          'Nota / foto referencia',
+          'b-note',
+          b.note||'',
+          'text',
+          'Ej. Fotos octubre tomadas'
+        )}
+
+
+        <button
+          onclick="saveBody()"
+          class="bg-slate-950 text-white rounded-2xl py-3 font-black"
+        >
+          Guardar
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+function saveBody(){
+
+  data.body[today()]={
+
+    weight:
+      val('b-w'),
+
+    waist:
+      val('b-waist'),
+
+    note:
+      val('b-note')
+
+  };
+
+
+  save(false);
+
+  salud('cuerpo');
+
+}
+
+
+function sleep(){
+
+  const t=today();
+
+  const s=
+    data.sleep[t]
+    ||
+    {};
+
+
+  document.getElementById(
+    'health'
+  ).innerHTML=`
+
+    <div class="bg-white rounded-3xl p-5 border">
+
+      <h2 class="font-black text-xl">
+        Sueño
+      </h2>
+
+      <p class="text-sm text-slate-500 mb-4">
+        Objetivo habitual:
+        dormir ~22:00–22:30;
+        23:00 como límite normal.
+      </p>
+
+
+      <div class="grid gap-3">
+
+        ${input(
+          'Horas dormidas',
+          's-hours',
+          s.hours||'',
+          'number'
+        )}
+
+        ${input(
+          'Hora de dormir',
+          's-bed',
+          s.bed||'',
+          'time'
+        )}
+
+        ${input(
+          'Calidad 1–5',
+          's-q',
+          s.quality||'',
+          'number'
+        )}
+
+
+        <button
+          onclick="saveSleep()"
+          class="bg-slate-950 text-white rounded-2xl py-3 font-black"
+        >
+          Guardar
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+function saveSleep(){
+
+  data.sleep[today()]={
+
+    hours:
+      val('s-hours'),
+
+    bed:
+      val('s-bed'),
+
+    quality:
+      val('s-q')
+
+  };
+
+
+  save(false);
+
+  salud('sueno');
+
+}
+
+
+function trend(){
+
+  const entries=
+    Object.entries(
+      data.body
+    )
+    .filter(
+      ([,b])=>b.weight
+    )
+    .sort(
+      (a,b)=>
+        a[0].localeCompare(b[0])
+    );
+
+
+  const last7=
+    entries.slice(-7);
+
+
+  const avg=
+    last7.length
+    ?
+    (
+      last7.reduce(
+        (s,[,b])=>
+          s+num(b.weight),
+        0
+      )
+      /
+      last7.length
+    ).toFixed(1)
+    :
+    '—';
+
+
+  const waist=
+    [...entries]
+      .reverse()
+      .find(
+        ([,b])=>b.waist
+      )
+      ?.[1]
+      ?.waist
+    ||
+    '—';
+
+
+  document.getElementById(
+    'health'
+  ).innerHTML=`
+
+    <div class="grid grid-cols-2 gap-3 mb-4">
+
+      ${card(
+        'Peso prom.',
+        avg+
+        (
+          avg==='—'
+          ?
+          ''
+          :
+          ' kg'
+        ),
+        `${last7.length} registros recientes`
+      )}
+
+      ${card(
+        'Cintura',
+        waist+
+        (
+          waist==='—'
+          ?
+          ''
+          :
+          ' cm'
+        ),
+        'último registro'
+      )}
+
+    </div>
+
+
+    <div class="bg-white rounded-3xl p-5 border">
+
+      <h2 class="font-black text-xl mb-3">
+        Historial
+      </h2>
+
+
+      ${
+        entries
+          .slice(-12)
+          .reverse()
+          .map(
+            ([d,b])=>`
+
+              <div class="py-2 border-t text-sm flex justify-between">
+
+                <span>
+                  ${d}
+                </span>
+
+                <b>
+                  ${b.weight} kg
+                  ${
+                    b.waist
+                    ?
+                    '· '+b.waist+' cm'
+                    :
+                    ''
+                  }
+                </b>
+
+              </div>
+
+            `
+          )
+          .join('')
+        ||
+        `
+          <p class="text-slate-500">
+            Sin datos todavía.
+          </p>
+        `
+      }
+
+    </div>
+
+  `;
+
+}
+
 
 /* =========================
    FE
 ========================= */
+
 function fe(){
-  const selected = localStorage.getItem('nlt-faith-date') || today();
-  const e=data.faith[selected]||{prayed:false,mass:false,rosary:false,type:'Oración personal',note:''};
+
+  const t=today();
+
+  const e=
+    data.faith[t]
+    ||
+    {};
+
 
   app(`
-    ${section('Fe','Oración diaria, misa, rosario y notas espirituales.')}
-    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm mb-4">
-      <h2 class="font-black text-xl mb-3">Buscar fecha</h2>
-      <input type="date" value="${selected}" onchange="setFaithDate(this.value)" class="w-full rounded-2xl border border-slate-200 px-4 py-3">
+
+    ${section(
+      'Fe',
+      'Relación con Dios · prácticas como medios, no como puntuación.'
+    )}
+
+
+    <div class="bg-white rounded-3xl p-5 border mb-4 space-y-2">
+
+      ${faithBtn(
+        'prayed',
+        'Oración personal',
+        e.prayed
+      )}
+
+      ${faithBtn(
+        'exam',
+        'Oración nocturna / examen',
+        e.exam
+      )}
+
+      ${faithBtn(
+        'mass',
+        'Misa',
+        e.mass
+      )}
+
+      ${faithBtn(
+        'rosary',
+        'Rosario',
+        e.rosary
+      )}
+
+      ${faithBtn(
+        'adoration',
+        'Santísimo / adoración',
+        e.adoration
+      )}
+
     </div>
 
-    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm mb-4 space-y-3">
-      ${faithBtn('prayed','Hice oración',e.prayed)}
-      ${faithBtn('mass','Fui a misa',e.mass)}
-      ${faithBtn('rosary','Recé el rosario',e.rosary)}
+
+    <div class="bg-white rounded-3xl p-5 border mb-4">
+
+      <h2 class="font-black text-xl">
+        Ritmo actual
+      </h2>
+
+      <p class="text-sm text-slate-500 mt-2">
+        Misa:
+        lunes 20:00 ·
+        jueves 20:00 con Deny ·
+        domingo.
+      </p>
+
+      <p class="text-sm text-slate-500 mt-1">
+        Rosario con mamá:
+        lunes 21:00.
+      </p>
+
+      <p class="text-sm text-slate-500 mt-1">
+        Confesión:
+        aproximadamente cada 3 semanas ·
+        servicio: mensual.
+      </p>
+
     </div>
 
-    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm">
-      <h2 class="font-black text-xl mb-3">Detalle espiritual · ${formatDatePretty(selected)}</h2>
-      <div class="grid gap-3">
-        ${select('Tipo','faith-type',['Oración personal','Rosario','Misa','Adoración','Lectio Divina','Lectura espiritual','Examen de conciencia'],e.type)}
-        <textarea id="faith-note" class="w-full rounded-2xl border border-slate-200 p-4 min-h-32 outline-none focus:ring-2 focus:ring-slate-900" placeholder="Notas del día...">${e.note||''}</textarea>
-        <button onclick="saveFaithDetail()" class="bg-slate-950 text-white rounded-2xl py-3 font-black">Guardar detalle</button>
-      </div>
-    </div>`);
+
+    <div class="bg-white rounded-3xl p-5 border">
+
+      <h2 class="font-black text-xl mb-3">
+        Nota espiritual
+      </h2>
+
+
+      <textarea
+        id="f-note"
+        class="w-full rounded-2xl border p-4 min-h-28"
+        placeholder="Gratitud, examen, intención..."
+      >${esc(e.note||'')}</textarea>
+
+
+      <button
+        onclick="saveFaithNote()"
+        class="mt-3 w-full bg-slate-950 text-white rounded-2xl py-3 font-black"
+      >
+        Guardar
+      </button>
+
+    </div>
+
+  `);
+
 }
 
-function setFaithDate(v){
-  localStorage.setItem('nlt-faith-date', v || today());
-  fe();
-}
 
-function faithBtn(key,label,done){
+function faithBtn(k,l,d){
+
   return `
-    <button onclick="toggleFaith('${key}')" class="w-full flex justify-between items-center rounded-2xl px-4 py-3 ${done?'bg-green-50 text-green-700':'bg-slate-50 text-slate-700'}">
-      <span class="font-black">${label}</span>
-      <span>${done?'✅':'○'}</span>
-    </button>`;
+
+    <button
+      onclick="toggleFaith('${k}')"
+      class="w-full flex justify-between rounded-2xl px-4 py-3 ${
+        d
+        ?
+        'bg-green-50 text-green-700'
+        :
+        'bg-slate-50'
+      }"
+    >
+
+      <b>
+        ${l}
+      </b>
+
+      <span>
+        ${d?'✓':'○'}
+      </span>
+
+    </button>
+
+  `;
+
 }
+
 
 function toggleFaith(k){
-  const selected = localStorage.getItem('nlt-faith-date') || today();
-  data.faith[selected]=data.faith[selected]||{};
-  data.faith[selected][k]=!data.faith[selected][k];
-  save();
+
+  const t=today();
+
+  data.faith[t]=
+    data.faith[t]
+    ||
+    {};
+
+
+  data.faith[t][k]=
+    !data.faith[t][k];
+
+
+  save(false);
+
+  fe();
+
 }
 
-function saveFaithDetail(){
-  const selected = localStorage.getItem('nlt-faith-date') || today();
-  data.faith[selected]=data.faith[selected]||{};
-  data.faith[selected].type=val('faith-type');
-  data.faith[selected].note=val('faith-note');
-  save();
+
+function saveFaithNote(){
+
+  const t=today();
+
+  data.faith[t]=
+    data.faith[t]
+    ||
+    {};
+
+
+  data.faith[t].note=
+    val('f-note');
+
+
+  save(false);
+
+  fe();
+
 }
+
 
 /* =========================
    RENDER
 ========================= */
+
 function render(){
-  if (!isUnlocked()) {
-    lockScreen();
-    return;
+
+  document
+    .querySelectorAll('.nav')
+    .forEach(
+      b=>
+        b.className=
+        'nav rounded-2xl py-2 text-[11px] font-bold tab-inactive'
+    );
+
+
+  const active=
+    document.getElementById(
+      'nav-'+view
+    );
+
+
+  if(active){
+
+    active.className=
+      'nav rounded-2xl py-2 text-[11px] font-bold tab-active';
+
   }
 
-  document.getElementById('bottom-nav').classList.remove('hide');
 
-  document.querySelectorAll('.nav').forEach(b=>{
-    b.className='nav rounded-2xl py-2 text-xs font-bold tab-inactive';
-  });
+  if(view==='inicio'){
+    inicio();
+  }
 
-  const active=document.getElementById('nav-'+view);
-  if(active) active.className='nav rounded-2xl py-2 text-xs font-bold tab-active';
+  if(view==='gym'){
+    gym();
+  }
 
-  if(view==='inicio') inicio();
-  if(view==='gym') gym();
-  if(view==='macros') macros();
-  if(view==='finanzas') finanzas();
-  if(view==='fe') fe();
+  if(view==='nutricion'){
+    nutricion();
+  }
+
+  if(view==='salud'){
+    salud();
+  }
+
+  if(view==='fe'){
+    fe();
+  }
+
 }
 
+
 render();
+
 </script>
+
 </body>
 </html>

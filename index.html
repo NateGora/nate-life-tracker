@@ -1,271 +1,274 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#171915">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Nate Life Tracker">
-<link rel="apple-touch-icon" href="/icon.jpeg">
-<title>Nate Life Tracker 2.2</title>
-
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#171915"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Nate Life Tracker">
+<link rel="apple-touch-icon" href="/icon.jpeg"><title>Nate Life Tracker 2.3</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root{
---ink:#171915;
---ivory:#f4f0e6;
---paper:#fffdf8;
---olive:#626a4d;
---sage:#dfe4d3;
---muted:#777a71;
---line:rgba(23,25,21,.09);
---danger:#9b4d42;
---gold:#a98546
+  --ink:#171915;
+  --ivory:#f4f0e6;
+  --paper:#fffdf8;
+  --olive:#626a4d;
+  --sage:#dfe4d3;
+  --muted:#777a71;
+  --line:rgba(23,25,21,.09);
+  --danger:#9b4d42;
+  --gold:#a98546
 }
 
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent
+}
 
 html,body{
-margin:0;
-background:var(--ivory);
-color:var(--ink);
-font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif
+  margin:0;
+  background:var(--ivory);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif
 }
 
 body{
-background:
-radial-gradient(circle at 95% 0,#e7e1d0 0,transparent 27%),
-var(--ivory)
+  background:
+    radial-gradient(circle at 95% 0,#e7e1d0 0,transparent 27%),
+    var(--ivory)
 }
 
 button,input,select,textarea{font:inherit}
 button{cursor:pointer;border:0}
 
 .app{
-max-width:480px;
-margin:auto;
-min-height:100vh;
-padding:22px 16px calc(105px + env(safe-area-inset-bottom))
+  max-width:480px;
+  margin:auto;
+  min-height:100vh;
+  padding:22px 16px calc(105px + env(safe-area-inset-bottom))
 }
 
 .card{
-background:rgba(255,253,248,.94);
-border:1px solid var(--line);
-box-shadow:0 12px 35px rgba(40,39,31,.055);
-border-radius:26px;
-padding:17px
+  background:rgba(255,253,248,.94);
+  border:1px solid var(--line);
+  box-shadow:0 12px 35px rgba(40,39,31,.055);
+  border-radius:26px;
+  padding:17px
 }
 
 .hero{
-background:linear-gradient(145deg,#171915,#2b2e25);
-color:white;
-border-radius:31px;
-padding:22px;
-box-shadow:0 18px 42px rgba(23,25,21,.18)
+  background:linear-gradient(145deg,#171915,#2b2e25);
+  color:white;
+  border-radius:31px;
+  padding:22px;
+  box-shadow:0 18px 42px rgba(23,25,21,.18)
 }
 
 .eyebrow{
-font-size:10px;
-letter-spacing:.14em;
-font-weight:850;
-color:var(--muted);
-text-transform:uppercase
+  font-size:10px;
+  letter-spacing:.14em;
+  font-weight:850;
+  color:var(--muted);
+  text-transform:uppercase
 }
 
 .hero .eyebrow{color:#ffffff88}
 
 h1{
-font-size:31px;
-line-height:1;
-margin:4px 0 8px;
-letter-spacing:-.04em
+  font-size:31px;
+  line-height:1;
+  margin:4px 0 8px;
+  letter-spacing:-.04em
 }
 
 h2{
-font-size:20px;
-margin:0;
-letter-spacing:-.02em
+  font-size:20px;
+  margin:0;
+  letter-spacing:-.02em
 }
 
-h3{font-size:15px;margin:0}
+h3{
+  font-size:15px;
+  margin:0
+}
 
 .muted{color:var(--muted)}
 .small{font-size:12px}
 .tiny{font-size:10px}
 
 .row{
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:12px
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px
 }
 
 .grid2{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:11px
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:11px
 }
 
-.stack{display:grid;gap:11px}
+.stack{
+  display:grid;
+  gap:11px
+}
 
 .btn{
-background:var(--ink);
-color:#fff;
-border-radius:17px;
-padding:12px 15px;
-font-weight:800
+  background:var(--ink);
+  color:#fff;
+  border-radius:17px;
+  padding:12px 15px;
+  font-weight:800
 }
 
 .btn.light{
-background:#ebe7dc;
-color:var(--ink)
+  background:#ebe7dc;
+  color:var(--ink)
 }
 
 .btn.olive{background:var(--olive)}
 
 .btn.danger{
-background:#f0dfdc;
-color:var(--danger)
+  background:#f0dfdc;
+  color:var(--danger)
 }
 
 .btn.sm{
-padding:8px 11px;
-border-radius:13px;
-font-size:12px
+  padding:8px 11px;
+  border-radius:13px;
+  font-size:12px
 }
 
 .field{
-width:100%;
-border:1px solid var(--line);
-background:var(--paper);
-border-radius:16px;
-padding:12px 13px;
-outline:none;
-font-size:16px
+  width:100%;
+  border:1px solid var(--line);
+  background:var(--paper);
+  border-radius:16px;
+  padding:12px 13px;
+  outline:none;
+  font-size:16px
 }
 
 .label{
-display:block;
-font-size:10px;
-font-weight:850;
-letter-spacing:.1em;
-text-transform:uppercase;
-color:var(--muted);
-margin:0 0 5px
+  display:block;
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:0 0 5px
 }
 
 .bar{
-height:7px;
-background:#e6e1d5;
-border-radius:99px;
-overflow:hidden
+  height:7px;
+  background:#e6e1d5;
+  border-radius:99px;
+  overflow:hidden
 }
 
 .bar i{
-display:block;
-height:100%;
-background:var(--olive);
-border-radius:99px
+  display:block;
+  height:100%;
+  background:var(--olive);
+  border-radius:99px
 }
 
 .pillrow{
-display:flex;
-gap:8px;
-overflow:auto;
-padding:1px 0 13px
+  display:flex;
+  gap:8px;
+  overflow:auto;
+  padding:1px 0 13px
 }
 
 .pill{
-white-space:nowrap;
-padding:9px 13px;
-border-radius:99px;
-background:var(--paper);
-color:var(--muted);
-border:1px solid var(--line);
-font-weight:800;
-font-size:12px
+  white-space:nowrap;
+  padding:9px 13px;
+  border-radius:99px;
+  background:var(--paper);
+  color:var(--muted);
+  border:1px solid var(--line);
+  font-weight:800;
+  font-size:12px
 }
 
 .pill.on{
-background:var(--ink);
-color:white
+  background:var(--ink);
+  color:white
 }
 
 .nav{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-background:#f4f0e6e8;
-backdrop-filter:blur(22px);
-border-top:1px solid var(--line);
-z-index:50
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#f4f0e6e8;
+  backdrop-filter:blur(22px);
+  border-top:1px solid var(--line);
+  z-index:50
 }
 
 .navin{
-max-width:480px;
-margin:auto;
-display:grid;
-grid-template-columns:repeat(5,1fr);
-padding:8px 7px calc(8px + env(safe-area-inset-bottom))
+  max-width:480px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  padding:8px 7px calc(8px + env(safe-area-inset-bottom))
 }
 
 .nav button{
-background:transparent;
-color:#777a71;
-border-radius:16px;
-padding:7px 2px;
-font-size:9px;
-font-weight:800
+  background:transparent;
+  color:#777a71;
+  border-radius:16px;
+  padding:7px 2px;
+  font-size:9px;
+  font-weight:800
 }
 
 .nav button b{
-display:block;
-font-size:18px;
-line-height:18px;
-margin-bottom:3px
+  display:block;
+  font-size:18px;
+  line-height:18px;
+  margin-bottom:3px
 }
 
 .nav button.on{
-background:var(--ink);
-color:white
+  background:var(--ink);
+  color:white
 }
 
 .check{
-width:29px;
-height:29px;
-border-radius:50%;
-display:grid;
-place-items:center;
-background:#e7e2d7;
-color:var(--muted);
-font-weight:900;
-flex:0 0 auto
+  width:29px;
+  height:29px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#e7e2d7;
+  color:var(--muted);
+  font-weight:900;
+  flex:0 0 auto
 }
 
 .check.on{
-background:var(--olive);
-color:white
+  background:var(--olive);
+  color:white
 }
 
 .divider{
-border-top:1px solid var(--line);
-margin:13px 0
+  border-top:1px solid var(--line);
+  margin:13px 0
 }
 
 .metric{
-font-size:25px;
-font-weight:900;
-letter-spacing:-.03em
+  font-size:25px;
+  font-weight:900;
+  letter-spacing:-.03em
 }
 
 .notice{
-background:#e7e3d4;
-border-radius:22px;
-padding:14px 16px
+  background:#e7e3d4;
+  border-radius:22px;
+  padding:14px 16px
 }
 
 .good{color:#52603e}
@@ -273,75 +276,77 @@ padding:14px 16px
 .bad{color:var(--danger)}
 
 .calgrid{
-display:grid;
-grid-template-columns:repeat(7,1fr);
-gap:5px
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:5px
 }
 
 .calday{
-aspect-ratio:1;
-border-radius:12px;
-background:#fffaf2;
-border:1px solid var(--line);
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-font-size:12px;
-position:relative
+  aspect-ratio:1;
+  border-radius:12px;
+  background:#fffaf2;
+  border:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  position:relative
 }
 
-.calday.today{outline:2px solid var(--ink)}
+.calday.today{
+  outline:2px solid var(--ink)
+}
 
 .calday.has:after{
-content:"";
-position:absolute;
-bottom:5px;
-width:4px;
-height:4px;
-background:var(--olive);
-border-radius:50%
+  content:"";
+  position:absolute;
+  bottom:5px;
+  width:4px;
+  height:4px;
+  background:var(--olive);
+  border-radius:50%
 }
 
 .calday.blank{visibility:hidden}
 
 .photo{
-width:100%;
-aspect-ratio:3/4;
-object-fit:cover;
-border-radius:18px;
-background:#e9e5da
+  width:100%;
+  aspect-ratio:3/4;
+  object-fit:cover;
+  border-radius:18px;
+  background:#e9e5da
 }
 
 .lock{
-min-height:82vh;
-display:grid;
-place-items:center;
-text-align:center
+  min-height:82vh;
+  display:grid;
+  place-items:center;
+  text-align:center
 }
 
 .orb{
-width:80px;
-height:80px;
-border-radius:28px;
-background:linear-gradient(145deg,#252820,#11130f);
-color:white;
-display:grid;
-place-items:center;
-font-size:30px;
-font-weight:900;
-margin:auto;
-box-shadow:0 18px 50px #17191533
+  width:80px;
+  height:80px;
+  border-radius:28px;
+  background:linear-gradient(145deg,#252820,#11130f);
+  color:white;
+  display:grid;
+  place-items:center;
+  font-size:30px;
+  font-weight:900;
+  margin:auto;
+  box-shadow:0 18px 50px #17191533
 }
 
 .hide{display:none!important}
 
 .syncdot{
-width:8px;
-height:8px;
-border-radius:50%;
-display:inline-block;
-background:#aaa
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  display:inline-block;
+  background:#aaa
 }
 
 .syncdot.ok{background:#65734e}
@@ -349,19 +354,19 @@ background:#aaa
 .syncdot.err{background:#a75046}
 
 .setrow{
-display:grid;
-grid-template-columns:30px 1fr 1fr 1fr;
-gap:7px;
-align-items:end;
-margin-top:8px
+  display:grid;
+  grid-template-columns:30px 1fr 1fr 1fr;
+  gap:7px;
+  align-items:end;
+  margin-top:8px
 }
 
 .setnum{
-height:42px;
-display:grid;
-place-items:center;
-font-weight:900;
-color:var(--muted)
+  height:42px;
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  color:var(--muted)
 }
 </style>
 </head>
@@ -369,17 +374,31 @@ color:var(--muted)
 <body>
 
 <main class="app">
-<section id="app"></section>
+  <section id="app"></section>
 </main>
 
 <nav class="nav" id="nav">
-<div class="navin">
-<button id="n-home" onclick="go('home')"><b>⌂</b>Inicio</button>
-<button id="n-plan" onclick="go('plan')"><b>▦</b>Plan</button>
-<button id="n-food" onclick="go('food')"><b>◌</b>Nutrición</button>
-<button id="n-progress" onclick="go('progress')"><b>⌁</b>Progreso</button>
-<button id="n-more" onclick="go('more')"><b>•••</b>Más</button>
-</div>
+  <div class="navin">
+    <button id="n-home" onclick="go('home')">
+      <b>⌂</b>Inicio
+    </button>
+
+    <button id="n-plan" onclick="go('plan')">
+      <b>▦</b>Plan
+    </button>
+
+    <button id="n-food" onclick="go('food')">
+      <b>◌</b>Nutrición
+    </button>
+
+    <button id="n-progress" onclick="go('progress')">
+      <b>⌁</b>Progreso
+    </button>
+
+    <button id="n-more" onclick="go('more')">
+      <b>•••</b>Más
+    </button>
+  </div>
 </nav>
 
 <script>
@@ -393,3281 +412,7596 @@ const SUPABASE_URL='https://fapkqpynuusudnulxdkg.supabase.co';
 const SUPABASE_KEY='sb_publishable_3bxW3dDFCsQz2WNBH3DW_A_JBz2Zitj';
 
 const sb=window.supabase?.createClient(
-SUPABASE_URL,
-SUPABASE_KEY,
-{
-auth:{
-persistSession:true,
-autoRefreshToken:true,
-detectSessionInUrl:true
-}
-}
+  SUPABASE_URL,
+  SUPABASE_KEY,
+  {
+    auth:{
+      persistSession:true,
+      autoRefreshToken:true,
+      detectSessionInUrl:true
+    }
+  }
 );
 
 let cloudUser=null;
 
-const $=id=>document.getElementById(id);
-
 const today=()=>new Date().toLocaleDateString(
-'en-CA',
-{timeZone:TZ}
+  'en-CA',
+  {timeZone:TZ}
 );
 
 const n=x=>Number(x||0);
 
 const esc=s=>String(s??'').replace(
-/[&<>"']/g,
-m=>({
-'&':'&amp;',
-'<':'&lt;',
-'>':'&gt;',
-'"':'&quot;',
-"'":'&#039;'
-}[m])
+  /[&<>"']/g,
+  m=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#039;'
+  }[m])
 );
 
 const dateObj=s=>{
-let [y,m,d]=s.split('-').map(Number);
-return new Date(y,m-1,d,12)
+  let [y,m,d]=s.split('-').map(Number);
+  return new Date(y,m-1,d,12)
 };
 
 const fmt=s=>dateObj(s).toLocaleDateString(
-'es-MX',
-{day:'numeric',month:'short'}
+  'es-MX',
+  {
+    day:'numeric',
+    month:'short'
+  }
 );
 
 const money=x=>'$'+n(x).toLocaleString(
-'es-MX',
-{maximumFractionDigits:2}
+  'es-MX',
+  {maximumFractionDigits:2}
 );
 
 const DAYS=[
-'Domingo',
-'Lunes',
-'Martes',
-'Miércoles',
-'Jueves',
-'Viernes',
-'Sábado'
+  'Domingo',
+  'Lunes',
+  'Martes',
+  'Miércoles',
+  'Jueves',
+  'Viernes',
+  'Sábado'
 ];
 
 const dayName=s=>DAYS[dateObj(s||today()).getDay()];
 
+
+/* =========================================================
+   GYM
+   ========================================================= */
+
 const gymRoutine=[
-
-{
-name:'PUSH',
-focus:'Pecho + hombro + tríceps',
-ex:[
-['Press inclinado con mancuernas',3,'6–10',2],
-['Press pecho máquina / Smith',3,'8–12',2],
-['Elevación lateral en polea',3,'12–20',1],
-['Press hombro máquina / mancuernas',2,'8–12',2],
-['Extensión tríceps polea',2,'10–15',1],
-['Tríceps overhead cuerda',2,'10–15',1]
-]
-},
-
-{
-name:'PULL',
-focus:'Espalda + deltoide posterior + bíceps',
-ex:[
-['Jalón neutro/medio',3,'6–10',2],
-['Remo pecho apoyado',3,'8–12',2],
-['Jalón unilateral a cadera',2,'10–15',1],
-['Reverse pec deck',3,'12–20',1],
-['Curl inclinado',2,'8–12',1],
-['Curl martillo',2,'10–15',1]
-]
-},
-
-{
-name:'LEGS A',
-focus:'Cuádriceps + femoral + core',
-ex:[
-['Hack / Smith squat',3,'6–10',2],
-['Peso muerto rumano',3,'6–10',2],
-['Prensa',2,'10–15',2],
-['Curl femoral',3,'10–15',1],
-['Extensión cuádriceps',2,'12–15',1],
-['Pantorrilla',2,'10–15',1],
-['Elevación piernas/rodillas',3,'8–15',1]
-]
-},
-
-{
-name:'UPPER',
-focus:'Torso + especialización',
-ex:[
-['Press inclinado Smith',3,'8–12',2],
-['Remo sentado',3,'8–12',2],
-['Jalón al pecho',2,'10–15',2],
-['Elevaciones laterales',3,'12–20',1],
-['Curl predicador',2,'10–15',1],
-['Extensión tríceps polea',2,'10–15',1]
-]
-},
-
-{
-name:'LEGS B + DELTS/ARMS',
-focus:'Cadena posterior + estética',
-ex:[
-['Hip thrust',3,'6–10',2],
-['Bulgarian split squat',2,'8–12',2],
-['Curl femoral',3,'10–15',1],
-['Elevación lateral',3,'12–20',1],
-['Curl polea',2,'10–15',1],
-['Tríceps overhead',2,'10–15',1],
-['Crunch polea',3,'10–15',1]
-]
-}
-
+  {
+    name:'PUSH',
+    focus:'Pecho + hombro + tríceps',
+    ex:[
+      ['Press inclinado con mancuernas',3,'6–10',2],
+      ['Press pecho máquina / Smith',3,'8–12',2],
+      ['Elevación lateral en polea',3,'12–20',1],
+      ['Press hombro máquina / mancuernas',2,'8–12',2],
+      ['Extensión tríceps polea',2,'10–15',1],
+      ['Tríceps overhead cuerda',2,'10–15',1]
+    ]
+  },
+  {
+    name:'PULL',
+    focus:'Espalda + deltoide posterior + bíceps',
+    ex:[
+      ['Jalón neutro/medio',3,'6–10',2],
+      ['Remo pecho apoyado',3,'8–12',2],
+      ['Jalón unilateral a cadera',2,'10–15',1],
+      ['Reverse pec deck',3,'12–20',1],
+      ['Curl inclinado',2,'8–12',1],
+      ['Curl martillo',2,'10–15',1]
+    ]
+  },
+  {
+    name:'LEGS A',
+    focus:'Cuádriceps + femoral + core',
+    ex:[
+      ['Hack / Smith squat',3,'6–10',2],
+      ['Peso muerto rumano',3,'6–10',2],
+      ['Prensa',2,'10–15',2],
+      ['Curl femoral',3,'10–15',1],
+      ['Extensión cuádriceps',2,'12–15',1],
+      ['Pantorrilla',2,'10–15',1],
+      ['Elevación piernas/rodillas',3,'8–15',1]
+    ]
+  },
+  {
+    name:'UPPER',
+    focus:'Torso + especialización',
+    ex:[
+      ['Press inclinado Smith',3,'8–12',2],
+      ['Remo sentado',3,'8–12',2],
+      ['Jalón al pecho',2,'10–15',2],
+      ['Elevaciones laterales',3,'12–20',1],
+      ['Curl predicador',2,'10–15',1],
+      ['Extensión tríceps polea',2,'10–15',1]
+    ]
+  },
+  {
+    name:'LEGS B + DELTS/ARMS',
+    focus:'Cadena posterior + estética',
+    ex:[
+      ['Hip thrust',3,'6–10',2],
+      ['Bulgarian split squat',2,'8–12',2],
+      ['Curl femoral',3,'10–15',1],
+      ['Elevación lateral',3,'12–20',1],
+      ['Curl polea',2,'10–15',1],
+      ['Tríceps overhead',2,'10–15',1],
+      ['Crunch polea',3,'10–15',1]
+    ]
+  }
 ];
 
+
+/* =========================================================
+   NUTRICIÓN
+   kcal / protein / carbs / fat por gramo
+   ========================================================= */
+
 const foods={
+  whey:{
+    name:'Holix Isolean Chocobrownie',
+    k:109/35,
+    p:26.02/35,
+    c:1.14/35,
+    f:.12/35
+  },
 
-whey:{
-name:'Holix Isolean Chocobrownie',
-k:109/35,
-p:26.02/35,
-c:1.14/35,
-f:.12/35
-},
+  banana:{
+    name:'Plátano',
+    k:.89,
+    p:.011,
+    c:.228,
+    f:.003
+  },
 
-banana:{
-name:'Plátano',
-k:.89,
-p:.011,
-c:.228,
-f:.003
-},
+  egg:{
+    name:'Huevo entero',
+    k:1.43,
+    p:.126,
+    c:.007,
+    f:.095
+  },
 
-egg:{
-name:'Huevo entero',
-k:1.43,
-p:.126,
-c:.007,
-f:.095
-},
+  white:{
+    name:'Clara de huevo',
+    k:.52,
+    p:.109,
+    c:.007,
+    f:.002
+  },
 
-white:{
-name:'Clara de huevo',
-k:.52,
-p:.109,
-c:.007,
-f:.002
-},
+  veg:{
+    name:'Verduras mixtas',
+    k:.35,
+    p:.02,
+    c:.07,
+    f:.003
+  },
 
-veg:{
-name:'Verduras mixtas',
-k:.35,
-p:.02,
-c:.07,
-f:.003
-},
+  quinoa:{
+    name:'Quinoa cocida',
+    k:1.20,
+    p:.044,
+    c:.213,
+    f:.019
+  },
 
-quinoa:{
-name:'Quinoa cocida',
-k:1.20,
-p:.044,
-c:.213,
-f:.019
-},
+  kiwi:{
+    name:'Kiwi',
+    k:.61,
+    p:.011,
+    c:.147,
+    f:.005
+  },
 
-kiwi:{
-name:'Kiwi',
-k:.61,
-p:.011,
-c:.147,
-f:.005
-},
+  almond:{
+    name:'Crema almendras Kirkland',
+    k:6.21,
+    p:.21,
+    c:.20,
+    f:.55
+  },
 
-almond:{
-name:'Crema almendras Kirkland',
-k:6.21,
-p:.21,
-c:.20,
-f:.55
-},
+  rice:{
+    name:'Arroz basmati cocido',
+    k:1.30,
+    p:.027,
+    c:.282,
+    f:.003
+  },
 
-rice:{
-name:'Arroz basmati cocido',
-k:1.30,
-p:.027,
-c:.282,
-f:.003
-},
+  tuna:{
+    name:'Atún en agua drenado',
+    k:1.16,
+    p:.26,
+    c:0,
+    f:.01
+  },
 
-tuna:{
-name:'Atún en agua drenado',
-k:1.16,
-p:.26,
-c:0,
-f:.01
-},
+  avocado:{
+    name:'Aguacate',
+    k:1.60,
+    p:.02,
+    c:.085,
+    f:.147
+  },
 
-avocado:{
-name:'Aguacate',
-k:1.60,
-p:.02,
-c:.085,
-f:.147
-},
+  chicken:{
+    name:'Pechuga pollo cocida',
+    k:1.65,
+    p:.31,
+    c:0,
+    f:.036
+  },
 
-chicken:{
-name:'Pechuga pollo cocida',
-k:1.65,
-p:.31,
-c:0,
-f:.036
-},
+  beef:{
+    name:'Res magra cocida',
+    k:2.10,
+    p:.28,
+    c:0,
+    f:.10
+  },
 
-beef:{
-name:'Res magra cocida',
-k:2.10,
-p:.28,
-c:0,
-f:.10
-},
+  potato:{
+    name:'Papa cocida',
+    k:.87,
+    p:.019,
+    c:.20,
+    f:.001
+  },
 
-potato:{
-name:'Papa cocida',
-k:.87,
-p:.019,
-c:.20,
-f:.001
-},
+  yogurt:{
+    name:'Yogurt griego Kirkland sin grasa',
+    k:.576,
+    p:.103,
+    c:.036,
+    f:0
+  },
 
-yogurt:{
-name:'Yogurt griego Kirkland sin grasa',
-k:.576,
-p:.103,
-c:.036,
-f:0
-},
+  berries:{
+    name:'Berries',
+    k:.50,
+    p:.01,
+    c:.12,
+    f:.003
+  },
 
-berries:{
-name:'Berries',
-k:.50,
-p:.01,
-c:.12,
-f:.003
-},
+  chia:{
+    name:'Chía',
+    k:4.86,
+    p:.165,
+    c:.421,
+    f:.307
+  },
 
-chia:{
-name:'Chía',
-k:4.86,
-p:.165,
-c:.421,
-f:.307
-},
+  oats:{
+    name:'Avena',
+    k:3.89,
+    p:.169,
+    c:.663,
+    f:.069
+  },
 
-oats:{
-name:'Avena',
-k:3.89,
-p:.169,
-c:.663,
-f:.069
-},
+  tilapia:{
+    name:'Tilapia cocida',
+    k:1.28,
+    p:.263,
+    c:0,
+    f:.027
+  },
 
-tilapia:{
-name:'Tilapia cocida',
-k:1.28,
-p:.263,
-c:0,
-f:.027
-},
+  salmon:{
+    name:'Salmón cocido',
+    k:2.06,
+    p:.22,
+    c:0,
+    f:.12
+  },
 
-salmon:{
-name:'Salmón cocido',
-k:2.06,
-p:.22,
-c:0,
-f:.12
-},
-
-salmas:{
-name:'Salmas',
-k:3.85,
-p:.08,
-c:.78,
-f:.035
-}
-
+  salmas:{
+    name:'Salmas',
+    k:3.85,
+    p:.08,
+    c:.78,
+    f:.035
+  }
 };
 
+
 const baseMeals=[
+  {
+    id:'pre',
+    time:'05:40',
+    name:'Pre-gym',
+    items:[
+      ['whey',35],
+      ['banana',120]
+    ]
+  },
 
-{
-id:'pre',
-time:'05:40',
-name:'Pre-gym',
-items:[
-['whey',35],
-['banana',120]
-]
-},
+  {
+    id:'breakfast',
+    time:'07:15',
+    name:'Desayuno',
+    items:[
+      ['veg',165],
+      ['egg',150],
+      ['white',99],
+      ['quinoa',140],
+      ['kiwi',75],
+      ['almond',15]
+    ]
+  },
 
-{
-id:'breakfast',
-time:'07:15',
-name:'Desayuno',
-items:[
-['veg',165],
-['egg',150],
-['white',99],
-['quinoa',140],
-['kiwi',75],
-['almond',15]
-]
-},
+  {
+    id:'meal2',
+    time:'11:30',
+    name:'Comida 2',
+    items:[
+      ['rice',150],
+      ['tuna',130],
+      ['avocado',75]
+    ]
+  },
 
-{
-id:'meal2',
-time:'11:30',
-name:'Comida 2',
-items:[
-['rice',150],
-['tuna',130],
-['avocado',75]
-]
-},
+  {
+    id:'main',
+    time:'14:30',
+    name:'Comida principal',
+    items:[
+      ['chicken',155],
+      ['potato',135],
+      ['veg',170]
+    ]
+  },
 
-{
-id:'main',
-time:'14:30',
-name:'Comida principal',
-items:[
-['chicken',155],
-['potato',135],
-['veg',170]
-]
-},
+  {
+    id:'snack',
+    time:'18:30',
+    name:'Snack',
+    items:[
+      ['yogurt',200],
+      ['berries',100],
+      ['chia',12]
+    ]
+  },
 
-{
-id:'snack',
-time:'18:30',
-name:'Snack',
-items:[
-['yogurt',200],
-['berries',100],
-['chia',12]
-]
-},
+  {
+    id:'dinner',
+    time:'21:00',
+    name:'Cena',
+    items:[
+      ['tilapia',130],
+      ['veg',170],
+      ['salmas',24]
+    ]
+  }
+];
 
-{
-id:'dinner',
-time:'21:15',
-name:'Cena',
-items:[
-['tilapia',150],
-['salmas',36],
-['veg',150]
-]
-}
 
+/* =========================================================
+   FINANZAS 2.3
+   Conceptos tomados de GASTOS / INGRESOS del Excel
+   ========================================================= */
+
+const expenseConcepts=[
+  'Actividades',
+  'Alimentación',
+  'Antojos/Extras',
+  'Cuidado Personal',
+  'Espiritualidad',
+  'Extraordinario',
+  'Limosna',
+  'Préstamo',
+  'Relación',
+  'Salud',
+  'Servicios/Software',
+  'Social',
+  'Suplementos/Vitaminas',
+  'Transporte'
+];
+
+const incomeConcepts=[
+  'Amazon',
+  'Otros',
+  'Préstamo',
+  'Sueldo',
+  'Vales'
 ];
 
 const payment=[
-'Revolut',
-'Openbank Cinépolis',
-'NU',
-'BBVA Oro',
-'Pluxee',
-'Efectivo',
-'Transferencia'
+  'Revolut',
+  'Openbank Cinépolis',
+  'Pluxee',
+  'NU',
+  'BBVA Oro',
+  'Efectivo',
+  'Transferencia'
 ];
 
-const financeCats=[
-'Alimentos',
-'Transporte',
-'Entretenimiento',
-'Salud',
-'Compras',
-'Deny',
-'Familia',
-'Viajes',
-'Educación',
-'Servicios',
-'Negocios',
-'Otros'
-];
+const financeConcepts=type=>
+  type==='Ingreso'
+    ? incomeConcepts
+    : expenseConcepts;
+
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
 
 function fresh(){
-return{
-version:'2.2-cloud',
-pin:DEFAULT_PIN,
+  return{
+    version:2.3,
+    pin:DEFAULT_PIN,
 
-routineState:{
-index:0
-},
+    gymState:{
+      next:0,
+      viewing:null
+    },
 
-gymAttendance:{},
-workouts:[],
-progress:[],
-cardio:{},
-football:{},
+    workouts:{},
+    gymAttendance:{},
+    cardio:{},
+    football:{},
 
-macroGoal:{
-kcal:2400,
-p:155,
-c:287,
-f:70
-},
+    macroGoal:{
+      calories:2400,
+      protein:155,
+      carbs:287,
+      fats:70
+    },
 
-mealLog:{},
-extras:{},
+    mealLog:{},
+    macroLog:{},
 
-body:{},
-sleep:{},
+    body:{},
+    sleep:{},
+    faith:{},
+    confessions:[],
 
-faith:{},
-confessions:[],
+    reading:{
+      books:[],
+      sessions:[]
+    },
 
-finance:[],
-budgets:{},
+    events:[],
+    finance:[],
 
-reading:{
-books:[],
-sessions:[]
-},
+    sync:{
+      endpoint:'',
+      queue:[]
+    },
 
-events:[],
-weeklyReviews:{},
+    weeklyReviews:{},
 
-sync:{
-queue:[]
-},
-
-settings:{
-mode:'normal'
-}
-}
-}
-
-function migrate(x){
-
-let d=fresh();
-
-if(!x)return d;
-
-d={...d,...x};
-
-d.routineState={
-...fresh().routineState,
-...(x.routineState||{})
-};
-
-d.macroGoal={
-...fresh().macroGoal,
-...(x.macroGoal||{})
-};
-
-d.reading={
-...fresh().reading,
-...(x.reading||{})
-};
-
-d.sync={
-...fresh().sync,
-...(x.sync||{})
-};
-
-d.settings={
-...fresh().settings,
-...(x.settings||{})
-};
-
-if(
-d.macroGoal.kcal===2400 &&
-d.macroGoal.p===155 &&
-d.macroGoal.c===275 &&
-d.macroGoal.f===70
-){
-d.macroGoal.c=287;
+    settings:{
+      returnPhaseStart:today()
+    }
+  }
 }
 
-d.version='2.2-cloud';
 
-return d;
+function migrate(){
+  let o={};
+
+  try{
+    o=JSON.parse(localStorage.getItem(KEY))||{}
+  }catch{}
+
+  let d=fresh();
+
+  for(const k of Object.keys(d)){
+    if(o[k]!==undefined)d[k]=o[k]
+  }
+
+  d.version=2.3;
+
+  d.gymState={
+    ...fresh().gymState,
+    ...(o.gymState||{})
+  };
+
+  d.reading={
+    ...fresh().reading,
+    ...(o.reading||{})
+  };
+
+  d.sync={
+    ...fresh().sync,
+    ...(o.sync||{})
+  };
+
+  if(
+    o.macroGoal &&
+    o.macroGoal.calories===2400 &&
+    o.macroGoal.protein===155 &&
+    o.macroGoal.carbs===275 &&
+    o.macroGoal.fats===70
+  ){
+    d.macroGoal=fresh().macroGoal
+  }
+
+  return d
 }
 
-let data;
 
-try{
-data=migrate(JSON.parse(localStorage.getItem(KEY)||'null'));
-}catch{
-data=fresh();
+let data=migrate();
+
+let view=
+  localStorage.getItem(VIEW)
+  ||'home';
+
+
+function save(r=true){
+  localStorage.setItem(
+    KEY,
+    JSON.stringify(data)
+  );
+
+  if(r)render()
 }
 
-let view=localStorage.getItem(VIEW)||'home';
-
-function save(renderNow=true){
-localStorage.setItem(KEY,JSON.stringify(data));
-if(renderNow)render();
-}
-
-function go(v){
-view=v;
-localStorage.setItem(VIEW,v);
-render();
-window.scrollTo({top:0,behavior:'smooth'});
-}
 
 function unlocked(){
-return sessionStorage.getItem('nlt-unlocked')==='1';
+  return sessionStorage.getItem('nlt-unlocked')==='1'
 }
 
-function val(id){
-return $(id)?.value||'';
+
+function go(v){
+  view=v;
+  localStorage.setItem(VIEW,v);
+  render()
 }
 
-function field(label,id,value='',type='text',placeholder=''){
-return`
-<label>
-<span class="label">${label}</span>
-<input
-id="${id}"
-class="field"
-type="${type}"
-value="${esc(value)}"
-placeholder="${esc(placeholder)}"
->
-</label>
-`;
+
+const $=id=>document.getElementById(id);
+
+const val=id=>$(id)?.value||'';
+
+
+function section(t,s=''){
+  return `
+    <div style="margin-bottom:18px">
+      <div class="eyebrow">NATE LIFE TRACKER 2.3</div>
+      <h1>${t}</h1>
+      ${s?`<div class="muted small">${s}</div>`:''}
+    </div>
+  `
 }
 
-function section(title,subtitle=''){
-return`
-<div style="margin-bottom:14px">
-<div class="eyebrow">NATE LIFE TRACKER</div>
-<h1>${title}</h1>
-${subtitle?`<div class="muted small">${subtitle}</div>`:''}
-</div>
-`;
+
+function field(
+  l,
+  id,
+  v='',
+  type='text',
+  ph=''
+){
+  return `
+    <label>
+      <span class="label">${l}</span>
+      <input
+        class="field"
+        id="${id}"
+        type="${type}"
+        value="${esc(v)}"
+        placeholder="${ph}">
+    </label>
+  `
 }
 
-function back(){
-return`
-<button
-class="btn light sm"
-style="margin-bottom:14px"
-onclick="go('more')"
->← Volver</button>
-`;
+
+function pill(t,on,js){
+  return `
+    <button
+      class="pill ${on?'on':''}"
+      onclick="${js}">
+      ${t}
+    </button>
+  `
 }
 
-function menu(title,subtitle,action){
-return`
-<button
-class="card"
-style="text-align:left;width:100%"
-onclick="${action}"
->
-<div class="row">
-<div>
-<h3>${title}</h3>
-<div class="small muted" style="margin-top:4px">${subtitle}</div>
-</div>
-<div>›</div>
-</div>
-</button>
-`;
+
+function progress(a,b){
+  let p=b
+    ?Math.max(
+      0,
+      Math.min(
+        100,
+        Math.round(a/b*100)
+      )
+    )
+    :0;
+
+  return `
+    <div class="bar">
+      <i style="width:${p}%"></i>
+    </div>
+  `
 }
+
+  /* =========================================================
+   SEGURIDAD / PIN
+   ========================================================= */
 
 function lockScreen(){
+  $('nav').classList.add('hide');
 
-$('nav').classList.add('hide');
+  $('app').innerHTML=`
+    <div class="lock">
+      <div>
+        <div class="orb">N</div>
 
-$('app').innerHTML=`
-<div class="lock">
-<div style="width:100%">
-<div class="orb">N</div>
+        <div
+          class="eyebrow"
+          style="margin-top:25px">
+          THE NATE SYSTEM
+        </div>
 
-<div style="margin-top:20px">
-<div class="eyebrow">NATE LIFE TRACKER</div>
-<h1 style="margin-top:7px">Bienvenido, Nate.</h1>
-<p class="muted">Planear. Ejecutar. Registrar. Revisar.</p>
-</div>
+        <h1>Bienvenido, Nate.</h1>
 
-<div class="card stack" style="max-width:340px;margin:24px auto 0">
-${field('PIN','pin-entry','','password')}
-<button class="btn" onclick="unlock()">Entrar</button>
-</div>
-</div>
-</div>
-`;
+        <div class="muted small">
+          Planificar · Ejecutar · Registrar · Revisar
+        </div>
 
-setTimeout(()=>{$('pin-entry')?.focus()},100);
+        <input
+          id="pin"
+          class="field"
+          style="
+            text-align:center;
+            letter-spacing:.4em;
+            margin-top:25px
+          "
+          type="password"
+          inputmode="numeric"
+          placeholder="PIN"
+          onkeydown="
+            if(event.key==='Enter')unlock()
+          ">
+
+        <button
+          class="btn"
+          style="
+            width:100%;
+            margin-top:10px
+          "
+          onclick="unlock()">
+          Entrar
+        </button>
+
+        <div
+          id="pinerr"
+          class="bad small"
+          style="margin-top:10px">
+        </div>
+      </div>
+    </div>
+  `
 }
+
 
 function unlock(){
+  if(
+    val('pin')===
+    String(data.pin||DEFAULT_PIN)
+  ){
+    sessionStorage.setItem(
+      'nlt-unlocked',
+      '1'
+    );
 
-if(val('pin-entry')===String(data.pin||DEFAULT_PIN)){
-sessionStorage.setItem('nlt-unlocked','1');
-render();
-}else{
-alert('PIN incorrecto.');
-}
-}
-
-function currentRoutine(){
-return gymRoutine[
-Math.max(
-0,
-Math.min(
-gymRoutine.length-1,
-n(data.routineState.index)%gymRoutine.length
-)
-)
-];
+    render()
+  }else{
+    $('pinerr').textContent=
+      'PIN incorrecto'
+  }
 }
 
-function completedGymDates(){
-return Object.entries(data.gymAttendance)
-.filter(([_,v])=>v==='completed'||v===true)
-.map(([d])=>d);
+
+/* =========================================================
+   GYM — SECUENCIA
+   ========================================================= */
+
+function nextGym(){
+  return gymRoutine[
+    n(data.gymState.next)%
+    gymRoutine.length
+  ]
 }
 
-function latestBody(){
-let entries=Object.entries(data.body||{})
-.sort((a,b)=>b[0].localeCompare(a[0]));
-return entries[0]||null;
+
+/*
+  Rutina que estamos viendo.
+
+  IMPORTANTE:
+  viewing NO modifica la secuencia.
+
+  gymState.next es la única fuente
+  de verdad de la siguiente rutina.
+*/
+
+function viewedGym(){
+  const idx=data.gymState.viewing;
+
+  if(
+    idx===null ||
+    idx===undefined ||
+    !gymRoutine[idx]
+  ){
+    return nextGym()
+  }
+
+  return gymRoutine[idx]
 }
 
-function macroToday(){
 
-let log=data.mealLog[today()]||{};
-let total={k:0,p:0,c:0,f:0};
-
-baseMeals.forEach(m=>{
-let x=log[m.id];
-if(x?.done){
-let z=mealMacros(x.items||m.items);
-total.k+=z.k;
-total.p+=z.p;
-total.c+=z.c;
-total.f+=z.f;
+function gymIndex(g){
+  return gymRoutine.findIndex(
+    x=>x.name===g.name
+  )
 }
-});
 
-(data.extras[today()]||[]).forEach(x=>{
-total.k+=n(x.k);
-total.p+=n(x.p);
-total.c+=n(x.c);
-total.f+=n(x.f);
-});
 
-return total;
+function viewRoutine(index){
+  data.gymState.viewing=index;
+
+  save(false);
+
+  gym()
 }
+
+
+function returnToNextGym(){
+  data.gymState.viewing=null;
+
+  save(false);
+
+  gym()
+}
+
+
+/* =========================================================
+   CONVERSIÓN DE PESOS
+   Base histórica = kg
+   Interfaz = lb
+   ========================================================= */
+
+const KG_TO_LB=2.2046226218;
+
+
+function kgToLb(kg){
+  if(
+    kg===null ||
+    kg===undefined ||
+    kg===''
+  ){
+    return ''
+  }
+
+  const lb=n(kg)*KG_TO_LB;
+
+  /*
+    Mostramos hasta 1 decimal para
+    conservar compatibilidad con cargas
+    históricas sin perder precisión.
+  */
+
+  return Math.round(lb*10)/10
+}
+
+
+function lbToKg(lb){
+  if(
+    lb===null ||
+    lb===undefined ||
+    lb===''
+  ){
+    return 0
+  }
+
+  return n(lb)/KG_TO_LB
+}
+
+
+function prettyLbFromKg(kg){
+  if(!n(kg))return '—';
+
+  return `${kgToLb(kg)} lb`
+}
+
+
+/* =========================================================
+   MACROS DEL DÍA
+   ========================================================= */
+
+function todaysMacros(){
+  let l=data.mealLog[today()]||{};
+
+  let sum={
+    k:0,
+    p:0,
+    c:0,
+    f:0
+  };
+
+  baseMeals.forEach(m=>{
+    let x=l[m.id];
+
+    if(x?.done){
+      (x.items||m.items).forEach(
+        ([id,q,on=true])=>{
+          if(on===false)return;
+
+          let z=foods[id];
+
+          if(z){
+            sum.k+=z.k*q;
+            sum.p+=z.p*q;
+            sum.c+=z.c*q;
+            sum.f+=z.f*q
+          }
+        }
+      )
+    }
+  });
+
+  (l.extras||[]).forEach(x=>{
+    sum.k+=n(x.k);
+    sum.p+=n(x.p);
+    sum.c+=n(x.c);
+    sum.f+=n(x.f)
+  });
+
+  return sum
+}
+
+
+/* =========================================================
+   INICIO
+   ========================================================= */
 
 function home(){
+  let t=today();
 
-let r=currentRoutine();
-let macros=macroToday();
-let b=latestBody();
+  let g=nextGym();
 
-let activeBook=(data.reading.books||[])
-.find(x=>x.status==='leyendo');
+  let m=todaysMacros();
 
-let bookPct=activeBook?.totalPages
-?Math.round(n(activeBook.currentPage)/n(activeBook.totalPages)*100)
-:0;
+  let events=getEvents(t);
 
-let events=(data.events||[])
-.filter(x=>x.date===today())
-.sort((a,b)=>(a.start||'99:99').localeCompare(b.start||'99:99'));
+  let faith=data.faith[t]||{};
 
-$('app').innerHTML=`
+  let read=todayRead();
 
-<div class="hero">
-<div class="eyebrow">${dayName(today())} · ${fmt(today())}</div>
-<h1>Hoy</h1>
-<div style="font-size:16px;line-height:1.45">
-Lo importante tiene un lugar antes de que lo urgente ocupe todo el espacio.
-</div>
-</div>
+  $('app').innerHTML=`
+    <div
+      class="row"
+      style="margin-bottom:18px">
 
-<div class="card" style="margin-top:12px">
-<div class="row">
-<div>
-<div class="eyebrow">SIGUIENTE ENTRENAMIENTO</div>
-<h2 style="margin-top:5px">${r.name}</h2>
-<div class="small muted">${r.focus}</div>
-</div>
-<button class="btn sm" onclick="go('plan')">Entrenar</button>
-</div>
-</div>
+      <div>
+        <div class="eyebrow">
+          THE NATE SYSTEM
+        </div>
 
-<div class="grid2" style="margin-top:11px">
+        <h1>Hoy.</h1>
+      </div>
 
-<div class="card">
-<div class="eyebrow">NUTRICIÓN</div>
-<div class="metric">${Math.round(macros.k)}</div>
-<div class="small muted">de ${data.macroGoal.kcal} kcal</div>
-<div class="bar" style="margin-top:10px">
-<i style="width:${Math.min(100,macros.k/data.macroGoal.kcal*100)}%"></i>
-</div>
-</div>
+      <button
+        class="check"
+        onclick="go('more')">
+        N
+      </button>
+    </div>
 
-<div class="card">
-<div class="eyebrow">PESO</div>
-<div class="metric">${b?n(b[1].weight).toFixed(1):'—'}</div>
-<div class="small muted">${b?'kg · '+fmt(b[0]):'sin registro'}</div>
-</div>
 
-</div>
+    <div class="hero">
 
-${activeBook?`
-<div class="card" style="margin-top:11px">
-<div class="row">
-<div>
-<div class="eyebrow">LECTURA</div>
-<h3 style="margin-top:5px">${esc(activeBook.title)}</h3>
-<div class="small muted">
-Pág. ${activeBook.currentPage||0} / ${activeBook.totalPages||'—'}
-</div>
-</div>
-<b>${bookPct}%</b>
-</div>
-<div class="bar" style="margin-top:11px">
-<i style="width:${bookPct}%"></i>
-</div>
-</div>
-`:''}
+      <div class="eyebrow">
+        SIGUIENTE ENTRENAMIENTO
+      </div>
 
-<div class="card" style="margin-top:11px">
-<div class="row">
-<div>
-<div class="eyebrow">AGENDA</div>
-<h2 style="margin-top:4px">Hoy</h2>
-</div>
-<button class="btn light sm" onclick="calendar()">Calendario</button>
-</div>
+      <h2
+        style="
+          font-size:27px;
+          margin-top:5px
+        ">
+        ${g.name}
+      </h2>
 
-<div style="margin-top:10px">
-${events.length
-?events.map(x=>`
-<div class="row small" style="padding:9px 0;border-bottom:1px solid var(--line)">
-<div>
-<b>${esc(x.title)}</b>
-<div class="muted">${x.start||'Todo el día'} · ${esc(x.category||'Personal')}</div>
-</div>
-</div>
-`).join('')
-:'<div class="small muted">Sin eventos personales hoy.</div>'
-}
-</div>
-</div>
+      <div
+        class="small"
+        style="
+          color:#ffffff99;
+          margin-top:4px
+        ">
+        ${g.focus} · la secuencia solo avanza al completar
+      </div>
 
-<div class="notice small" style="margin-top:11px">
-<span class="syncdot ${cloudUser?'ok':data.sync.queue.length?'pending':''}"></span>
-${cloudUser
-?'Nate Cloud conectado.'
-:'Tus datos se guardan localmente. Conecta Nate Cloud desde Más → Configuración.'
-}
-</div>
-`;
-}
+      <button
+        class="btn light"
+        style="margin-top:16px"
+        onclick="
+          data.gymState.viewing=null;
+          save(false);
+          plan('gym')
+        ">
+        Abrir sesión →
+      </button>
 
-function plan(){
+    </div>
 
-let r=currentRoutine();
 
-$('app').innerHTML=`
-${section(
-'Entrenar',
-'La secuencia avanza únicamente cuando completas la sesión.'
-)}
+    <div
+      class="grid2"
+      style="margin-top:11px">
 
-<div class="card">
-<div class="eyebrow">HOY TOCA</div>
-<h1 style="margin:5px 0">${r.name}</h1>
-<div class="muted">${r.focus}</div>
-</div>
+      <div class="card">
+        <div class="eyebrow">
+          NUTRICIÓN
+        </div>
 
-<div class="stack" style="margin-top:11px">
-${r.ex.map((e,i)=>exerciseCard(e,i)).join('')}
-</div>
+        <div class="metric">
+          ${Math.round(m.k)}
+        </div>
 
-<div class="grid2" style="margin-top:12px">
-<button class="btn olive" onclick="completeWorkout()">Completar sesión</button>
-<button class="btn light" onclick="skipWorkout()">Hoy no fui</button>
-</div>
+        <div class="small muted">
+          / ${data.macroGoal.calories} kcal
+        </div>
 
-<div class="card" style="margin-top:11px">
-<div class="eyebrow">REGLA</div>
-<div class="small" style="margin-top:6px">
-Si hoy no entrenas, mañana seguirá apareciendo <b>${r.name}</b>.
-No se pierde la secuencia.
-</div>
-</div>
-`;
-}
+        ${progress(
+          m.k,
+          data.macroGoal.calories
+        )}
+      </div>
 
-function exerciseCard(e,i){
 
-let [name,sets,reps,rir]=e;
+      <div class="card">
+        <div class="eyebrow">
+          AGENDA
+        </div>
 
-let previous=[...data.progress]
-.reverse()
-.find(x=>x.exercise===name);
+        <div class="metric">
+          ${events.length}
+        </div>
 
-return`
-<div class="card">
-<div class="row">
-<div>
-<h3>${name}</h3>
-<div class="small muted">${sets} series · ${reps} reps · RIR ${rir}</div>
-</div>
-${previous?`
-<div class="tiny muted" style="text-align:right">
-Anterior<br>
-${previous.weight||'—'} kg
-</div>
-`:''}
-</div>
+        <div class="small muted">
+          eventos hoy
+        </div>
+      </div>
 
-<div id="sets-${i}">
-${Array.from({length:sets},(_,s)=>`
-<div class="setrow">
-<div class="setnum">${s+1}</div>
-${field('kg',`w-${i}-${s}`,'','number')}
-${field('reps',`r-${i}-${s}`,'','number')}
-${field('RIR',`rir-${i}-${s}`,rir,'number')}
-</div>
-`).join('')}
-</div>
-</div>
-`;
-}
 
-function completeWorkout(){
+      <div class="card">
+        <div class="eyebrow">
+          LECTURA
+        </div>
 
-let r=currentRoutine();
-let entries=[];
+        <div class="metric">
+          ${read.minutes}
+        </div>
 
-r.ex.forEach((e,i)=>{
-let [name,sets]=e;
+        <div class="small muted">
+          min hoy
+        </div>
+      </div>
 
-for(let s=0;s<sets;s++){
-let weight=n(val(`w-${i}-${s}`));
-let reps=n(val(`r-${i}-${s}`));
-let rir=n(val(`rir-${i}-${s}`));
 
-if(weight||reps){
-entries.push({
-id:crypto.randomUUID?.()||Date.now()+Math.random(),
-date:today(),
-routine:r.name,
-exercise:name,
-set:s+1,
-weight,
-reps,
-rir
-});
-}
-}
-});
+      <div class="card">
+        <div class="eyebrow">
+          FE
+        </div>
 
-data.progress.push(...entries);
+        <div class="metric">
+          ${faith.prayed?'✓':'—'}
+        </div>
 
-data.workouts.push({
-id:crypto.randomUUID?.()||Date.now().toString(),
-date:today(),
-routine:r.name,
-status:'completed'
-});
+        <div class="small muted">
+          oración personal
+        </div>
+      </div>
 
-data.gymAttendance[today()]='completed';
+    </div>
 
-data.routineState.index=
-(n(data.routineState.index)+1)%gymRoutine.length;
 
-save();
+    ${
+      events.length
+      ?`
+        <div
+          class="card"
+          style="margin-top:11px">
 
-alert(
-`Sesión ${r.name} completada. Siguiente: ${currentRoutine().name}`
-);
+          <div class="eyebrow">
+            HOY
+          </div>
+
+          ${events.map(e=>`
+            <div
+              class="row"
+              style="
+                padding:10px 0;
+                border-bottom:1px solid var(--line)
+              ">
+
+              <div>
+                <b>${esc(e.title)}</b>
+
+                <div class="small muted">
+                  ${e.time||'Todo el día'}
+                  ·
+                  ${e.category||'Personal'}
+                </div>
+              </div>
+
+              <span
+                class="
+                  check
+                  ${e.done?'on':''}
+                "
+                onclick="
+                  toggleEvent('${e.id}')
+                ">
+                ${e.done?'✓':'○'}
+              </span>
+
+            </div>
+          `).join('')}
+
+        </div>
+      `
+      :''
+    }
+
+
+    <div
+      class="notice"
+      style="margin-top:11px">
+
+      <div class="eyebrow">
+        NATE CODE
+      </div>
+
+      <b>
+        Ritmos, no perfección.
+      </b>
+
+      <div
+        class="small muted"
+        style="margin-top:4px">
+        Lo importante tiene un lugar antes de que lo urgente ocupe todo el espacio.
+      </div>
+
+    </div>
+  `
 }
 
-function skipWorkout(){
 
-data.gymAttendance[today()]='skipped';
+/* =========================================================
+   PLAN
+   ========================================================= */
 
-data.workouts.push({
-id:crypto.randomUUID?.()||Date.now().toString(),
-date:today(),
-routine:currentRoutine().name,
-status:'skipped'
-});
+function plan(tab='calendar'){
 
-save();
+  $('app').innerHTML=`
+    ${section(
+      'Plan',
+      'Tu vida planeada y lo que realmente ocurrió.'
+    )}
 
-alert(
-`Registrado. La próxima sesión sigue siendo ${currentRoutine().name}.`
-);
+    <div class="pillrow">
+
+      ${pill(
+        'Calendario',
+        tab==='calendar',
+        "plan('calendar')"
+      )}
+
+      ${pill(
+        'Entrenar',
+        tab==='gym',
+        "plan('gym')"
+      )}
+
+      ${pill(
+        'Actividad',
+        tab==='activity',
+        "plan('activity')"
+      )}
+
+    </div>
+
+    <div id="planbody"></div>
+  `;
+
+
+  if(tab==='calendar'){
+    calendar()
+  }
+
+  if(tab==='gym'){
+    gym()
+  }
+
+  if(tab==='activity'){
+    activity()
+  }
 }
 
-function mealMacros(items){
 
-let z={k:0,p:0,c:0,f:0};
+/* =========================================================
+   CALENDARIO
+   ========================================================= */
 
-(items||[]).forEach(([id,g])=>{
-let x=foods[id];
-if(!x)return;
+let calCursor=new Date();
 
-z.k+=x.k*n(g);
-z.p+=x.p*n(g);
-z.c+=x.c*n(g);
-z.f+=x.f*n(g);
-});
-
-return z;
-}
-
-function food(){
-
-let log=data.mealLog[today()]||{};
-let total=macroToday();
-
-$('app').innerHTML=`
-${section(
-'Nutrición',
-'Marca lo planeado y NLT calcula el día automáticamente.'
-)}
-
-<div class="card">
-<div class="row">
-<div>
-<div class="eyebrow">HOY</div>
-<div class="metric">${Math.round(total.k)} kcal</div>
-</div>
-<div class="small" style="text-align:right">
-<b>${Math.round(total.p)} P</b><br>
-${Math.round(total.c)} C · ${Math.round(total.f)} G
-</div>
-</div>
-
-<div class="bar" style="margin-top:12px">
-<i style="width:${Math.min(100,total.k/data.macroGoal.kcal*100)}%"></i>
-</div>
-
-<div class="small muted" style="margin-top:8px">
-Meta: ${data.macroGoal.kcal} kcal ·
-${data.macroGoal.p} P ·
-${data.macroGoal.c} C ·
-${data.macroGoal.f} G
-</div>
-</div>
-
-<div class="stack" style="margin-top:11px">
-${baseMeals.map(m=>mealCard(m,log[m.id])).join('')}
-</div>
-
-<div class="card stack" style="margin-top:11px">
-<h2>Fuera del plan</h2>
-<div class="small muted">
-Agrega algo adicional sin tener que rehacer el día.
-</div>
-
-${field('Alimento','extra-name','','text','Ej. pastel')}
-${field('Calorías','extra-k','','number')}
-${field('Proteína','extra-p','','number')}
-${field('Carbohidratos','extra-c','','number')}
-${field('Grasas','extra-f','','number')}
-
-<button class="btn light" onclick="addExtra()">
-Agregar al día
-</button>
-</div>
-`;
-}
-
-function mealCard(m,x){
-
-let items=x?.items||m.items;
-let z=mealMacros(items);
-
-return`
-<div class="card">
-<div class="row">
-<div>
-<div class="eyebrow">${m.time}</div>
-<h3 style="margin-top:4px">${m.name}</h3>
-<div class="small muted">
-${Math.round(z.k)} kcal ·
-${Math.round(z.p)}P ·
-${Math.round(z.c)}C ·
-${Math.round(z.f)}G
-</div>
-</div>
-
-<button
-class="check ${x?.done?'on':''}"
-onclick="toggleMeal('${m.id}')"
->${x?.done?'✓':'○'}</button>
-</div>
-
-<div class="divider"></div>
-
-${items.map(([id,g],i)=>`
-<div class="row small" style="padding:5px 0">
-<span>${esc(foods[id]?.name||id)}</span>
-<span>
-<input
-style="width:65px;text-align:right"
-class="field"
-type="number"
-value="${g}"
-onchange="changeMealQty('${m.id}',${i},this.value)"
-> g
-</span>
-</div>
-`).join('')}
-
-<div style="margin-top:10px">
-<input
-class="field"
-placeholder="Nota: hoy no hubo verduras..."
-value="${esc(x?.note||'')}"
-onchange="mealNote('${m.id}',this.value)"
->
-</div>
-</div>
-`;
-}
-
-function ensureMeal(id){
-
-let m=baseMeals.find(x=>x.id===id);
-
-data.mealLog[today()]??={};
-
-data.mealLog[today()][id]??={
-done:false,
-items:JSON.parse(JSON.stringify(m.items)),
-note:''
-};
-
-return data.mealLog[today()][id];
-}
-
-function toggleMeal(id){
-let x=ensureMeal(id);
-x.done=!x.done;
-save();
-}
-
-function changeMealQty(id,i,v){
-let x=ensureMeal(id);
-x.items[i][1]=n(v);
-save();
-}
-
-function mealNote(id,v){
-let x=ensureMeal(id);
-x.note=v;
-save(false);
-}
-
-function addExtra(){
-
-let x={
-id:crypto.randomUUID?.()||Date.now().toString(),
-name:val('extra-name'),
-k:n(val('extra-k')),
-p:n(val('extra-p')),
-c:n(val('extra-c')),
-f:n(val('extra-f'))
-};
-
-data.extras[today()]??=[];
-data.extras[today()].push(x);
-
-save();
-}
-
-function progressView(){
-
-let b=latestBody();
-
-$('app').innerHTML=`
-${section(
-'Progreso',
-'Observa tendencias. No conviertas tu cuerpo en una puntuación.'
-)}
-
-<div class="grid2">
-
-<div class="card">
-<div class="eyebrow">PESO</div>
-<div class="metric">${b?n(b[1].weight).toFixed(1):'—'}</div>
-<div class="small muted">kg</div>
-</div>
-
-<div class="card">
-<div class="eyebrow">CINTURA</div>
-<div class="metric">${b?n(b[1].waist).toFixed(1):'—'}</div>
-<div class="small muted">cm</div>
-</div>
-
-</div>
-
-<div class="card stack" style="margin-top:11px">
-<h2>Registrar cuerpo</h2>
-
-${field('Peso kg','body-weight','','number')}
-${field('Cintura ombligo cm','body-waist','','number')}
-${field('Abdomen cm','body-abdomen','','number')}
-${field('Pecho cm','body-chest','','number')}
-${field('Cadera cm','body-hips','','number')}
-
-<div class="grid2">
-${field('Brazo izquierdo','body-la','','number')}
-${field('Brazo derecho','body-ra','','number')}
-</div>
-
-<div class="grid2">
-${field('Muslo izquierdo','body-lt','','number')}
-${field('Muslo derecho','body-rt','','number')}
-</div>
-
-${field('Nota','body-note')}
-
-<button class="btn" onclick="saveBody()">
-Guardar medición
-</button>
-</div>
-
-<div class="card" style="margin-top:11px">
-<h2>Historial</h2>
-
-${Object.entries(data.body||{})
-.sort((a,b)=>b[0].localeCompare(a[0]))
-.slice(0,10)
-.map(([d,x])=>`
-<div class="row small" style="padding:10px 0;border-bottom:1px solid var(--line)">
-<div>
-<b>${fmt(d)}</b>
-<div class="muted">
-Cintura ${x.waist||'—'} cm
-</div>
-</div>
-<b>${x.weight||'—'} kg</b>
-</div>
-`).join('')||'<p class="small muted">Sin mediciones todavía.</p>'}
-
-</div>
-`;
-}
-
-function saveBody(){
-
-data.body[today()]={
-weight:n(val('body-weight')),
-waist:n(val('body-waist')),
-abdomen:n(val('body-abdomen')),
-chest:n(val('body-chest')),
-hips:n(val('body-hips')),
-leftArm:n(val('body-la')),
-rightArm:n(val('body-ra')),
-leftThigh:n(val('body-lt')),
-rightThigh:n(val('body-rt')),
-note:val('body-note')
-};
-
-save();
-}
-
-function more(){
-
-$('app').innerHTML=`
-${section(
-'Más',
-'Las demás áreas de tu sistema.'
-)}
-
-<div class="stack">
-
-${menu(
-'Calendario',
-'Agenda personal + ritmos del sistema.',
-"calendar()"
-)}
-
-${menu(
-'Fe',
-'Oración, Misa, Rosario, Santísimo y confesión.',
-"faith()"
-)}
-
-${menu(
-'Actividad',
-'Fútbol y cardio.',
-"activity()"
-)}
-
-${menu(
-'Lectura',
-'Libros, páginas y sesiones.',
-"reading()"
-)}
-
-${menu(
-'Finanzas',
-'Registros + Nate Cloud.',
-"finance()"
-)}
-
-${menu(
-'Weekly Reset',
-'Revisar la semana y corregir dirección.',
-"weekly()"
-)}
-
-${menu(
-'Datos & Backup',
-'Excel, JSON y restauración.',
-"backup()"
-)}
-
-${menu(
-'Configuración',
-'Nube, PIN y seguridad.',
-"settings()"
-)}
-
-</div>
-`;
-}
 
 function calendar(){
 
-let now=dateObj(today());
-let y=now.getFullYear();
-let m=now.getMonth();
+  let y=calCursor.getFullYear();
 
-let first=new Date(y,m,1,12);
-let last=new Date(y,m+1,0,12);
+  let mo=calCursor.getMonth();
 
-let blanks=first.getDay();
-let cells=[];
+  let first=new Date(
+    y,
+    mo,
+    1
+  );
 
-for(let i=0;i<blanks;i++)cells.push(null);
+  let days=new Date(
+    y,
+    mo+1,
+    0
+  ).getDate();
 
-for(let d=1;d<=last.getDate();d++){
-let dt=new Date(y,m,d,12);
-cells.push(dt.toLocaleDateString('en-CA'));
+  let start=first.getDay();
+
+  let cells='';
+
+
+  for(let i=0;i<start;i++){
+    cells+=`
+      <div class="calday blank"></div>
+    `
+  }
+
+
+  for(let d=1;d<=days;d++){
+
+    let ds=
+      `${y}-`+
+      `${String(mo+1).padStart(2,'0')}-`+
+      `${String(d).padStart(2,'0')}`;
+
+    let has=getEvents(ds).length;
+
+    cells+=`
+      <button
+        class="
+          calday
+          ${ds===today()?'today':''}
+          ${has?'has':''}
+        "
+        onclick="
+          dayAgenda('${ds}')
+        ">
+        ${d}
+      </button>
+    `
+  }
+
+
+  $('planbody').innerHTML=`
+
+    <div class="card">
+
+      <div class="row">
+
+        <button
+          class="btn sm light"
+          onclick="calMove(-1)">
+          ←
+        </button>
+
+        <b>
+          ${
+            first.toLocaleDateString(
+              'es-MX',
+              {
+                month:'long',
+                year:'numeric'
+              }
+            )
+          }
+        </b>
+
+        <button
+          class="btn sm light"
+          onclick="calMove(1)">
+          →
+        </button>
+
+      </div>
+
+
+      <div
+        class="calgrid small muted"
+        style="
+          margin:15px 0 6px;
+          text-align:center
+        ">
+
+        <b>D</b>
+        <b>L</b>
+        <b>M</b>
+        <b>M</b>
+        <b>J</b>
+        <b>V</b>
+        <b>S</b>
+
+      </div>
+
+
+      <div class="calgrid">
+        ${cells}
+      </div>
+
+    </div>
+
+
+    <button
+      class="btn"
+      style="
+        width:100%;
+        margin-top:11px
+      "
+      onclick="
+        newEvent('${today()}')
+      ">
+      + Agregar evento
+    </button>
+  `
 }
 
-let monthName=now.toLocaleDateString(
-'es-MX',
-{month:'long',year:'numeric'}
-);
 
-$('app').innerHTML=`
-${back()}
-${section(
-'Calendario',
-'Agenda tu vida aquí: fiestas, voluntariado, citas, Misa, actividades y compromisos.'
-)}
+function calMove(x){
 
-<div class="card">
-<div class="row">
-<h2 style="text-transform:capitalize">${monthName}</h2>
-<button class="btn sm" onclick="newEvent()">+ Evento</button>
-</div>
+  calCursor=
+    new Date(
+      calCursor.getFullYear(),
+      calCursor.getMonth()+x,
+      1
+    );
 
-<div class="calgrid small muted" style="margin-top:15px;margin-bottom:6px">
-${['D','L','M','M','J','V','S']
-.map(x=>`<div style="text-align:center">${x}</div>`)
-.join('')}
-</div>
-
-<div class="calgrid">
-${cells.map(d=>{
-if(!d)return '<div class="calday blank"></div>';
-
-let has=data.events.some(x=>x.date===d);
-
-return`
-<button
-class="calday ${d===today()?'today':''} ${has?'has':''}"
-onclick="dayEvents('${d}')"
->
-${dateObj(d).getDate()}
-</button>
-`;
-}).join('')}
-</div>
-</div>
-
-<div class="card" style="margin-top:11px">
-<h2>Próximos</h2>
-
-${data.events
-.filter(x=>x.date>=today())
-.sort((a,b)=>
-(a.date+(a.start||''))
-.localeCompare(b.date+(b.start||''))
-)
-.slice(0,10)
-.map(x=>`
-<div class="row small" style="padding:10px 0;border-bottom:1px solid var(--line)">
-<div>
-<b>${esc(x.title)}</b>
-<div class="muted">
-${fmt(x.date)} · ${x.start||'Todo el día'} · ${esc(x.category||'Personal')}
-</div>
-</div>
-</div>
-`).join('')||'<p class="small muted">Sin eventos próximos.</p>'}
-
-</div>
-`;
+  calendar()
 }
 
-function newEvent(date=today()){
 
-$('app').innerHTML=`
-${back()}
-${section('Nuevo evento')}
+/* =========================================================
+   RITMOS AUTOMÁTICOS
+   ========================================================= */
 
-<div class="card stack">
+function recurring(ds){
 
-${field('Título','ev-title','','text','Fiesta de...')}
-${field('Fecha','ev-date',date,'date')}
+  let dn=dayName(ds);
 
-<div class="grid2">
-${field('Inicio','ev-start','','time')}
-${field('Fin','ev-end','','time')}
-</div>
+  let a=[];
 
-<label>
-<span class="label">Categoría</span>
-<select id="ev-cat" class="field">
-<option>Dios</option>
-<option>Familia / Amor</option>
-<option>Salud</option>
-<option>Trabajo</option>
-<option>Crecimiento</option>
-<option>Social</option>
-<option>Servicio</option>
-<option>Personal</option>
-</select>
-</label>
 
-${field('Notas','ev-note')}
+  if(
+    [
+      'Lunes',
+      'Martes',
+      'Miércoles',
+      'Jueves',
+      'Viernes'
+    ].includes(dn)
+  ){
+    a.push({
+      id:'sys-gym-'+ds,
+      title:'Gym · '+nextGym().name,
+      time:'06:00',
+      category:'Salud',
+      system:true
+    })
+  }
 
-<button class="btn" onclick="saveEvent()">
-Guardar evento
-</button>
 
-</div>
-`;
+  if(dn==='Domingo'){
+
+    a.push({
+      id:'sys-foot-'+ds,
+      title:'Fútbol',
+      time:'Variable',
+      category:'Salud',
+      system:true
+    })
+
+  }
+
+
+  if(dn==='Lunes'){
+
+    a.push(
+      {
+        id:'sys-mass-'+ds,
+        title:'Misa',
+        time:'20:00',
+        category:'Dios',
+        system:true
+      },
+
+      {
+        id:'sys-ros-'+ds,
+        title:'Rosario con mamá',
+        time:'21:00',
+        category:'Dios',
+        system:true
+      }
+    )
+
+  }
+
+
+  if(dn==='Jueves'){
+
+    a.push({
+      id:'sys-mass-'+ds,
+      title:'Misa con Deny',
+      time:'20:00',
+      category:'Dios',
+      system:true
+    })
+
+  }
+
+
+  if(dn==='Domingo'){
+
+    a.push(
+      {
+        id:'sys-mass-'+ds,
+        title:'Misa',
+        time:'Variable',
+        category:'Dios',
+        system:true
+      },
+
+      {
+        id:'sys-reset-'+ds,
+        title:'Weekly Reset',
+        time:'Variable',
+        category:'Personal',
+        system:true
+      }
+    )
+
+  }
+
+
+  return a
 }
+
+
+function getEvents(ds){
+
+  return[
+    ...recurring(ds),
+    ...data.events.filter(
+      e=>e.date===ds
+    )
+  ]
+}
+
+
+/* =========================================================
+   AGENDA
+   ========================================================= */
+
+function dayAgenda(ds){
+
+  let es=getEvents(ds);
+
+
+  $('planbody').innerHTML=`
+
+    <button
+      class="btn sm light"
+      onclick="calendar()">
+      ← Calendario
+    </button>
+
+
+    <div
+      class="card"
+      style="margin-top:11px">
+
+      <div class="eyebrow">
+        ${dayName(ds)}
+      </div>
+
+      <h2>
+        ${fmt(ds)}
+      </h2>
+
+
+      ${
+        es.length
+
+        ?es.map(e=>`
+
+          <div
+            class="row"
+            style="
+              padding:12px 0;
+              border-bottom:1px solid var(--line)
+            ">
+
+            <div>
+
+              <b>
+                ${esc(e.title)}
+              </b>
+
+              <div class="small muted">
+
+                ${e.time||'Todo el día'}
+
+                ·
+
+                ${e.category||'Personal'}
+
+                ${
+                  e.system
+                  ?' · sistema'
+                  :''
+                }
+
+              </div>
+
+            </div>
+
+
+            ${
+              e.system
+              ?''
+              :`
+                <button
+                  class="btn sm danger"
+                  onclick="
+                    deleteEvent(
+                      '${e.id}',
+                      '${ds}'
+                    )
+                  ">
+                  ×
+                </button>
+              `
+            }
+
+          </div>
+
+        `).join('')
+
+        :`
+          <p class="muted small">
+            Sin eventos.
+          </p>
+        `
+      }
+
+    </div>
+
+
+    <button
+      class="btn"
+      style="
+        width:100%;
+        margin-top:11px
+      "
+      onclick="
+        newEvent('${ds}')
+      ">
+      + Agregar evento
+    </button>
+  `
+}
+
+
+function newEvent(ds){
+
+  $('planbody').innerHTML=`
+
+    <button
+      class="btn sm light"
+      onclick="
+        dayAgenda('${ds}')
+      ">
+      ← Día
+    </button>
+
+
+    <div
+      class="card stack"
+      style="margin-top:11px">
+
+      <h2>
+        Nuevo evento
+      </h2>
+
+
+      ${field(
+        'Título',
+        'ev-title'
+      )}
+
+
+      ${field(
+        'Fecha',
+        'ev-date',
+        ds,
+        'date'
+      )}
+
+
+      ${field(
+        'Hora',
+        'ev-time',
+        '',
+        'time'
+      )}
+
+
+      <label>
+
+        <span class="label">
+          Categoría
+        </span>
+
+        <select
+          id="ev-cat"
+          class="field">
+
+          <option>Dios</option>
+
+          <option>
+            Familia/Amor
+          </option>
+
+          <option>
+            Salud
+          </option>
+
+          <option>
+            Trabajo
+          </option>
+
+          <option>
+            Crecimiento
+          </option>
+
+          <option>
+            Social
+          </option>
+
+          <option>
+            Servicio
+          </option>
+
+          <option>
+            Personal
+          </option>
+
+        </select>
+
+      </label>
+
+
+      ${field(
+        'Notas',
+        'ev-note'
+      )}
+
+
+      <button
+        class="btn"
+        onclick="saveEvent()">
+        Guardar evento
+      </button>
+
+    </div>
+  `
+}
+
 
 function saveEvent(){
 
-let title=val('ev-title').trim();
+  data.events.push({
 
-if(!title)return alert('Pon un título.');
+    id:
+      crypto.randomUUID?.()
+      ||Date.now().toString(),
 
-data.events.push({
-id:crypto.randomUUID?.()||Date.now().toString(),
-title,
-date:val('ev-date')||today(),
-start:val('ev-start'),
-end:val('ev-end'),
-category:val('ev-cat'),
-note:val('ev-note'),
-status:'scheduled'
-});
+    title:val('ev-title'),
 
-save(false);
-calendar();
+    date:val('ev-date'),
+
+    time:val('ev-time'),
+
+    category:val('ev-cat'),
+
+    note:val('ev-note'),
+
+    done:false
+
+  });
+
+
+  save(false);
+
+  dayAgenda(
+    val('ev-date')
+  )
 }
 
-function dayEvents(d){
 
-let rows=data.events
-.filter(x=>x.date===d)
-.sort((a,b)=>(a.start||'').localeCompare(b.start||''));
+function deleteEvent(id,ds){
 
-$('app').innerHTML=`
-${back()}
-${section(fmt(d))}
+  data.events=
+    data.events.filter(
+      x=>x.id!==id
+    );
 
-<div class="stack">
+  save(false);
 
-${rows.map(x=>`
-<div class="card">
-<div class="row">
-<div>
-<h3>${esc(x.title)}</h3>
-<div class="small muted">
-${x.start||'Todo el día'}${x.end?' – '+x.end:''} · ${esc(x.category||'Personal')}
-</div>
-</div>
-
-<button class="btn danger sm" onclick="deleteEvent('${x.id}','${d}')">
-Eliminar
-</button>
-</div>
-
-${x.note?`<div class="small" style="margin-top:9px">${esc(x.note)}</div>`:''}
-</div>
-`).join('')||'<div class="card small muted">Sin eventos.</div>'}
-
-<button class="btn" onclick="newEvent('${d}')">
-+ Agregar evento
-</button>
-
-</div>
-`;
+  dayAgenda(ds)
 }
 
-function deleteEvent(id,d){
 
-if(!confirm('¿Eliminar evento?'))return;
+function toggleEvent(id){
 
-data.events=data.events.filter(x=>x.id!==id);
+  let e=
+    data.events.find(
+      x=>x.id===id
+    );
 
-save(false);
-dayEvents(d);
+  if(e){
+
+    e.done=!e.done;
+
+    save(false);
+
+    home()
+  }
 }
 
-function faith(){
 
-let x=data.faith[today()]||{};
+/* =========================================================
+   GYM 2.3
+   - Secuencia independiente
+   - Consulta libre de rutinas
+   - UI en libras
+   - Datos históricos conservados en kg
+   ========================================================= */
 
-let last=[...data.confessions]
-.sort()
-.reverse()[0];
+function gym(){
 
-let days=last
-?Math.floor((dateObj(today())-dateObj(last))/86400000)
-:null;
+  const next=nextGym();
 
-$('app').innerHTML=`
-${back()}
-${section(
-'Fe',
-'Registrar para recordar y cuidar el ritmo; no para convertirlo en una puntuación.'
-)}
+  const g=viewedGym();
 
-<div class="card">
-<div class="eyebrow">CONFESIÓN</div>
-<div class="metric" style="font-size:21px">
-${last?`Hace ${days} días`:'Sin registro'}
-</div>
-<div class="small muted">
-${last?fmt(last):'Registra tu próxima confesión cuando ocurra.'}
-</div>
+  const selectedIndex=gymIndex(g);
 
-<button
-class="btn light sm"
-style="margin-top:12px"
-onclick="addConfession()"
->
-Registrar confesión hoy
-</button>
-</div>
+  const nextIndex=
+    n(data.gymState.next)%
+    gymRoutine.length;
 
-<div class="card stack" style="margin-top:11px">
-${faithToggle('prayed','Oración')}
-${faithToggle('examen','Examen de conciencia')}
-${faithToggle('mass','Misa')}
-${faithToggle('rosary','Rosario')}
-${faithToggle('adoration','Santísimo')}
-</div>
-`;
+  const isNext=
+    selectedIndex===nextIndex;
+
+  const t=today();
+
+
+  /*
+    Solo utilizamos el entrenamiento de hoy
+    si corresponde a la rutina que estamos
+    visualizando.
+
+    Así evitamos mezclar PUSH con PULL,
+    por ejemplo.
+  */
+
+  let existing=data.workouts[t];
+
+  let w=
+    existing?.routine===g.name
+    ?existing
+    :{
+      routine:g.name,
+      entries:{},
+      completed:false
+    };
+
+
+  $('planbody').innerHTML=`
+
+    <div class="card">
+
+      <div class="eyebrow">
+        VER RUTINA
+      </div>
+
+      <div
+        class="pillrow"
+        style="
+          padding-bottom:0;
+          margin-top:10px
+        ">
+
+        ${
+          gymRoutine.map(
+            (r,i)=>
+              pill(
+                r.name,
+                i===selectedIndex,
+                `viewRoutine(${i})`
+              )
+          ).join('')
+        }
+
+      </div>
+
+    </div>
+
+
+    ${
+      !isNext
+      ?`
+        <div
+          class="notice small"
+          style="margin-top:11px">
+
+          Estás consultando
+          <b>${g.name}</b>.
+
+          Tu siguiente entrenamiento sigue siendo
+          <b>${next.name}</b>.
+
+          Ver otra rutina no modifica la secuencia.
+
+          <button
+            class="btn sm light"
+            style="margin-top:9px"
+            onclick="returnToNextGym()">
+            Volver a ${next.name}
+          </button>
+
+        </div>
+      `
+      :''
+    }
+
+
+    <div
+      class="hero"
+      style="margin-top:11px">
+
+      <div class="eyebrow">
+
+        ${
+          isNext
+          ?`SIGUIENTE · SECUENCIA ${nextIndex+1}/${gymRoutine.length}`
+          :'CONSULTANDO RUTINA'
+        }
+
+      </div>
+
+
+      <h2
+        style="
+          font-size:27px;
+          margin-top:5px
+        ">
+        ${g.name}
+      </h2>
+
+
+      <div
+        class="small"
+        style="color:#ffffff99">
+
+        ${g.focus}
+
+        ${
+          isNext
+          ?' · al completarla avanza la secuencia'
+          :' · verla no cambia tu siguiente sesión'
+        }
+
+      </div>
+
+    </div>
+
+
+    <div
+      class="stack"
+      style="margin-top:11px">
+
+      ${
+        g.ex.map(
+          (e,i)=>
+            exercise(
+              e,
+              i,
+              w,
+              g
+            )
+        ).join('')
+      }
+
+    </div>
+
+
+    ${
+      isNext
+      ?`
+        <button
+          class="btn olive"
+          style="
+            width:100%;
+            margin-top:11px
+          "
+          onclick="
+            completeWorkout()
+          ">
+          Completar ${g.name} ✓
+        </button>
+
+
+        <button
+          class="btn light"
+          style="
+            width:100%;
+            margin-top:8px
+          "
+          onclick="
+            skipGymToday()
+          ">
+          Hoy no fui · mantener ${g.name}
+        </button>
+      `
+      :`
+        <div
+          class="notice small"
+          style="margin-top:11px">
+
+          Esta vista es únicamente para consultar
+          <b>${g.name}</b>.
+
+          Para registrar y completar tu sesión,
+          vuelve a
+          <b>${next.name}</b>.
+
+        </div>
+      `
+    }
+  `
 }
 
-function faithToggle(k,label){
 
-let x=data.faith[today()]||{};
+/* =========================================================
+   ÚLTIMO REGISTRO DE EJERCICIO
+   ========================================================= */
 
-return`
-<div class="row">
-<div>
-<b>${label}</b>
-</div>
-<button
-class="check ${x[k]?'on':''}"
-onclick="toggleFaith('${k}')"
->${x[k]?'✓':'○'}</button>
-</div>
-`;
+function lastExercise(name){
+
+  let arr=[];
+
+
+  Object.entries(
+    data.workouts
+  ).forEach(
+    ([d,w])=>{
+
+      let x=
+        w.entries?.[name];
+
+      if(x){
+
+        arr.push({
+          d,
+          ...x
+        })
+
+      }
+
+    }
+  );
+
+
+  return arr
+    .sort(
+      (a,b)=>
+        b.d.localeCompare(a.d)
+    )[0]
 }
 
-function toggleFaith(k){
 
-data.faith[today()]??={};
-data.faith[today()][k]=!data.faith[today()][k];
+/* =========================================================
+   TARJETA DE EJERCICIO
+   ========================================================= */
 
-save(false);
-faith();
+function exercise(
+  e,
+  i,
+  w,
+  g
+){
+
+  let[
+    name,
+    sets,
+    target,
+    rir
+  ]=e;
+
+
+  let x=
+    w.entries?.[name]
+    ||{};
+
+
+  let last=
+    lastExercise(name);
+
+
+  let rows='';
+
+
+  for(
+    let s=0;
+    s<sets;
+    s++
+  ){
+
+    let z=
+      x.sets?.[s]
+      ||{};
+
+
+    /*
+      El valor guardado históricamente
+      sigue siendo kg.
+
+      Aquí solamente lo convertimos
+      para mostrarlo en lb.
+    */
+
+    let displayWeight=
+      z.weight
+      ?kgToLb(z.weight)
+      :'';
+
+
+    rows+=`
+
+      <div class="setrow">
+
+        <div class="setnum">
+          ${s+1}
+        </div>
+
+
+        <label>
+
+          <span class="label">
+            lb
+          </span>
+
+          <input
+            class="field"
+            style="padding:9px"
+            id="g-${i}-${s}-w"
+            type="number"
+            step="0.5"
+            inputmode="decimal"
+            value="${displayWeight}">
+
+        </label>
+
+
+        <label>
+
+          <span class="label">
+            reps
+          </span>
+
+          <input
+            class="field"
+            style="padding:9px"
+            id="g-${i}-${s}-r"
+            type="number"
+            inputmode="numeric"
+            value="${z.reps||''}">
+
+        </label>
+
+
+        <label>
+
+          <span class="label">
+            RIR
+          </span>
+
+          <input
+            class="field"
+            style="padding:9px"
+            id="g-${i}-${s}-i"
+            type="number"
+            inputmode="numeric"
+            value="${z.rir??rir}">
+
+        </label>
+
+      </div>
+    `
+  }
+
+
+  return`
+
+    <div class="card">
+
+      <div class="row">
+
+        <div>
+
+          <h3>
+            ${name}
+          </h3>
+
+          <div class="small muted">
+            ${sets}×${target}
+          </div>
+
+        </div>
+
+
+        ${
+          last
+          ?`
+            <div
+              class="small"
+              style="text-align:right">
+
+              <span class="muted">
+                Último
+              </span>
+
+              <br>
+
+              <b>
+                ${
+                  prettyLbFromKg(
+                    last.sets?.[0]?.weight
+                  )
+                }
+              </b>
+
+            </div>
+          `
+          :''
+        }
+
+      </div>
+
+
+      ${rows}
+
+
+      ${
+        gymIndex(g)===
+        (
+          n(data.gymState.next)%
+          gymRoutine.length
+        )
+
+        ?`
+          <button
+            class="btn sm light"
+            style="
+              width:100%;
+              margin-top:10px
+            "
+            onclick="
+              saveEx(
+                ${i},
+                '${g.name.replace(/'/g,"\\'")}'
+              )
+            ">
+            Guardar ejercicio
+          </button>
+        `
+
+        :`
+          <div
+            class="tiny muted"
+            style="margin-top:10px">
+            Consulta · tu siguiente rutina es ${nextGym().name}.
+          </div>
+        `
+      }
+
+    </div>
+  `
 }
 
-function addConfession(){
 
-if(
-data.confessions.includes(today()) ||
-!confirm('¿Registrar confesión hoy?')
-)return;
+/* =========================================================
+   GUARDAR EJERCICIO
+   ========================================================= */
 
-data.confessions.push(today());
+function saveEx(
+  i,
+  routineName
+){
 
-save(false);
-faith();
+  const g=
+    gymRoutine.find(
+      x=>x.name===routineName
+    );
+
+
+  if(!g){
+    return
+  }
+
+
+  /*
+    Protección:
+    únicamente se puede registrar
+    la rutina que realmente sigue.
+  */
+
+  if(
+    g.name!==
+    nextGym().name
+  ){
+
+    alert(
+      `Tu siguiente entrenamiento es ${nextGym().name}. `+
+      `Puedes consultar ${g.name}, pero no registrar esa sesión todavía.`
+    );
+
+    return
+  }
+
+
+  let e=g.ex[i];
+
+  let t=today();
+
+
+  /*
+    Si hoy ya existe otra rutina,
+    no mezclamos sus ejercicios.
+  */
+
+  if(
+    data.workouts[t] &&
+    data.workouts[t].routine!==g.name &&
+    !data.workouts[t].completed
+  ){
+    data.workouts[t]={
+      routine:g.name,
+      entries:{},
+      completed:false
+    }
+  }
+
+
+  data.workouts[t]=
+    data.workouts[t]
+    ||{
+      routine:g.name,
+      entries:{},
+      completed:false
+    };
+
+
+  let sets=[];
+
+
+  for(
+    let s=0;
+    s<e[1];
+    s++
+  ){
+
+    const lb=
+      val(`g-${i}-${s}-w`);
+
+
+    sets.push({
+
+      /*
+        Usuario captura libras.
+        Guardamos kg para mantener
+        compatibilidad histórica.
+      */
+
+      weight:
+        lb
+        ?lbToKg(lb)
+        :0,
+
+      reps:
+        n(
+          val(`g-${i}-${s}-r`)
+        ),
+
+      rir:
+        n(
+          val(`g-${i}-${s}-i`)
+        )
+
+    })
+  }
+
+
+  data.workouts[t]
+    .entries[e[0]]={
+
+      sets,
+
+      target:e[2],
+
+      /*
+        Metadato nuevo.
+        Nos permite saber que esta
+        captura fue realizada en lb.
+      */
+
+      inputUnit:'lb'
+
+    };
+
+
+  save(false);
+
+  gym()
 }
+
+
+/* =========================================================
+   COMPLETAR ENTRENAMIENTO
+   ========================================================= */
+
+function completeWorkout(){
+
+  let t=today();
+
+  let g=nextGym();
+
+
+  data.workouts[t]=
+    data.workouts[t]
+    ||{
+      routine:g.name,
+      entries:{}
+    };
+
+
+  /*
+    Protección adicional por si
+    existiera una sesión provisional
+    de otra rutina.
+  */
+
+  if(
+    data.workouts[t].routine!==g.name
+  ){
+
+    data.workouts[t]={
+      routine:g.name,
+      entries:{}
+    }
+
+  }
+
+
+  data.workouts[t]
+    .completed=true;
+
+
+  data.gymAttendance[t]=
+    'completed';
+
+
+  /*
+    ESTA es la única operación que
+    avanza la secuencia.
+  */
+
+  data.gymState.next=
+    (
+      n(data.gymState.next)+1
+    )%
+    gymRoutine.length;
+
+
+  /*
+    Después de completar volvemos
+    automáticamente a la siguiente.
+  */
+
+  data.gymState.viewing=null;
+
+
+  save(false);
+
+  plan('gym')
+}
+
+
+/* =========================================================
+   NO ASISTÍ
+   ========================================================= */
+
+function skipGymToday(){
+
+  data.gymAttendance[
+    today()
+  ]='missed';
+
+
+  /*
+    NO modificamos gymState.next.
+  */
+
+  data.gymState.viewing=null;
+
+
+  save(false);
+
+  plan('gym')
+}
+
+
+/* =========================================================
+   ACTIVIDAD / CARDIO / FÚTBOL
+   ========================================================= */
 
 function activity(){
 
-let f=data.football[today()]||{};
-let c=data.cardio[today()]||{};
+  let t=today();
 
-$('app').innerHTML=`
-${back()}
-${section(
-'Actividad',
-'Fútbol y cardio fuera de la rutina de fuerza.'
-)}
+  let c=
+    data.cardio[t]
+    ||{};
 
-<div class="card stack">
-<h2>Fútbol</h2>
+  let f=
+    data.football[t]
+    ||{};
 
-<label>
-<span class="label">Estado</span>
-<select id="football-status" class="field">
-<option value="">Sin registrar</option>
-<option value="played" ${f.status==='played'?'selected':''}>Fui</option>
-<option value="missed" ${f.status==='missed'?'selected':''}>No fui</option>
-<option value="planned" ${f.status==='planned'?'selected':''}>Programado</option>
-</select>
-</label>
 
-${field('Minutos','football-min',f.minutes||'','number')}
+  $('planbody').innerHTML=`
 
-<button class="btn light" onclick="saveFootball()">
-Guardar fútbol
-</button>
-</div>
+    <div class="card stack">
 
-<div class="card stack" style="margin-top:11px">
-<h2>Cardio</h2>
+      <h2>
+        Cardio
+      </h2>
 
-<label>
-<span class="label">Tipo</span>
-<select id="cardio-type" class="field">
-<option>Caminadora</option>
-<option>Bicicleta</option>
-<option>Elíptica</option>
-<option>Caminata</option>
-<option>Correr</option>
-<option>Otro</option>
-</select>
-</label>
 
-${field('Minutos','cardio-min',c.minutes||'','number')}
+      ${field(
+        'Actividad',
+        'ca-type',
+        c.type||''
+      )}
 
-<label>
-<span class="label">Intensidad</span>
-<select id="cardio-int" class="field">
-<option>Baja</option>
-<option>Media</option>
-<option>Alta</option>
-</select>
-</label>
 
-<button class="btn light" onclick="saveCardio()">
-Guardar cardio
-</button>
-</div>
-`;
+      ${field(
+        'Minutos',
+        'ca-min',
+        c.minutes||'',
+        'number'
+      )}
+
+
+      ${field(
+        'Intensidad 1–10',
+        'ca-int',
+        c.intensity||'',
+        'number'
+      )}
+
+
+      <button
+        class="btn"
+        onclick="saveCardio()">
+        Guardar cardio
+      </button>
+
+    </div>
+
+
+    <div
+      class="card"
+      style="margin-top:11px">
+
+      <div class="row">
+
+        <div>
+
+          <h2>
+            Fútbol
+          </h2>
+
+          <div class="small muted">
+            Registra lo que realmente pasó.
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="grid2"
+        style="margin-top:13px">
+
+        <button
+          class="
+            btn
+            ${
+              f.status==='played'
+              ?'olive'
+              :'light'
+            }
+          "
+          onclick="
+            football('played')
+          ">
+          ✓ Fui
+        </button>
+
+
+        <button
+          class="
+            btn
+            ${
+              f.status==='missed'
+              ?'danger'
+              :'light'
+            }
+          "
+          onclick="
+            football('missed')
+          ">
+          No fui
+        </button>
+
+      </div>
+
+    </div>
+  `
 }
 
-function saveFootball(){
-
-data.football[today()]={
-status:val('football-status'),
-minutes:n(val('football-min'))
-};
-
-save(false);
-activity();
-}
 
 function saveCardio(){
 
-data.cardio[today()]={
-type:val('cardio-type'),
-minutes:n(val('cardio-min')),
-intensity:val('cardio-int')
-};
+  data.cardio[
+    today()
+  ]={
 
-save(false);
-activity();
+    type:
+      val('ca-type'),
+
+    minutes:
+      n(val('ca-min')),
+
+    intensity:
+      n(val('ca-int'))
+
+  };
+
+
+  save(false);
+
+  activity()
 }
+
+
+function football(s){
+
+  data.football[
+    today()
+  ]={
+    status:s
+  };
+
+
+  save(false);
+
+  activity()
+}
+
+  /* =========================================================
+   NUTRICIÓN
+   ========================================================= */
+
+function food(tab='today'){
+
+  $('app').innerHTML=`
+    ${section(
+      'Nutrición',
+      'Las cuentas las hace el sistema; tú registras lo que realmente comiste.'
+    )}
+
+    <div class="pillrow">
+
+      ${pill(
+        'Hoy',
+        tab==='today',
+        "food('today')"
+      )}
+
+      ${pill(
+        'Plan',
+        tab==='plan',
+        "food('plan')"
+      )}
+
+      ${pill(
+        'Metas',
+        tab==='goals',
+        "food('goals')"
+      )}
+
+    </div>
+
+    <div id="foodbody"></div>
+  `;
+
+
+  if(tab==='today'){
+    foodToday()
+  }
+
+  if(tab==='plan'){
+    foodPlan()
+  }
+
+  if(tab==='goals'){
+    foodGoals()
+  }
+}
+
+
+/* =========================================================
+   MACROS DE UNA COMIDA
+   ========================================================= */
+
+function mealMacros(items){
+
+  let s={
+    k:0,
+    p:0,
+    c:0,
+    f:0
+  };
+
+
+  items.forEach(
+    ([id,q,on=true])=>{
+
+      if(on===false)return;
+
+
+      let z=foods[id];
+
+
+      if(z){
+
+        s.k+=z.k*q;
+
+        s.p+=z.p*q;
+
+        s.c+=z.c*q;
+
+        s.f+=z.f*q
+
+      }
+
+    }
+  );
+
+
+  return s
+}
+
+
+/* =========================================================
+   NUTRICIÓN — HOY
+   ========================================================= */
+
+function foodToday(){
+
+  let t=today();
+
+  let log=
+    data.mealLog[t]
+    ||{};
+
+  let sum=
+    todaysMacros();
+
+  let g=
+    data.macroGoal;
+
+
+  $('foodbody').innerHTML=`
+
+    <div class="grid2">
+
+      <div class="card">
+
+        <div class="eyebrow">
+          CALORÍAS
+        </div>
+
+        <div class="metric">
+          ${Math.round(sum.k)}
+        </div>
+
+        <div class="small muted">
+          /${g.calories}
+        </div>
+
+        ${progress(
+          sum.k,
+          g.calories
+        )}
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="eyebrow">
+          PROTEÍNA
+        </div>
+
+        <div class="metric">
+          ${Math.round(sum.p)}g
+        </div>
+
+        <div class="small muted">
+          /${g.protein}g
+        </div>
+
+        ${progress(
+          sum.p,
+          g.protein
+        )}
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="eyebrow">
+          CARBS
+        </div>
+
+        <div class="metric">
+          ${Math.round(sum.c)}g
+        </div>
+
+        <div class="small muted">
+          /${g.carbs}g
+        </div>
+
+        ${progress(
+          sum.c,
+          g.carbs
+        )}
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="eyebrow">
+          GRASAS
+        </div>
+
+        <div class="metric">
+          ${Math.round(sum.f)}g
+        </div>
+
+        <div class="small muted">
+          /${g.fats}g
+        </div>
+
+        ${progress(
+          sum.f,
+          g.fats
+        )}
+
+      </div>
+
+    </div>
+
+
+    <div
+      class="stack"
+      style="margin-top:11px">
+
+      ${
+        baseMeals.map(
+          m=>
+            mealCard(
+              m,
+              log[m.id]
+            )
+        ).join('')
+      }
+
+    </div>
+
+
+    <button
+      class="btn light"
+      style="
+        width:100%;
+        margin-top:11px
+      "
+      onclick="extraFood()">
+      + Comida fuera del plan
+    </button>
+
+
+    ${
+      (log.extras||[]).map(
+        (x,i)=>`
+
+          <div
+            class="card"
+            style="margin-top:8px">
+
+            <div class="row">
+
+              <div>
+
+                <b>
+                  ${esc(x.name)}
+                </b>
+
+                <div class="small muted">
+                  ${x.k} kcal
+                  ·
+                  ${x.p}P
+                  ·
+                  ${x.c}C
+                  ·
+                  ${x.f}G
+                </div>
+
+              </div>
+
+
+              <button
+                class="btn sm danger"
+                onclick="
+                  deleteExtra(${i})
+                ">
+                ×
+              </button>
+
+            </div>
+
+          </div>
+
+        `
+      ).join('')
+    }
+  `
+}
+
+
+/* =========================================================
+   TARJETA DE COMIDA
+   ========================================================= */
+
+function mealCard(m,x){
+
+  let items=
+    x?.items
+    ||m.items;
+
+
+  let mm=
+    mealMacros(items);
+
+
+  return`
+
+    <div class="card">
+
+      <div class="row">
+
+        <div>
+
+          <div class="eyebrow">
+            ${m.time}
+          </div>
+
+          <h3>
+            ${m.name}
+          </h3>
+
+          <div class="small muted">
+            ${Math.round(mm.k)} kcal
+            ·
+            ${Math.round(mm.p)}P
+            ·
+            ${Math.round(mm.c)}C
+            ·
+            ${Math.round(mm.f)}G
+          </div>
+
+        </div>
+
+
+        <button
+          class="
+            check
+            ${x?.done?'on':''}
+          "
+          onclick="
+            toggleMeal('${m.id}')
+          ">
+          ${x?.done?'✓':'○'}
+        </button>
+
+      </div>
+
+
+      <div
+        class="small muted"
+        style="margin-top:9px">
+
+        ${
+          items
+            .filter(
+              z=>z[2]!==false
+            )
+            .map(
+              ([id,q])=>
+                `${foods[id]?.name||id} ${q}g`
+            )
+            .join(' · ')
+        }
+
+      </div>
+
+
+      <div
+        class="row"
+        style="margin-top:10px">
+
+        <button
+          class="btn sm light"
+          onclick="
+            editMeal('${m.id}')
+          ">
+          Modificar
+        </button>
+
+        <span class="small muted">
+          ${esc(x?.note||'')}
+        </span>
+
+      </div>
+
+    </div>
+  `
+}
+
+
+/* =========================================================
+   MARCAR COMIDA COMO REALIZADA
+   ========================================================= */
+
+function toggleMeal(id){
+
+  let t=today();
+
+  let m=
+    baseMeals.find(
+      x=>x.id===id
+    );
+
+
+  data.mealLog[t]=
+    data.mealLog[t]
+    ||{};
+
+
+  let x=
+    data.mealLog[t][id]
+    ||{
+      items:
+        JSON.parse(
+          JSON.stringify(m.items)
+        ),
+
+      note:''
+    };
+
+
+  x.done=!x.done;
+
+
+  data.mealLog[t][id]=x;
+
+
+  save(false);
+
+  foodToday()
+}
+
+
+/* =========================================================
+   MODIFICAR COMIDA
+   ========================================================= */
+
+function editMeal(id){
+
+  let t=today();
+
+  let m=
+    baseMeals.find(
+      x=>x.id===id
+    );
+
+
+  let x=
+    (data.mealLog[t]||{})[id]
+    ||{
+      items:
+        JSON.parse(
+          JSON.stringify(m.items)
+        ),
+
+      note:''
+    };
+
+
+  $('foodbody').innerHTML=`
+
+    <button
+      class="btn sm light"
+      onclick="foodToday()">
+      ← Hoy
+    </button>
+
+
+    <div
+      class="card stack"
+      style="margin-top:11px">
+
+      <h2>
+        ${m.name}
+      </h2>
+
+
+      ${
+        x.items.map(
+          ([fid,q,on=true],i)=>`
+
+            <div class="row">
+
+              <label style="flex:1">
+
+                <span class="label">
+                  ${foods[fid]?.name||fid}
+                </span>
+
+                <input
+                  id="mi-${i}"
+                  class="field"
+                  type="number"
+                  value="${q}">
+
+              </label>
+
+
+              <button
+                class="
+                  check
+                  ${on!==false?'on':''}
+                "
+                onclick="
+                  toggleIngredient(
+                    '${id}',
+                    ${i}
+                  )
+                ">
+                ${on!==false?'✓':'×'}
+              </button>
+
+            </div>
+
+          `
+        ).join('')
+      }
+
+
+      ${field(
+        'Comentario',
+        'meal-note',
+        x.note||'',
+        'text',
+        'Ej. hoy no hubo verduras'
+      )}
+
+
+      <button
+        class="btn"
+        onclick="
+          saveMealEdit('${id}')
+        ">
+        Guardar cambios
+      </button>
+
+    </div>
+  `
+}
+
+
+/* =========================================================
+   ACTIVAR / DESACTIVAR INGREDIENTE
+   ========================================================= */
+
+function toggleIngredient(id,i){
+
+  let t=today();
+
+  let m=
+    baseMeals.find(
+      x=>x.id===id
+    );
+
+
+  data.mealLog[t]=
+    data.mealLog[t]
+    ||{};
+
+
+  let x=
+    data.mealLog[t][id]
+    ||{
+      items:
+        JSON.parse(
+          JSON.stringify(m.items)
+        ),
+
+      note:''
+    };
+
+
+  x.items[i][2]=
+    x.items[i][2]===false
+    ?true
+    :false;
+
+
+  data.mealLog[t][id]=x;
+
+
+  save(false);
+
+  editMeal(id)
+}
+
+
+function saveMealEdit(id){
+
+  let t=today();
+
+  let m=
+    baseMeals.find(
+      x=>x.id===id
+    );
+
+
+  let x=
+    data.mealLog[t][id]
+    ||{
+      items:
+        JSON.parse(
+          JSON.stringify(m.items)
+        )
+    };
+
+
+  x.items=
+    x.items.map(
+      (z,i)=>[
+        z[0],
+
+        n(
+          val('mi-'+i)
+        ),
+
+        z[2]!==false
+      ]
+    );
+
+
+  x.note=
+    val('meal-note');
+
+
+  data.mealLog[t][id]=x;
+
+
+  save(false);
+
+  foodToday()
+}
+
+
+/* =========================================================
+   COMIDA FUERA DEL PLAN
+   ========================================================= */
+
+function extraFood(){
+
+  $('foodbody').innerHTML=`
+
+    <button
+      class="btn sm light"
+      onclick="foodToday()">
+      ← Hoy
+    </button>
+
+
+    <div
+      class="card stack"
+      style="margin-top:11px">
+
+      <h2>
+        Comida fuera del plan
+      </h2>
+
+
+      ${field(
+        'Descripción',
+        'x-name',
+        '',
+        'text',
+        'Ej. 2 tacos de asada'
+      )}
+
+
+      ${field(
+        'Calorías estimadas',
+        'x-k',
+        '',
+        'number'
+      )}
+
+
+      ${field(
+        'Proteína g',
+        'x-p',
+        '',
+        'number'
+      )}
+
+
+      ${field(
+        'Carbs g',
+        'x-c',
+        '',
+        'number'
+      )}
+
+
+      ${field(
+        'Grasas g',
+        'x-f',
+        '',
+        'number'
+      )}
+
+
+      <div class="notice small">
+        La captura es editable/manual.
+        La estimación por foto con IA se conectará mediante backend seguro.
+      </div>
+
+
+      <button
+        class="btn"
+        onclick="saveExtra()">
+        Agregar al día
+      </button>
+
+    </div>
+  `
+}
+
+
+function saveExtra(){
+
+  let t=today();
+
+
+  data.mealLog[t]=
+    data.mealLog[t]
+    ||{};
+
+
+  data.mealLog[t].extras=
+    data.mealLog[t].extras
+    ||[];
+
+
+  data.mealLog[t].extras.push({
+
+    name:
+      val('x-name'),
+
+    k:
+      n(val('x-k')),
+
+    p:
+      n(val('x-p')),
+
+    c:
+      n(val('x-c')),
+
+    f:
+      n(val('x-f'))
+
+  });
+
+
+  save(false);
+
+  foodToday()
+}
+
+
+function deleteExtra(i){
+
+  data.mealLog[
+    today()
+  ].extras.splice(
+    i,
+    1
+  );
+
+
+  save(false);
+
+  foodToday()
+}
+
+
+/* =========================================================
+   PLAN NUTRICIONAL
+   ========================================================= */
+
+function foodPlan(){
+
+  $('foodbody').innerHTML=
+
+    baseMeals.map(
+      m=>{
+
+        let z=
+          mealMacros(
+            m.items
+          );
+
+
+        return`
+
+          <div
+            class="card"
+            style="margin-bottom:10px">
+
+            <div class="eyebrow">
+              ${m.time}
+            </div>
+
+
+            <h3>
+              ${m.name}
+            </h3>
+
+
+            <div
+              class="small muted"
+              style="margin:5px 0">
+
+              ${
+                m.items.map(
+                  ([id,q])=>
+                    `${foods[id].name} ${q}g`
+                ).join(' · ')
+              }
+
+            </div>
+
+
+            <b class="small">
+
+              ≈
+              ${Math.round(z.k)} kcal
+              ·
+              ${Math.round(z.p)}P
+              ·
+              ${Math.round(z.c)}C
+              ·
+              ${Math.round(z.f)}G
+
+            </b>
+
+          </div>
+        `
+      }
+    ).join('')
+}
+
+
+/* =========================================================
+   METAS NUTRICIONALES
+   ========================================================= */
+
+function foodGoals(){
+
+  let g=
+    data.macroGoal;
+
+
+  $('foodbody').innerHTML=`
+
+    <div class="card stack">
+
+      <h2>
+        Metas
+      </h2>
+
+
+      <div class="grid2">
+
+        ${field(
+          'Calorías',
+          'mg-k',
+          g.calories,
+          'number'
+        )}
+
+
+        ${field(
+          'Proteína',
+          'mg-p',
+          g.protein,
+          'number'
+        )}
+
+
+        ${field(
+          'Carbs',
+          'mg-c',
+          g.carbs,
+          'number'
+        )}
+
+
+        ${field(
+          'Grasas',
+          'mg-f',
+          g.fats,
+          'number'
+        )}
+
+      </div>
+
+
+      <button
+        class="btn"
+        onclick="saveGoals()">
+        Guardar
+      </button>
+
+    </div>
+  `
+}
+
+
+function saveGoals(){
+
+  data.macroGoal={
+
+    calories:
+      n(val('mg-k')),
+
+    protein:
+      n(val('mg-p')),
+
+    carbs:
+      n(val('mg-c')),
+
+    fats:
+      n(val('mg-f'))
+
+  };
+
+
+  save(false);
+
+  food('goals')
+}
+
+
+/* =========================================================
+   PROGRESO
+   ========================================================= */
+
+function progressView(
+  tab='body'
+){
+
+  $('app').innerHTML=`
+
+    ${section(
+      'Progreso',
+      'Tendencias útiles, no obsesión.'
+    )}
+
+
+    <div class="pillrow">
+
+      ${pill(
+        'Cuerpo',
+        tab==='body',
+        "progressView('body')"
+      )}
+
+      ${pill(
+        'Fotos',
+        tab==='photos',
+        "progressView('photos')"
+      )}
+
+      ${pill(
+        'Sueño',
+        tab==='sleep',
+        "progressView('sleep')"
+      )}
+
+      ${pill(
+        'Gym',
+        tab==='gym',
+        "progressView('gym')"
+      )}
+
+    </div>
+
+
+    <div id="progbody"></div>
+  `;
+
+
+  if(tab==='body'){
+    body()
+  }
+
+  if(tab==='photos'){
+    photos()
+  }
+
+  if(tab==='sleep'){
+    sleep()
+  }
+
+  if(tab==='gym'){
+    gymStats()
+  }
+}
+
+
+/* =========================================================
+   CUERPO
+   Peso corporal permanece en KG
+   ========================================================= */
+
+function body(){
+
+  let b=
+    data.body[today()]
+    ||{};
+
+
+  $('progbody').innerHTML=`
+
+    <div class="card stack">
+
+      <h2>
+        Registro corporal
+      </h2>
+
+
+      <div class="small muted">
+        Peso frecuente · cintura semanal · medidas completas cada 4 semanas.
+      </div>
+
+
+      <div class="grid2">
+
+        ${field(
+          'Peso kg',
+          'b-weight',
+          b.weight||'',
+          'number'
+        )}
+
+
+        ${field(
+          'Cintura ombligo cm',
+          'b-waist',
+          b.waist||'',
+          'number'
+        )}
+
+
+        ${field(
+          'Abdomen cm',
+          'b-abd',
+          b.abdomen||'',
+          'number'
+        )}
+
+
+        ${field(
+          'Pecho cm',
+          'b-chest',
+          b.chest||'',
+          'number'
+        )}
+
+
+        ${field(
+          'Cadera cm',
+          'b-hip',
+          b.hip||'',
+          'number'
+        )}
+
+
+        ${field(
+          'Brazo der. cm',
+          'b-ra',
+          b.rightArm||'',
+          'number'
+        )}
+
+
+        ${field(
+          'Brazo izq. cm',
+          'b-la',
+          b.leftArm||'',
+          'number'
+        )}
+
+
+        ${field(
+          'Muslo der. cm',
+          'b-rt',
+          b.rightThigh||'',
+          'number'
+        )}
+
+
+        ${field(
+          'Muslo izq. cm',
+          'b-lt',
+          b.leftThigh||'',
+          'number'
+        )}
+
+      </div>
+
+
+      ${field(
+        'Nota',
+        'b-note',
+        b.note||''
+      )}
+
+
+      <button
+        class="btn"
+        onclick="saveBody()">
+        Guardar medidas
+      </button>
+
+    </div>
+
+
+    ${bodyHistory()}
+  `
+}
+
+
+function saveBody(){
+
+  data.body[today()]={
+
+    weight:
+      n(val('b-weight')),
+
+    waist:
+      n(val('b-waist')),
+
+    abdomen:
+      n(val('b-abd')),
+
+    chest:
+      n(val('b-chest')),
+
+    hip:
+      n(val('b-hip')),
+
+    rightArm:
+      n(val('b-ra')),
+
+    leftArm:
+      n(val('b-la')),
+
+    rightThigh:
+      n(val('b-rt')),
+
+    leftThigh:
+      n(val('b-lt')),
+
+    note:
+      val('b-note')
+
+  };
+
+
+  save(false);
+
+  body()
+}
+
+
+function bodyHistory(){
+
+  let a=
+    Object.entries(
+      data.body
+    )
+    .filter(
+      ([,x])=>
+        x.weight||
+        x.waist
+    )
+    .sort(
+      (a,b)=>
+        b[0].localeCompare(a[0])
+    )
+    .slice(
+      0,
+      10
+    );
+
+
+  return`
+
+    <div
+      class="card"
+      style="margin-top:11px">
+
+      <h2>
+        Historial
+      </h2>
+
+
+      ${
+        a.map(
+          ([d,x])=>`
+
+            <div
+              class="row small"
+              style="
+                padding:10px 0;
+                border-bottom:1px solid var(--line)
+              ">
+
+              <span class="muted">
+                ${fmt(d)}
+              </span>
+
+
+              <b>
+                ${x.weight||'—'} kg
+                ·
+                ${x.waist||'—'} cm cintura
+              </b>
+
+            </div>
+
+          `
+        ).join('')
+
+        ||`
+
+          <p class="small muted">
+            Sin registros.
+          </p>
+
+        `
+      }
+
+    </div>
+  `
+}
+
+
+/* =========================================================
+   SUEÑO
+   ========================================================= */
+
+function sleep(){
+
+  let s=
+    data.sleep[today()]
+    ||{};
+
+
+  $('progbody').innerHTML=`
+
+    <div class="card stack">
+
+      <h2>
+        Sueño
+      </h2>
+
+
+      ${field(
+        'Horas',
+        'sl-h',
+        s.hours||'',
+        'number'
+      )}
+
+
+      ${field(
+        'Hora de dormir',
+        'sl-b',
+        s.bed||'',
+        'time'
+      )}
+
+
+      ${field(
+        'Calidad 1–5',
+        'sl-q',
+        s.quality||'',
+        'number'
+      )}
+
+
+      <button
+        class="btn"
+        onclick="saveSleep()">
+        Guardar
+      </button>
+
+    </div>
+  `
+}
+
+
+function saveSleep(){
+
+  data.sleep[today()]={
+
+    hours:
+      n(val('sl-h')),
+
+    bed:
+      val('sl-b'),
+
+    quality:
+      n(val('sl-q'))
+
+  };
+
+
+  save(false);
+
+  sleep()
+}
+
+
+/* =========================================================
+   ESTADÍSTICAS DEL GYM
+   ========================================================= */
+
+function gymStats(){
+
+  let all=
+    Object.entries(
+      data.gymAttendance
+    )
+    .sort(
+      (a,b)=>
+        b[0].localeCompare(a[0])
+    );
+
+
+  let done=
+    all.filter(
+      ([,s])=>
+        s==='completed'||
+        s===true
+    ).length;
+
+
+  let miss=
+    all.filter(
+      ([,s])=>
+        s==='missed'
+    ).length;
+
+
+  $('progbody').innerHTML=`
+
+    <div class="grid2">
+
+      <div class="card">
+
+        <div class="eyebrow">
+          COMPLETADAS
+        </div>
+
+        <div class="metric">
+          ${done}
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="eyebrow">
+          NO ASISTÍ
+        </div>
+
+        <div class="metric">
+          ${miss}
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div
+      class="card"
+      style="margin-top:11px">
+
+      ${
+        all.slice(
+          0,
+          30
+        ).map(
+          ([d,s])=>`
+
+            <div
+              class="row small"
+              style="
+                padding:9px 0;
+                border-bottom:1px solid var(--line)
+              ">
+
+              <span>
+                ${fmt(d)}
+              </span>
+
+
+              <b
+                class="
+                  ${
+                    s==='completed'||
+                    s===true
+                    ?'good'
+                    :'bad'
+                  }
+                ">
+
+                ${
+                  s==='completed'||
+                  s===true
+                  ?'Completado'
+                  :'No fui'
+                }
+
+              </b>
+
+            </div>
+
+          `
+        ).join('')
+
+        ||`
+
+          <p class="small muted">
+            Sin registros.
+          </p>
+
+        `
+      }
+
+    </div>
+  `
+}
+
+
+/* =========================================================
+   FOTOS
+   IndexedDB evita saturar localStorage
+   ========================================================= */
+
+let photoDB;
+
+
+function dbOpen(){
+
+  return new Promise(
+    (res,rej)=>{
+
+      let q=
+        indexedDB.open(
+          'nlt-media',
+          1
+        );
+
+
+      q.onupgradeneeded=()=>{
+
+        q.result.createObjectStore(
+          'photos',
+          {
+            keyPath:'id'
+          }
+        )
+
+      };
+
+
+      q.onsuccess=()=>{
+
+        photoDB=q.result;
+
+        res(q.result)
+
+      };
+
+
+      q.onerror=()=>rej(
+        q.error
+      )
+
+    }
+  )
+}
+
+
+async function photos(){
+
+  await dbOpen();
+
+
+  let rows=
+    await dbAllPhotos();
+
+
+  $('progbody').innerHTML=`
+
+    <div class="card">
+
+      <h2>
+        Fotos de progreso
+      </h2>
+
+
+      <div
+        class="small muted"
+        style="margin:5px 0 12px">
+
+        Cada 4 semanas · misma luz, distancia y condiciones.
+
+      </div>
+
+
+      <label
+        class="btn"
+        style="
+          display:block;
+          text-align:center
+        ">
+
+        + Agregar foto
+
+        <input
+          class="hide"
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onchange="
+            addPhoto(event)
+          ">
+
+      </label>
+
+    </div>
+
+
+    <div
+      class="grid2"
+      style="margin-top:11px">
+
+      ${
+        rows.map(
+          x=>`
+
+            <div>
+
+              <img
+                class="photo"
+                src="${
+                  URL.createObjectURL(
+                    x.blob
+                  )
+                }">
+
+
+              <div
+                class="small"
+                style="margin-top:5px">
+
+                <b>
+                  ${x.type}
+                </b>
+
+                <br>
+
+                <span class="muted">
+                  ${fmt(x.date)}
+                </span>
+
+              </div>
+
+            </div>
+
+          `
+        ).join('')
+      }
+
+    </div>
+  `
+}
+
+
+function dbAllPhotos(){
+
+  return new Promise(
+    res=>{
+
+      let q=
+        photoDB
+        .transaction(
+          'photos'
+        )
+        .objectStore(
+          'photos'
+        )
+        .getAll();
+
+
+      q.onsuccess=()=>res(
+
+        q.result.sort(
+          (a,b)=>
+            b.date.localeCompare(a.date)
+        )
+
+      );
+
+
+      q.onerror=()=>res([])
+
+    }
+  )
+}
+
+
+async function addPhoto(ev){
+
+  let file=
+    ev.target.files[0];
+
+
+  if(!file)return;
+
+
+  let type=
+    prompt(
+      'Tipo: frente, perfil o espalda',
+      'frente'
+    )
+    ||'frente';
+
+
+  await dbOpen();
+
+
+  let tx=
+    photoDB.transaction(
+      'photos',
+      'readwrite'
+    );
+
+
+  tx
+    .objectStore(
+      'photos'
+    )
+    .put({
+
+      id:
+        Date.now().toString(),
+
+      date:
+        today(),
+
+      type,
+
+      blob:file
+
+    });
+
+
+  tx.oncomplete=()=>photos()
+}
+
+
+/* =========================================================
+   MÁS
+   ========================================================= */
+
+function more(){
+
+  $('app').innerHTML=`
+
+    ${section(
+      'Más',
+      'Fe, lectura, finanzas, review y configuración.'
+    )}
+
+
+    <div class="stack">
+
+      ${menu(
+        'Fe',
+        'Oración, Misa, Rosario, Santísimo y confesión.',
+        "faith()"
+      )}
+
+
+      ${menu(
+        'Lectura',
+        'Libros, páginas, minutos y avance.',
+        "reading()"
+      )}
+
+
+      ${menu(
+        'Finanzas',
+        'Captura una vez. Nate Cloud conserva el registro.',
+        "finance()"
+      )}
+
+
+      ${menu(
+        'Weekly Reset',
+        'Revisión de la semana.',
+        "weekly()"
+      )}
+
+
+      ${menu(
+        'Datos & Backup',
+        'Excel local y respaldo JSON.',
+        "backup()"
+      )}
+
+
+      ${menu(
+        'Configuración',
+        'PIN y Nate Cloud.',
+        "settings()"
+      )}
+
+    </div>
+  `
+}
+
+
+function menu(t,s,js){
+
+  return`
+
+    <button
+      class="card row"
+      style="
+        text-align:left;
+        width:100%
+      "
+      onclick="${js}">
+
+      <div>
+
+        <h3>
+          ${t}
+        </h3>
+
+        <div
+          class="small muted"
+          style="margin-top:4px">
+          ${s}
+        </div>
+
+      </div>
+
+      <b>→</b>
+
+    </button>
+  `
+}
+
+
+function back(){
+
+  return`
+
+    <button
+      class="btn sm light"
+      onclick="go('more')">
+      ← Más
+    </button>
+  `
+}
+
+
+/* =========================================================
+   FE
+   ========================================================= */
+
+function faith(){
+
+  let f=
+    data.faith[today()]
+    ||{};
+
+
+  let last=
+    [...data.confessions]
+    .sort()
+    .reverse()[0];
+
+
+  let days=
+    last
+    ?Math.floor(
+      (
+        dateObj(today())-
+        dateObj(last)
+      )/
+      86400000
+    )
+    :null;
+
+
+  $('app').innerHTML=`
+
+    ${back()}
+
+
+    ${section(
+      'Fe',
+      'Registrar para recordar ritmos, no para puntuar la vida espiritual.'
+    )}
+
+
+    <div class="card stack">
+
+      ${faithToggle(
+        'prayed',
+        'Oración personal',
+        f.prayed
+      )}
+
+
+      ${faithToggle(
+        'exam',
+        'Examen / oración nocturna',
+        f.exam
+      )}
+
+
+      ${faithToggle(
+        'mass',
+        'Misa',
+        f.mass
+      )}
+
+
+      ${faithToggle(
+        'rosary',
+        'Rosario',
+        f.rosary
+      )}
+
+
+      ${faithToggle(
+        'adoration',
+        'Santísimo',
+        f.adoration
+      )}
+
+    </div>
+
+
+    <div
+      class="card"
+      style="margin-top:11px">
+
+      <div class="row">
+
+        <div>
+
+          <div class="eyebrow">
+            CONFESIÓN
+          </div>
+
+
+          <h2>
+
+            ${
+              last
+              ?`Hace ${days} días`
+              :'Sin registro'
+            }
+
+          </h2>
+
+
+          <div class="small muted">
+
+            ${
+              last
+              ?'Última: '+fmt(last)
+              :'Agrega tu última confesión.'
+            }
+
+          </div>
+
+        </div>
+
+
+        <button
+          class="btn sm"
+          onclick="confess()">
+          Registrar hoy
+        </button>
+
+      </div>
+
+
+      ${
+        data.confessions
+          .slice()
+          .sort()
+          .reverse()
+          .slice(
+            0,
+            6
+          )
+          .map(
+            d=>`
+
+              <div
+                class="small muted"
+                style="margin-top:8px">
+                ${fmt(d)}
+              </div>
+
+            `
+          ).join('')
+      }
+
+    </div>
+  `
+}
+
+
+function faithToggle(
+  k,
+  l,
+  on
+){
+
+  return`
+
+    <button
+      class="row"
+      style="
+        background:#f0ede4;
+        border-radius:17px;
+        padding:12px
+      "
+      onclick="
+        toggleFaith('${k}')
+      ">
+
+      <b>
+        ${l}
+      </b>
+
+
+      <span
+        class="
+          check
+          ${on?'on':''}
+        ">
+        ${on?'✓':'○'}
+      </span>
+
+    </button>
+  `
+}
+
+
+function toggleFaith(k){
+
+  data.faith[today()]=
+    data.faith[today()]
+    ||{};
+
+
+  data.faith[today()][k]=
+    !data.faith[today()][k];
+
+
+  save(false);
+
+  faith()
+}
+
+
+function confess(){
+
+  if(
+    !data.confessions.includes(
+      today()
+    )
+  ){
+    data.confessions.push(
+      today()
+    )
+  }
+
+
+  save(false);
+
+  faith()
+}
+
+
+/* =========================================================
+   LECTURA
+   ========================================================= */
+
+function todayRead(){
+
+  let s=
+    data.reading.sessions.filter(
+      x=>x.date===today()
+    );
+
+
+  return{
+
+    minutes:
+      s.reduce(
+        (a,x)=>
+          a+n(x.minutes),
+        0
+      ),
+
+    pages:
+      s.reduce(
+        (a,x)=>
+          a+n(x.pages),
+        0
+      )
+
+  }
+}
+
+
+function currentBook(){
+
+  return(
+    data.reading.books.find(
+      x=>x.current
+    )
+    ||
+    data.reading.books[0]
+  )
+}
+
 
 function reading(){
 
-let books=data.reading.books||[];
-let active=books.find(x=>x.status==='leyendo');
+  let b=
+    currentBook();
 
-$('app').innerHTML=`
-${back()}
-${section(
-'Lectura',
-'Leer también es una forma de construir.'
-)}
 
-${active?`
-<div class="card">
-<div class="eyebrow">LIBRO ACTUAL</div>
-<h2 style="margin-top:5px">${esc(active.title)}</h2>
-<div class="small muted">${esc(active.author||'')}</div>
+  let tr=
+    todayRead();
 
-<div class="row" style="margin-top:14px">
-<div>
-<div class="metric">
-${active.totalPages
-?Math.round(n(active.currentPage)/n(active.totalPages)*100)
-:0}%
-</div>
-<div class="small muted">
-Pág. ${active.currentPage||0} / ${active.totalPages||'—'}
-</div>
-</div>
 
-<button class="btn sm" onclick="readingSession('${active.id}')">
-Registrar lectura
-</button>
-</div>
-</div>
-`:`
-<div class="notice small">
-No tienes un libro activo.
-</div>
-`}
+  $('app').innerHTML=`
 
-<div class="card stack" style="margin-top:11px">
-<h2>Agregar libro</h2>
+    ${back()}
 
-${field('Título','book-title')}
-${field('Autor','book-author')}
-${field('Páginas totales','book-pages','','number')}
 
-<button class="btn light" onclick="addBook()">
-Agregar
-</button>
-</div>
+    ${section(
+      'Lectura',
+      'Leer con intención; registrar sin convertirlo en obligación vacía.'
+    )}
 
-<div class="card" style="margin-top:11px">
-<h2>Biblioteca</h2>
 
-${books.map(b=>`
-<div class="row small" style="padding:10px 0;border-bottom:1px solid var(--line)">
-<div>
-<b>${esc(b.title)}</b>
-<div class="muted">
-${esc(b.author||'')} · ${b.currentPage||0}/${b.totalPages||'—'}
-</div>
-</div>
+    ${
+      b
+      ?`
 
-${b.status!=='leyendo'
-?`<button class="btn light sm" onclick="activateBook('${b.id}')">Leer</button>`
-:'<b>Actual</b>'
+        <div class="hero">
+
+          <div class="eyebrow">
+            LIBRO ACTUAL
+          </div>
+
+
+          <h2
+            style="
+              font-size:25px;
+              margin-top:5px
+            ">
+            ${esc(b.title)}
+          </h2>
+
+
+          <div
+            class="small"
+            style="color:#ffffff99">
+
+            ${esc(b.author||'')}
+
+            ·
+
+            ${b.page||0}/${b.total||0}
+            páginas
+
+          </div>
+
+
+          <div style="margin-top:13px">
+
+            ${progress(
+              b.page,
+              b.total
+            )}
+
+          </div>
+
+
+          <div
+            class="small"
+            style="margin-top:7px">
+
+            ${
+              b.total
+              ?Math.round(
+                b.page/
+                b.total*
+                100
+              )
+              :0
+            }% completado
+
+          </div>
+
+        </div>
+
+      `
+      :''
+    }
+
+
+    <div
+      class="grid2"
+      style="margin-top:11px">
+
+      <div class="card">
+
+        <div class="eyebrow">
+          HOY
+        </div>
+
+        <div class="metric">
+          ${tr.pages}
+        </div>
+
+        <div class="small muted">
+          páginas
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="eyebrow">
+          TIEMPO
+        </div>
+
+        <div class="metric">
+          ${tr.minutes}
+        </div>
+
+        <div class="small muted">
+          minutos
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div
+      class="card stack"
+      style="margin-top:11px">
+
+      <h2>
+        Registrar lectura
+      </h2>
+
+
+      ${field(
+        'Página actual',
+        'rd-page',
+        b?.page||'',
+        'number'
+      )}
+
+
+      ${field(
+        'Páginas leídas',
+        'rd-pages',
+        '',
+        'number'
+      )}
+
+
+      ${field(
+        'Minutos',
+        'rd-min',
+        '',
+        'number'
+      )}
+
+
+      <button
+        class="btn"
+        onclick="saveRead()">
+        Guardar sesión
+      </button>
+
+    </div>
+
+
+    <button
+      class="btn light"
+      style="
+        width:100%;
+        margin-top:11px
+      "
+      onclick="addBook()">
+      + Agregar / cambiar libro
+    </button>
+  `
 }
-</div>
-`).join('')||'<p class="small muted">Sin libros todavía.</p>'}
 
-</div>
-`;
-}
 
 function addBook(){
 
-let title=val('book-title').trim();
+  $('app').innerHTML=`
 
-if(!title)return alert('Pon el título.');
+    ${back()}
 
-let hasActive=data.reading.books.some(x=>x.status==='leyendo');
 
-data.reading.books.push({
-id:crypto.randomUUID?.()||Date.now().toString(),
-title,
-author:val('book-author'),
-totalPages:n(val('book-pages')),
-currentPage:0,
-status:hasActive?'pendiente':'leyendo',
-startedDate:hasActive?'':today()
-});
+    ${section(
+      'Nuevo libro'
+    )}
 
-save(false);
-reading();
+
+    <div class="card stack">
+
+      ${field(
+        'Título',
+        'bk-title'
+      )}
+
+
+      ${field(
+        'Autor',
+        'bk-author'
+      )}
+
+
+      ${field(
+        'Páginas totales',
+        'bk-total',
+        '',
+        'number'
+      )}
+
+
+      ${field(
+        'Página actual',
+        'bk-page',
+        '0',
+        'number'
+      )}
+
+
+      <button
+        class="btn"
+        onclick="saveBook()">
+        Guardar como libro actual
+      </button>
+
+    </div>
+  `
 }
 
-function activateBook(id){
 
-data.reading.books.forEach(x=>{
-if(x.status==='leyendo')x.status='pausado';
-});
+function saveBook(){
 
-let b=data.reading.books.find(x=>x.id===id);
+  data.reading.books.forEach(
+    x=>x.current=false
+  );
 
-if(b){
-b.status='leyendo';
-b.startedDate ||= today();
+
+  data.reading.books.push({
+
+    id:
+      Date.now().toString(),
+
+    title:
+      val('bk-title'),
+
+    author:
+      val('bk-author'),
+
+    total:
+      n(val('bk-total')),
+
+    page:
+      n(val('bk-page')),
+
+    current:true
+
+  });
+
+
+  save(false);
+
+  reading()
 }
 
-save(false);
-reading();
+
+function saveRead(){
+
+  let b=
+    currentBook();
+
+
+  if(!b){
+
+    return alert(
+      'Agrega un libro primero.'
+    )
+
+  }
+
+
+  b.page=
+    n(val('rd-page'));
+
+
+  data.reading.sessions.push({
+
+    date:
+      today(),
+
+    bookId:
+      b.id,
+
+    pages:
+      n(val('rd-pages')),
+
+    minutes:
+      n(val('rd-min')),
+
+    page:
+      b.page
+
+  });
+
+
+  save(false);
+
+  reading()
 }
 
-function readingSession(id){
+  /* =========================================================
+   FINANZAS 2.3
+   ========================================================= */
 
-let b=data.reading.books.find(x=>x.id===id);
+let deletedFinance=null;
+let deletedFinanceTimer=null;
 
-if(!b)return;
 
-$('app').innerHTML=`
-${back()}
-${section('Registrar lectura',esc(b.title))}
+/* =========================================================
+   NORMALIZAR MOVIMIENTO
+   ========================================================= */
 
-<div class="card stack">
+function normalizeFinanceType(type){
 
-<div class="notice small">
-Página actual: <b>${b.currentPage||0}</b>
-</div>
-
-${field('Nueva página','read-page',b.currentPage||0,'number')}
-${field('Minutos leídos','read-min','','number')}
-${field('Nota','read-note')}
-
-<button class="btn" onclick="saveReading('${id}')">
-Guardar sesión
-</button>
-
-</div>
-`;
+  return(
+    String(type||'Gasto')
+      .toLowerCase()==='ingreso'
+  )
+  ?'Ingreso'
+  :'Gasto'
 }
 
-function saveReading(id){
 
-let b=data.reading.books.find(x=>x.id===id);
-
-if(!b)return;
-
-let old=n(b.currentPage);
-let page=n(val('read-page'));
-
-if(page<old)return alert('La página no puede ser menor a la actual.');
-
-let pages=page-old;
-
-data.reading.sessions.push({
-id:crypto.randomUUID?.()||Date.now().toString(),
-bookId:id,
-date:today(),
-startPage:old,
-endPage:page,
-pages,
-minutes:n(val('read-min')),
-note:val('read-note')
-});
-
-b.currentPage=page;
-
-if(b.totalPages && page>=b.totalPages){
-b.currentPage=b.totalPages;
-b.status='terminado';
-b.finishedDate=today();
-}
-
-save(false);
-reading();
-}
+/* =========================================================
+   PANTALLA PRINCIPAL DE FINANZAS
+   ========================================================= */
 
 function finance(){
 
-let rows=[...(data.finance||[])]
-.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-
-let month=today().slice(0,7);
-
-let monthRows=rows.filter(x=>(x.date||'').startsWith(month));
-
-let expenses=monthRows
-.filter(x=>x.type==='gasto')
-.reduce((s,x)=>s+n(x.amount),0);
-
-let income=monthRows
-.filter(x=>x.type==='ingreso')
-.reduce((s,x)=>s+n(x.amount),0);
-
-$('app').innerHTML=`
-${back()}
-${section(
-'Finanzas',
-'Captura una vez. Nate Cloud conserva el registro y prepara tu análisis.'
-)}
-
-<div class="grid2">
-
-<div class="card">
-<div class="eyebrow">INGRESOS MES</div>
-<div class="metric">${money(income)}</div>
-</div>
-
-<div class="card">
-<div class="eyebrow">GASTOS MES</div>
-<div class="metric">${money(expenses)}</div>
-</div>
-
-</div>
-
-<div class="card stack" style="margin-top:11px">
-
-<h2>Nuevo movimiento</h2>
-
-<label>
-<span class="label">Tipo</span>
-<select id="fin-type" class="field">
-<option value="gasto">Gasto</option>
-<option value="ingreso">Ingreso</option>
-</select>
-</label>
-
-${field('Fecha','fin-date',today(),'date')}
-
-${field(
-'Concepto',
-'fin-concept',
-'',
-'text',
-'Ej. Gasolina'
-)}
-
-${field(
-'Subconcepto',
-'fin-sub',
-'',
-'text',
-'Ej. Transporte'
-)}
-
-${field(
-'Monto',
-'fin-amount',
-'',
-'number',
-'0.00'
-)}
-
-<label>
-<span class="label">Método / cuenta</span>
-<select id="fin-payment" class="field">
-${payment.map(x=>`
-<option value="${esc(x)}">${esc(x)}</option>
-`).join('')}
-</select>
-</label>
-
-${field(
-'MSI / número de pagos',
-'fin-msi',
-1,
-'number'
-)}
-
-${field(
-'Nota',
-'fin-note',
-'',
-'text',
-'Opcional'
-)}
-
-<button class="btn" onclick="addFinance()">
-Guardar movimiento
-</button>
+  let rows=[
+    ...data.finance
+  ].reverse();
+
+  let pend=
+    data.sync.queue.length;
 
-</div>
 
-<div class="card" style="margin-top:11px">
+  let currentMonth=
+    today().slice(0,7);
 
-<div class="row">
-<div>
-<div class="eyebrow">HISTORIAL</div>
-<h2 style="margin-top:4px">Movimientos</h2>
-</div>
 
-<div class="small muted">
-${cloudUser
-?'<span class="good">● Cloud</span>'
-:'<span class="warn">● Local</span>'
-}
-</div>
-</div>
+  let monthRows=
+    data.finance.filter(
+      x=>
+        String(x.date||'')
+          .slice(0,7)
+        ===currentMonth
+    );
 
-<div style="margin-top:8px">
 
-${rows.slice(0,30).map(x=>`
-<div
-class="row small"
-style="padding:11px 0;border-bottom:1px solid var(--line)"
->
-<div>
-<b>${esc(x.concept)}</b>
+  let expenses=
+    monthRows
+      .filter(
+        x=>
+          normalizeFinanceType(x.type)
+          ==='Gasto'
+      )
+      .reduce(
+        (a,x)=>
+          a+n(x.amount),
+        0
+      );
 
-<div class="muted">
-${fmt(x.date)} ·
-${esc(x.paymentMethod||'—')}
-${x.subcategory?' · '+esc(x.subcategory):''}
-</div>
 
-${x.syncStatus==='pending'
-?'<div class="tiny warn">⟳ pendiente de sincronizar</div>'
-:x.syncStatus==='error'
-?'<div class="tiny bad">! error de sincronización</div>'
-:x.syncStatus==='synced'
-?'<div class="tiny good">✓ sincronizado</div>'
-:''
-}
-</div>
+  let income=
+    monthRows
+      .filter(
+        x=>
+          normalizeFinanceType(x.type)
+          ==='Ingreso'
+      )
+      .reduce(
+        (a,x)=>
+          a+n(x.amount),
+        0
+      );
 
-<b class="${x.type==='gasto'?'bad':'good'}">
-${x.type==='gasto'?'-':'+'}${money(x.amount)}
-</b>
-</div>
-`).join('')||`
-<p class="small muted">
-Todavía no hay movimientos.
-</p>
-`}
 
-</div>
-</div>
-`;
-}
+  $('app').innerHTML=`
 
-async function addFinance(){
+    ${back()}
 
-let amount=n(val('fin-amount'));
-let concept=val('fin-concept').trim();
 
-if(!concept){
-return alert('Escribe el concepto.');
-}
+    ${section(
+      'Finanzas',
+      'Captura una vez. Nate Cloud conserva el registro y prepara tu análisis.'
+    )}
 
-if(!amount || amount<=0){
-return alert('Escribe un monto válido.');
-}
 
-let paymentMethod=val('fin-payment');
+    <div class="notice small">
 
-let movement={
+      <span
+        class="
+          syncdot
+          ${
+            pend
+            ?'pending'
+            :cloudUser
+              ?'ok'
+              :''
+          }
+        ">
+      </span>
 
-id:crypto.randomUUID
-?crypto.randomUUID()
-:Date.now().toString(),
+      ${
+        cloudUser
+        ?(
+          pend
+          ?`${pend} movimiento(s) pendientes de subir`
+          :'Nate Cloud sincronizado'
+        )
+        :'Nube sin iniciar sesión · tus registros siguen guardándose localmente.'
+      }
 
-date:val('fin-date')||today(),
+    </div>
 
-type:val('fin-type'),
 
-concept,
+    <div
+      class="grid2"
+      style="margin-top:11px">
 
-subcategory:val('fin-sub').trim(),
+      <div class="card">
 
-amount,
+        <div class="eyebrow">
+          INGRESOS DEL MES
+        </div>
 
-paymentMethod,
+        <div class="metric good">
+          ${money(income)}
+        </div>
 
-accountCard:paymentMethod,
+      </div>
 
-installments:
-Math.max(1,n(val('fin-msi'))||1),
 
-note:val('fin-note').trim(),
+      <div class="card">
 
-createdAt:new Date().toISOString(),
+        <div class="eyebrow">
+          GASTOS DEL MES
+        </div>
 
-syncStatus:
-cloudUser
-?'pending'
-:'local'
+        <div class="metric">
+          ${money(expenses)}
+        </div>
 
-};
+      </div>
 
-data.finance.push(movement);
+    </div>
 
-save(false);
 
-if(cloudUser){
+    <div
+      class="card stack"
+      style="margin-top:11px">
 
-let ok=await pushFinance(movement);
+      <h2>
+        Nuevo movimiento
+      </h2>
 
-movement.syncStatus=
-ok
-?'synced'
-:'error';
 
-save(false);
+      <label>
 
-}
+        <span class="label">
+          Tipo
+        </span>
 
-finance();
-}
+        <select
+          id="fi-type"
+          class="field"
+          onchange="
+            updateFinanceConceptOptions()
+          ">
 
-async function pushFinance(x){
+          <option value="Gasto">
+            Gasto
+          </option>
 
-if(!sb || !cloudUser){
-return false;
-}
+          <option value="Ingreso">
+            Ingreso
+          </option>
 
-try{
+        </select>
 
-const {error}=await sb
-.from('finance')
-.upsert({
+      </label>
 
-id:x.id,
 
-user_id:cloudUser.id,
+      ${field(
+        'Fecha',
+        'fi-date',
+        today(),
+        'date'
+      )}
 
-transaction_date:x.date,
 
-transaction_type:x.type,
+      <label>
 
-concept:x.concept,
+        <span class="label">
+          Concepto
+        </span>
 
-subcategory:x.subcategory||null,
+        <select
+          id="fi-concept"
+          class="field">
 
-amount:n(x.amount),
+          ${
+            expenseConcepts.map(
+              x=>
+                `<option value="${esc(x)}">${esc(x)}</option>`
+            ).join('')
+          }
 
-payment_method:x.paymentMethod||null,
+        </select>
 
-account_card:x.accountCard||null,
+      </label>
 
-installments:
-Math.max(1,n(x.installments)||1),
 
-note:x.note||null,
+      ${field(
+        'Subconcepto',
+        'fi-sub',
+        '',
+        'text',
+        'Ej. Gasolina, Tapioca Deny, Spotify...'
+      )}
 
-source:'NLT',
 
-updated_at:new Date().toISOString()
+      ${field(
+        'Monto',
+        'fi-amt',
+        '',
+        'number'
+      )}
 
-},{
-onConflict:'id'
-});
 
-if(error){
-console.error(error);
-return false;
-}
+      <label>
 
-return true;
+        <span class="label">
+          Método / Cuenta
+        </span>
 
-}catch(err){
+        <select
+          id="fi-pay"
+          class="field">
 
-console.error(err);
-return false;
+          ${
+            payment.map(
+              x=>
+                `<option value="${esc(x)}">${esc(x)}</option>`
+            ).join('')
+          }
 
-}
-}
+        </select>
 
-async function retryFinanceSync(){
+      </label>
 
-if(!cloudUser){
-return alert('Primero conecta Nate Cloud.');
-}
 
-let pending=(data.finance||[])
-.filter(x=>
-x.syncStatus!=='synced'
-);
+      ${field(
+        'MSI / Número de pagos',
+        'fi-msi',
+        '',
+        'number',
+        'Opcional'
+      )}
 
-if(!pending.length){
-return alert('No hay movimientos pendientes.');
-}
 
-let success=0;
-let failed=0;
+      ${field(
+        'Nota',
+        'fi-note',
+        '',
+        'text',
+        'Opcional'
+      )}
 
-for(const x of pending){
 
-let ok=await pushFinance(x);
+      <button
+        class="btn"
+        onclick="addFinance()">
+        Guardar movimiento
+      </button>
 
-if(ok){
-x.syncStatus='synced';
-success++;
-}else{
-x.syncStatus='error';
-failed++;
-}
+    </div>
 
-}
 
-save(false);
+    ${
+      deletedFinance
+      ?`
 
-alert(
-`Sincronización terminada.\n\n`+
-`Correctos: ${success}\n`+
-`Con error: ${failed}`
-);
+        <div
+          class="notice"
+          style="margin-top:11px">
 
-settings();
+          <div class="row">
+
+            <div>
+
+              <b>
+                Movimiento eliminado
+              </b>
+
+              <div class="small muted">
+                ${esc(
+                  deletedFinance.subconcept
+                  ||deletedFinance.concept
+                  ||'Movimiento'
+                )}
+              </div>
+
+            </div>
+
+
+            <button
+              class="btn sm"
+              onclick="undoDeleteFinance()">
+              Deshacer
+            </button>
+
+          </div>
+
+        </div>
+
+      `
+      :''
+    }
+
+
+    <div
+      class="card"
+      style="margin-top:11px">
+
+      <h2>
+        Últimos movimientos
+      </h2>
+
+
+      ${
+        rows.length
+
+        ?rows
+          .slice(0,30)
+          .map(
+            x=>financeRow(x)
+          )
+          .join('')
+
+        :`
+
+          <p class="small muted">
+            Sin movimientos.
+          </p>
+
+        `
+      }
+
+    </div>
+  `
 }
 
-async function pullFinance(){
 
-if(!cloudUser){
-return alert('Primero conecta Nate Cloud.');
+/* =========================================================
+   FILA DE MOVIMIENTO
+   ========================================================= */
+
+function financeRow(x){
+
+  const type=
+    normalizeFinanceType(
+      x.type
+    );
+
+
+  const synced=
+    x.syncStatus==='synced';
+
+
+  const pending=
+    x.syncStatus==='pending';
+
+
+  const error=
+    x.syncStatus==='error';
+
+
+  return`
+
+    <div
+      style="
+        padding:12px 0;
+        border-bottom:1px solid var(--line)
+      ">
+
+      <div class="row">
+
+        <div style="min-width:0">
+
+          <b>
+            ${
+              esc(
+                x.subconcept
+                ||x.concept
+                ||'Movimiento'
+              )
+            }
+          </b>
+
+
+          <div
+            class="small muted"
+            style="margin-top:3px">
+
+            ${esc(x.concept||x.category||'')}
+
+            ·
+
+            ${esc(x.payment||x.method||'')}
+
+            ·
+
+            ${fmt(x.date||today())}
+
+          </div>
+
+
+          <div
+            class="tiny muted"
+            style="margin-top:4px">
+
+            ${
+              type==='Ingreso'
+              ?'Ingreso'
+              :'Gasto'
+            }
+
+            ·
+
+            ${
+              synced
+              ?'<span class="good">✓ sincronizado</span>'
+              :pending
+                ?'<span class="warn">● pendiente</span>'
+                :error
+                  ?'<span class="bad">● error de sincronización</span>'
+                  :'local'
+            }
+
+          </div>
+
+        </div>
+
+
+        <b
+          class="
+            ${type==='Ingreso'?'good':''}
+          "
+          style="
+            white-space:nowrap;
+            font-size:15px
+          ">
+
+          ${
+            type==='Ingreso'
+            ?'+'
+            :'-'
+          }${money(x.amount)}
+
+        </b>
+
+      </div>
+
+
+      <div
+        class="row"
+        style="
+          justify-content:flex-end;
+          margin-top:9px
+        ">
+
+        <button
+          class="btn sm light"
+          onclick="
+            editFinance('${x.id}')
+          ">
+          Editar
+        </button>
+
+
+        <button
+          class="btn sm danger"
+          onclick="
+            deleteFinance('${x.id}')
+          ">
+          Eliminar
+        </button>
+
+      </div>
+
+    </div>
+  `
 }
 
-try{
 
-const {data:rows,error}=await sb
-.from('finance')
-.select('*')
-.eq('user_id',cloudUser.id)
-.order('transaction_date',{
-ascending:false
-});
+/* =========================================================
+   CAMBIAR CONCEPTOS SEGÚN GASTO / INGRESO
+   ========================================================= */
 
-if(error){
-console.error(error);
-return alert(
-'No se pudieron descargar los movimientos.'
-);
-}
-
-let localMap=new Map(
-(data.finance||[])
-.map(x=>[x.id,x])
-);
-
-(rows||[]).forEach(r=>{
-
-localMap.set(r.id,{
-
-id:r.id,
-
-date:r.transaction_date,
-
-type:r.transaction_type,
-
-concept:r.concept,
-
-subcategory:r.subcategory||'',
-
-amount:n(r.amount),
-
-paymentMethod:
-r.payment_method||'',
-
-accountCard:
-r.account_card||'',
-
-installments:
-n(r.installments)||1,
-
-note:r.note||'',
-
-createdAt:r.created_at,
-
-syncStatus:'synced'
-
-});
-
-});
-
-data.finance=[
-...localMap.values()
-];
-
-save(false);
-
-alert(
-`Nate Cloud actualizado: ${rows?.length||0} movimientos encontrados.`
-);
-
-finance();
-
-}catch(err){
-
-console.error(err);
-
-alert(
-'Error al descargar Nate Cloud.'
-);
-
-}
-}
-
-function weekly(){
-
-let d=dateObj(today());
-
-let diff=
-(d.getDay()+6)%7;
-
-let monday=
-new Date(
-d.getFullYear(),
-d.getMonth(),
-d.getDate()-diff,
-12
-);
-
-let weekStart=
-monday.toLocaleDateString('en-CA');
-
-let weekEndObj=
-new Date(
-monday.getFullYear(),
-monday.getMonth(),
-monday.getDate()+6,
-12
-);
-
-let weekEnd=
-weekEndObj.toLocaleDateString('en-CA');
-
-let gymCount=
-Object.entries(data.gymAttendance||{})
-.filter(([date,status])=>
-date>=weekStart &&
-date<=weekEnd &&
-(status==='completed'||status===true)
-).length;
-
-let cardioMin=
-Object.entries(data.cardio||{})
-.filter(([date])=>
-date>=weekStart &&
-date<=weekEnd
-)
-.reduce((s,[_,x])=>
-s+n(x.minutes),0
-);
-
-let football=
-Object.entries(data.football||{})
-.filter(([date,x])=>
-date>=weekStart &&
-date<=weekEnd &&
-x.status==='played'
-).length;
-
-let readingMin=
-(data.reading.sessions||[])
-.filter(x=>
-x.date>=weekStart &&
-x.date<=weekEnd
-)
-.reduce((s,x)=>s+n(x.minutes),0);
-
-let readingPages=
-(data.reading.sessions||[])
-.filter(x=>
-x.date>=weekStart &&
-x.date<=weekEnd
-)
-.reduce((s,x)=>s+n(x.pages),0);
-
-let review=
-data.weeklyReviews[weekStart]||{};
-
-$('app').innerHTML=`
-${back()}
-${section(
-'Weekly Reset',
-`${fmt(weekStart)} – ${fmt(weekEnd)}`
-)}
-
-<div class="grid2">
-
-<div class="card">
-<div class="eyebrow">GYM</div>
-<div class="metric">${gymCount}</div>
-<div class="small muted">sesiones</div>
-</div>
-
-<div class="card">
-<div class="eyebrow">CARDIO</div>
-<div class="metric">${cardioMin}</div>
-<div class="small muted">minutos</div>
-</div>
-
-<div class="card">
-<div class="eyebrow">FÚTBOL</div>
-<div class="metric">${football}</div>
-<div class="small muted">sesiones</div>
-</div>
-
-<div class="card">
-<div class="eyebrow">LECTURA</div>
-<div class="metric">${readingPages}</div>
-<div class="small muted">${readingMin} min</div>
-</div>
-
-</div>
-
-<div class="card stack" style="margin-top:11px">
-
-<label>
-<span class="label">Modo de la próxima semana</span>
-
-<select id="wr-mode" class="field">
-
-<option value="ideal"
-${review.mode==='ideal'?'selected':''}>
-Ideal
-</option>
-
-<option value="normal"
-${(!review.mode||review.mode==='normal')?'selected':''}>
-Normal
-</option>
-
-<option value="minimum"
-${review.mode==='minimum'?'selected':''}>
-Mínimo
-</option>
-
-</select>
-</label>
-
-<label>
-<span class="label">Victorias</span>
-<textarea
-id="wr-wins"
-class="field"
-rows="3"
->${esc(review.wins||'')}</textarea>
-</label>
-
-<label>
-<span class="label">Dificultades</span>
-<textarea
-id="wr-difficulties"
-class="field"
-rows="3"
->${esc(review.difficulties||'')}</textarea>
-</label>
-
-<label>
-<span class="label">Qué aprendí</span>
-<textarea
-id="wr-lessons"
-class="field"
-rows="3"
->${esc(review.lessons||'')}</textarea>
-</label>
-
-<label>
-<span class="label">
-¿Qué es verdaderamente importante esta semana?
-</span>
-
-<textarea
-id="wr-priority"
-class="field"
-rows="3"
->${esc(review.priority||'')}</textarea>
-</label>
-
-<button
-class="btn"
-onclick="saveWeekly('${weekStart}')"
->
-Guardar Weekly Reset
-</button>
-
-</div>
-`;
-}
-
-function saveWeekly(weekStart){
-
-data.weeklyReviews[weekStart]={
-
-mode:val('wr-mode'),
-
-wins:val('wr-wins'),
-
-difficulties:
-val('wr-difficulties'),
-
-lessons:
-val('wr-lessons'),
-
-priority:
-val('wr-priority'),
-
-savedAt:
-new Date().toISOString()
-
-};
-
-data.settings.mode=
-val('wr-mode');
-
-save(false);
-
-alert(
-'Weekly Reset guardado.'
-);
-
-weekly();
-}
-
-function backup(){
-
-$('app').innerHTML=`
-${back()}
-${section(
-'Datos & Backup',
-'Tus datos locales siguen siendo tuyos aunque Nate Cloud esté conectado.'
-)}
-
-<div class="card stack">
-
-<h2>Backup completo</h2>
-
-<div class="small muted">
-Descarga una copia JSON de Nate Life Tracker.
-Guárdala en iCloud Drive, OneDrive o donde prefieras.
-</div>
-
-<button
-class="btn"
-onclick="exportJSON()"
->
-Descargar JSON
-</button>
-
-<label>
-<span class="label">
-Restaurar JSON
-</span>
-
-<input
-id="restore-file"
-class="field"
-type="file"
-accept=".json,application/json"
-onchange="restoreJSON(this.files[0])"
->
-</label>
-
-</div>
-
-<div class="card stack" style="margin-top:11px">
-
-<h2>Excel</h2>
-
-<div class="small muted">
-Genera un libro con las principales áreas de Nate Life Tracker.
-</div>
-
-<button
-class="btn light"
-onclick="exportExcel()"
->
-Exportar Excel
-</button>
-
-</div>
-`;
-}
-
-function downloadBlob(
-blob,
-filename
+function updateFinanceConceptOptions(
+  selected=''
 ){
 
-let url=
-URL.createObjectURL(blob);
+  const type=
+    normalizeFinanceType(
+      val('fi-type')
+    );
 
-let a=
-document.createElement('a');
 
-a.href=url;
-a.download=filename;
+  const select=
+    $('fi-concept');
 
-document.body.appendChild(a);
 
-a.click();
-a.remove();
+  if(!select)return;
 
-setTimeout(
-()=>URL.revokeObjectURL(url),
-1000
-);
+
+  const concepts=
+    financeConcepts(type);
+
+
+  select.innerHTML=
+    concepts.map(
+      x=>`
+
+        <option
+          value="${esc(x)}"
+          ${
+            x===selected
+            ?'selected'
+            :''
+          }>
+          ${esc(x)}
+        </option>
+
+      `
+    ).join('')
 }
 
-function exportJSON(){
 
-let payload={
-exportedAt:
-new Date().toISOString(),
+/* =========================================================
+   CREAR MOVIMIENTO
+   ========================================================= */
 
-app:
-'Nate Life Tracker',
+function addFinance(){
 
-version:
-data.version,
+  const type=
+    normalizeFinanceType(
+      val('fi-type')
+    );
 
-data
-};
 
-downloadBlob(
-new Blob(
-[
-JSON.stringify(
-payload,
-null,
-2
-)
-],
-{
-type:'application/json'
-}
-),
-`Nate_Life_Tracker_${today()}.json`
-);
-}
+  const amount=
+    n(val('fi-amt'));
 
-function restoreJSON(file){
 
-if(!file)return;
+  if(amount<=0){
 
-if(
-!confirm(
-'Esto reemplazará los datos locales actuales por el backup seleccionado. ¿Continuar?'
-)
-)return;
+    return alert(
+      'Escribe un monto mayor a 0.'
+    )
 
-let reader=
-new FileReader();
+  }
 
-reader.onload=()=>{
 
-try{
+  const x={
 
-let parsed=
-JSON.parse(reader.result);
+    id:
+      crypto.randomUUID?.()
+      ||Date.now().toString(),
 
-let incoming=
-parsed.data||parsed;
+    date:
+      val('fi-date')
+      ||today(),
 
-data=
-migrate(incoming);
+    type,
 
-save(false);
+    concept:
+      val('fi-concept'),
 
-alert(
-'Backup restaurado.'
-);
+    category:
+      val('fi-concept'),
 
-go('home');
+    subconcept:
+      val('fi-sub').trim(),
 
-}catch(err){
+    amount,
 
-console.error(err);
+    payment:
+      val('fi-pay'),
 
-alert(
-'El archivo no parece ser un backup válido.'
-);
+    method:
+      val('fi-pay'),
 
-}
+    msi:
+      n(val('fi-msi')),
 
-};
+    note:
+      val('fi-note').trim(),
 
-reader.readAsText(file);
-}
+    createdAt:
+      Date.now(),
 
-function exportExcel(){
+    syncStatus:
+      'pending'
 
-if(
-typeof XLSX==='undefined'
-){
+  };
 
-return alert(
-'No se pudo cargar el módulo de Excel. Revisa tu conexión a internet.'
-);
 
-}
+  const duplicate=
+    findFinanceDuplicate(x);
 
-let wb=
-XLSX.utils.book_new();
 
-let financeRows=
-(data.finance||[])
-.map(x=>({
+  if(duplicate){
 
-Fecha:x.date,
+    const proceed=
+      confirm(
+        'Parece que este movimiento ya fue registrado.\n\n'+
+        `${x.date} · ${x.concept}\n`+
+        `${x.subconcept||'Sin subconcepto'}\n`+
+        `${x.payment} · ${money(x.amount)}\n\n`+
+        '¿Quieres guardarlo de todos modos?'
+      );
 
-Tipo:x.type,
 
-Concepto:x.concept,
+    if(!proceed){
+      return
+    }
 
-Subconcepto:
-x.subcategory||'',
+  }
 
-Monto:
-n(x.amount),
 
-Metodo:
-x.paymentMethod||'',
+  data.finance.push(x);
 
-Cuenta_Tarjeta:
-x.accountCard||'',
 
-MSI:
-x.installments||1,
+  queueFinanceSync(
+    x.id
+  );
 
-Nota:
-x.note||'',
 
-Sincronizacion:
-x.syncStatus||''
+  save(false);
 
-}));
 
-XLSX.utils.book_append_sheet(
-wb,
-XLSX.utils.json_to_sheet(
-financeRows.length
-?financeRows
-:[{
-Fecha:'',
-Tipo:'',
-Concepto:'',
-Monto:''
-}]
-),
-'Finanzas'
-);
+  syncFinance();
 
-let gymRows=
-(data.workouts||[])
-.map(x=>({
 
-Fecha:x.date,
-
-Rutina:x.routine,
-
-Estado:x.status
-
-}));
-
-XLSX.utils.book_append_sheet(
-wb,
-XLSX.utils.json_to_sheet(
-gymRows.length
-?gymRows
-:[{
-Fecha:'',
-Rutina:'',
-Estado:''
-}]
-),
-'Gym Sesiones'
-);
-
-let sets=
-(data.progress||[])
-.map(x=>({
-
-Fecha:x.date,
-
-Rutina:x.routine,
-
-Ejercicio:x.exercise,
-
-Serie:x.set,
-
-Peso_kg:x.weight,
-
-Repeticiones:x.reps,
-
-RIR:x.rir
-
-}));
-
-XLSX.utils.book_append_sheet(
-wb,
-XLSX.utils.json_to_sheet(
-sets.length
-?sets
-:[{
-Fecha:'',
-Ejercicio:'',
-Peso_kg:''
-}]
-),
-'Gym Ejercicios'
-);
-
-let bodyRows=
-Object.entries(data.body||{})
-.map(([date,x])=>({
-
-Fecha:date,
-
-Peso_kg:x.weight,
-
-Cintura_cm:x.waist,
-
-Abdomen_cm:x.abdomen,
-
-Pecho_cm:x.chest,
-
-Cadera_cm:x.hips,
-
-Brazo_Izq_cm:x.leftArm,
-
-Brazo_Der_cm:x.rightArm,
-
-Muslo_Izq_cm:x.leftThigh,
-
-Muslo_Der_cm:x.rightThigh,
-
-Nota:x.note||''
-
-}));
-
-XLSX.utils.book_append_sheet(
-wb,
-XLSX.utils.json_to_sheet(
-bodyRows.length
-?bodyRows
-:[{
-Fecha:'',
-Peso_kg:'',
-Cintura_cm:''
-}]
-),
-'Cuerpo'
-);
-
-let faithRows=
-Object.entries(data.faith||{})
-.map(([date,x])=>({
-
-Fecha:date,
-
-Oracion:
-!!x.prayed,
-
-Examen:
-!!x.examen,
-
-Misa:
-!!x.mass,
-
-Rosario:
-!!x.rosary,
-
-Santisimo:
-!!x.adoration
-
-}));
-
-XLSX.utils.book_append_sheet(
-wb,
-XLSX.utils.json_to_sheet(
-faithRows.length
-?faithRows
-:[{
-Fecha:'',
-Misa:''
-}]
-),
-'Fe'
-);
-
-let books=
-(data.reading.books||[])
-.map(x=>({
-
-Titulo:x.title,
-
-Autor:x.author||'',
-
-Paginas_Totales:
-x.totalPages||'',
-
-Pagina_Actual:
-x.currentPage||0,
-
-Estado:x.status,
-
-Inicio:
-x.startedDate||'',
-
-Fin:
-x.finishedDate||''
-
-}));
-
-XLSX.utils.book_append_sheet(
-wb,
-XLSX.utils.json_to_sheet(
-books.length
-?books
-:[{
-Titulo:'',
-Autor:''
-}]
-),
-'Lectura'
-);
-
-let eventRows=
-(data.events||[])
-.map(x=>({
-
-Fecha:x.date,
-
-Inicio:x.start||'',
-
-Fin:x.end||'',
-
-Evento:x.title,
-
-Categoria:x.category||'',
-
-Estado:x.status||'',
-
-Nota:x.note||''
-
-}));
-
-XLSX.utils.book_append_sheet(
-wb,
-XLSX.utils.json_to_sheet(
-eventRows.length
-?eventRows
-:[{
-Fecha:'',
-Evento:''
-}]
-),
-'Calendario'
-);
-
-XLSX.writeFile(
-wb,
-`Nate_Life_Tracker_${today()}.xlsx`
-);
+  finance()
 }
 
-function settings(){
 
-$('app').innerHTML=`
-${back()}
-${section(
-'Configuración',
-'Nate Cloud, seguridad y preferencias.'
-)}
+/* =========================================================
+   DETECTOR DE DUPLICADOS
+   ========================================================= */
 
-<div class="card stack">
+function cleanFinanceText(x){
 
-<div class="row">
-<div>
-<div class="eyebrow">NATE CLOUD</div>
-<h2 style="margin-top:4px">
-${cloudUser
-?'Conectado'
-:'Sin conectar'
-}
-</h2>
-</div>
-
-<span
-class="syncdot ${cloudUser?'ok':'pending'}"
-style="width:12px;height:12px"
-></span>
-</div>
-
-${cloudUser
-?`
-<div class="notice small">
-<b>${esc(cloudUser.email||'Usuario Nate')}</b><br>
-Tus nuevos movimientos financieros pueden sincronizarse con Supabase.
-</div>
-
-<button
-class="btn light"
-onclick="retryFinanceSync()"
->
-Sincronizar pendientes
-</button>
-
-<button
-class="btn light"
-onclick="pullFinance()"
->
-Descargar movimientos de Nate Cloud
-</button>
-
-<button
-class="btn danger"
-onclick="cloudLogout()"
->
-Cerrar sesión de Nate Cloud
-</button>
-`
-:`
-<div class="small muted">
-Inicia sesión con el usuario que creaste en Supabase.
-La contraseña no se guarda dentro de Nate Life Tracker.
-</div>
-
-${field(
-'Correo',
-'cloud-email',
-'',
-'email',
-'tu correo'
-)}
-
-${field(
-'Contraseña',
-'cloud-password',
-'',
-'password',
-'Contraseña Nate Cloud'
-)}
-
-<button
-class="btn"
-onclick="cloudLogin()"
->
-Conectar Nate Cloud
-</button>
-`
+  return String(x||'')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g,' ')
 }
 
-</div>
 
-<div class="card stack" style="margin-top:11px">
+function findFinanceDuplicate(candidate){
 
-<h2>PIN local</h2>
+  const now=
+    Date.now();
 
-<div class="small muted">
-Este PIN protege la interfaz en este dispositivo.
-No sustituye la autenticación de Nate Cloud.
-</div>
 
-${field(
-'PIN nuevo',
-'new-pin',
-'',
-'password',
-'4 o más dígitos'
-)}
+  return data.finance.find(
+    x=>{
 
-<button
-class="btn light"
-onclick="changePin()"
->
-Cambiar PIN
-</button>
+      const sameCore=
 
-</div>
+        normalizeFinanceType(x.type)
+          ===normalizeFinanceType(candidate.type)
 
-<div class="card" style="margin-top:11px">
+        &&
 
-<div class="eyebrow">
-ESTADO
-</div>
+        String(x.date||'')
+          ===String(candidate.date||'')
 
-<div
-class="small"
-style="margin-top:8px;line-height:1.7"
->
-Versión:
-<b>${esc(data.version)}</b><br>
+        &&
 
-Supabase:
-<b>${cloudUser?'conectado':'desconectado'}</b><br>
+        cleanFinanceText(
+          x.concept||x.category
+        )
+          ===
+        cleanFinanceText(
+          candidate.concept||candidate.category
+        )
 
-Movimientos locales:
-<b>${data.finance.length}</b><br>
+        &&
 
-Pendientes:
-<b>${
-data.finance.filter(
-x=>x.syncStatus!=='synced'
-).length
-}</b>
-</div>
+        cleanFinanceText(
+          x.subconcept
+        )
+          ===
+        cleanFinanceText(
+          candidate.subconcept
+        )
 
-</div>
-`;
+        &&
+
+        cleanFinanceText(
+          x.payment||x.method
+        )
+          ===
+        cleanFinanceText(
+          candidate.payment||candidate.method
+        )
+
+        &&
+
+        Math.abs(
+          n(x.amount)-
+          n(candidate.amount)
+        )<0.001;
+
+
+      /*
+        Si existe createdAt,
+        usamos una ventana corta.
+
+        Los movimientos antiguos de 2.2
+        pueden no tener createdAt.
+        En ese caso el sistema avisa
+        si el núcleo coincide exactamente.
+      */
+
+      const recent=
+        !x.createdAt
+        ||
+        (
+          now-
+          n(x.createdAt)
+        )<
+        5*60*1000;
+
+
+      return(
+        sameCore
+        &&
+        recent
+      )
+    }
+  )
 }
 
-async function initCloud(){
 
-if(!sb)return;
+/* =========================================================
+   EDITAR MOVIMIENTO
+   ========================================================= */
 
-try{
+function editFinance(id){
 
-const {
-data:{
-session
+  const x=
+    data.finance.find(
+      z=>z.id===id
+    );
+
+
+  if(!x)return;
+
+
+  const type=
+    normalizeFinanceType(
+      x.type
+    );
+
+
+  const concepts=
+    financeConcepts(type);
+
+
+  $('app').innerHTML=`
+
+    ${back()}
+
+
+    ${section(
+      'Editar movimiento',
+      'Los cambios también se sincronizarán con Nate Cloud.'
+    )}
+
+
+    <div class="card stack">
+
+
+      <label>
+
+        <span class="label">
+          Tipo
+        </span>
+
+        <select
+          id="fi-type"
+          class="field"
+          onchange="
+            updateFinanceConceptOptions()
+          ">
+
+          <option
+            value="Gasto"
+            ${
+              type==='Gasto'
+              ?'selected'
+              :''
+            }>
+            Gasto
+          </option>
+
+          <option
+            value="Ingreso"
+            ${
+              type==='Ingreso'
+              ?'selected'
+              :''
+            }>
+            Ingreso
+          </option>
+
+        </select>
+
+      </label>
+
+
+      ${field(
+        'Fecha',
+        'fi-date',
+        x.date||today(),
+        'date'
+      )}
+
+
+      <label>
+
+        <span class="label">
+          Concepto
+        </span>
+
+        <select
+          id="fi-concept"
+          class="field">
+
+          ${
+            concepts.map(
+              c=>`
+
+                <option
+                  value="${esc(c)}"
+                  ${
+                    c===
+                    (x.concept||x.category)
+                    ?'selected'
+                    :''
+                  }>
+                  ${esc(c)}
+                </option>
+
+              `
+            ).join('')
+          }
+
+        </select>
+
+      </label>
+
+
+      ${field(
+        'Subconcepto',
+        'fi-sub',
+        x.subconcept||''
+      )}
+
+
+      ${field(
+        'Monto',
+        'fi-amt',
+        x.amount||'',
+        'number'
+      )}
+
+
+      <label>
+
+        <span class="label">
+          Método / Cuenta
+        </span>
+
+        <select
+          id="fi-pay"
+          class="field">
+
+          ${
+            payment.map(
+              p=>`
+
+                <option
+                  value="${esc(p)}"
+                  ${
+                    p===
+                    (x.payment||x.method)
+                    ?'selected'
+                    :''
+                  }>
+                  ${esc(p)}
+                </option>
+
+              `
+            ).join('')
+          }
+
+        </select>
+
+      </label>
+
+
+      ${field(
+        'MSI / Número de pagos',
+        'fi-msi',
+        x.msi||'',
+        'number'
+      )}
+
+
+      ${field(
+        'Nota',
+        'fi-note',
+        x.note||''
+      )}
+
+
+      <button
+        class="btn"
+        onclick="
+          saveFinanceEdit('${x.id}')
+        ">
+        Guardar cambios
+      </button>
+
+
+      <button
+        class="btn light"
+        onclick="finance()">
+        Cancelar
+      </button>
+
+    </div>
+  `
 }
-}=await sb.auth.getSession();
 
-cloudUser=
-session?.user||null;
 
-sb.auth.onAuthStateChange(
-(_event,session)=>{
+/* =========================================================
+   GUARDAR EDICIÓN
+   ========================================================= */
 
-cloudUser=
-session?.user||null;
+function saveFinanceEdit(id){
 
-if(unlocked()){
-render();
+  const x=
+    data.finance.find(
+      z=>z.id===id
+    );
+
+
+  if(!x)return;
+
+
+  const amount=
+    n(val('fi-amt'));
+
+
+  if(amount<=0){
+
+    return alert(
+      'Escribe un monto mayor a 0.'
+    )
+
+  }
+
+
+  x.type=
+    normalizeFinanceType(
+      val('fi-type')
+    );
+
+
+  x.date=
+    val('fi-date')
+    ||today();
+
+
+  x.concept=
+    val('fi-concept');
+
+
+  x.category=
+    val('fi-concept');
+
+
+  x.subconcept=
+    val('fi-sub').trim();
+
+
+  x.amount=
+    amount;
+
+
+  x.payment=
+    val('fi-pay');
+
+
+  x.method=
+    val('fi-pay');
+
+
+  x.msi=
+    n(val('fi-msi'));
+
+
+  x.note=
+    val('fi-note').trim();
+
+
+  x.updatedAt=
+    Date.now();
+
+
+  x.syncStatus=
+    'pending';
+
+
+  queueFinanceSync(id);
+
+
+  save(false);
+
+
+  syncFinance();
+
+
+  finance()
 }
 
-}
-);
 
-}catch(err){
+/* =========================================================
+   COLA DE SINCRONIZACIÓN
+   ========================================================= */
 
-console.error(
-'Cloud init:',
-err
-);
+function queueFinanceSync(id){
 
+  if(
+    !data.sync.queue.includes(id)
+  ){
+    data.sync.queue.push(id)
+  }
 }
+
+
+/* =========================================================
+   ELIMINAR MOVIMIENTO
+   ========================================================= */
+
+async function deleteFinance(id){
+
+  const index=
+    data.finance.findIndex(
+      x=>x.id===id
+    );
+
+
+  if(index<0)return;
+
+
+  const x=
+    data.finance[index];
+
+
+  const ok=
+    confirm(
+      `¿Eliminar este movimiento?\n\n`+
+      `${x.subconcept||x.concept||'Movimiento'}\n`+
+      `${money(x.amount)}`
+    );
+
+
+  if(!ok)return;
+
+
+  /*
+    Conservamos copia temporal
+    para permitir Deshacer.
+  */
+
+  deletedFinance=
+    JSON.parse(
+      JSON.stringify(x)
+    );
+
+
+  data.finance.splice(
+    index,
+    1
+  );
+
+
+  data.sync.queue=
+    data.sync.queue.filter(
+      z=>z!==id
+    );
+
+
+  save(false);
+
+
+  /*
+    Eliminamos también de Supabase.
+  */
+
+  if(
+    sb &&
+    cloudUser
+  ){
+
+    try{
+
+      const {error}=
+        await sb
+          .from('finance')
+          .delete()
+          .eq('id',id)
+          .eq(
+            'user_id',
+            cloudUser.id
+          );
+
+
+      if(error){
+        throw error
+      }
+
+    }catch(e){
+
+      console.warn(
+        'Delete finance cloud',
+        e
+      );
+
+
+      alert(
+        'Se eliminó localmente, pero Nate Cloud no confirmó la eliminación. Revisa tu conexión antes de continuar.'
+      )
+
+    }
+
+  }
+
+
+  clearTimeout(
+    deletedFinanceTimer
+  );
+
+
+  /*
+    Ventana de 10 segundos
+    para Deshacer.
+  */
+
+  deletedFinanceTimer=
+    setTimeout(
+      ()=>{
+
+        deletedFinance=null;
+
+        if(
+          unlocked() &&
+          view==='more'
+        ){
+          /*
+            No forzamos navegación.
+          */
+        }
+
+      },
+      10000
+    );
+
+
+  finance()
 }
+
+
+/* =========================================================
+   DESHACER ELIMINACIÓN
+   ========================================================= */
+
+async function undoDeleteFinance(){
+
+  if(!deletedFinance){
+    return
+  }
+
+
+  const restored=
+    JSON.parse(
+      JSON.stringify(
+        deletedFinance
+      )
+    );
+
+
+  restored.syncStatus=
+    'pending';
+
+
+  restored.updatedAt=
+    Date.now();
+
+
+  data.finance.push(
+    restored
+  );
+
+
+  queueFinanceSync(
+    restored.id
+  );
+
+
+  deletedFinance=null;
+
+
+  clearTimeout(
+    deletedFinanceTimer
+  );
+
+
+  save(false);
+
+
+  await syncFinance();
+
+
+  finance()
+}
+
+
+/* =========================================================
+   NATE CLOUD
+   ========================================================= */
+
+async function cloudInit(){
+
+  if(!sb)return;
+
+
+  try{
+
+    let{
+      data:{
+        session
+      }
+    }=
+      await sb.auth.getSession();
+
+
+    cloudUser=
+      session?.user
+      ||null;
+
+
+    if(cloudUser){
+
+      await syncFinance()
+
+    }
+
+  }catch(e){
+
+    console.warn(
+      'Cloud init',
+      e
+    )
+
+  }
+}
+
+
+/* =========================================================
+   LOGIN NATE CLOUD
+   ========================================================= */
 
 async function cloudLogin(){
 
-if(!sb){
-return alert(
-'No se pudo inicializar Nate Cloud.'
-);
+  if(!sb){
+
+    return alert(
+      'Supabase no cargó. Revisa tu conexión.'
+    )
+
+  }
+
+
+  let email=
+    val('cloud-email')
+      .trim();
+
+
+  let password=
+    val('cloud-pass');
+
+
+  if(
+    !email||
+    !password
+  ){
+
+    return alert(
+      'Escribe correo y contraseña.'
+    )
+
+  }
+
+
+  let{
+    data:r,
+    error
+  }=
+    await sb.auth
+      .signInWithPassword({
+
+        email,
+        password
+
+      });
+
+
+  if(error){
+
+    return alert(
+      'No se pudo iniciar sesión: '+
+      error.message
+    )
+
+  }
+
+
+  cloudUser=
+    r.user;
+
+
+  await sb
+    .from('profiles')
+    .upsert(
+      {
+
+        user_id:
+          cloudUser.id,
+
+        display_name:
+          'Nate',
+
+        timezone:
+          TZ
+
+      },
+      {
+        onConflict:'user_id'
+      }
+    );
+
+
+  await syncFinance();
+
+
+  settings()
 }
 
-let email=
-val('cloud-email').trim();
 
-let password=
-val('cloud-password');
-
-if(!email || !password){
-return alert(
-'Escribe correo y contraseña.'
-);
-}
-
-try{
-
-const {
-data:result,
-error
-}=await sb.auth.signInWithPassword({
-email,
-password
-});
-
-if(error){
-console.error(error);
-
-return alert(
-'No se pudo iniciar sesión. Revisa correo y contraseña.'
-);
-}
-
-cloudUser=
-result.user;
-
-await ensureProfile();
-
-alert(
-'Nate Cloud conectado.'
-);
-
-settings();
-
-}catch(err){
-
-console.error(err);
-
-alert(
-'Error al conectar Nate Cloud.'
-);
-
-}
-}
-
-async function ensureProfile(){
-
-if(
-!sb ||
-!cloudUser
-)return;
-
-try{
-
-const {error}=await sb
-.from('profiles')
-.upsert({
-
-user_id:
-cloudUser.id,
-
-display_name:
-'Nate',
-
-timezone:
-TZ,
-
-updated_at:
-new Date().toISOString()
-
-},{
-onConflict:
-'user_id'
-});
-
-if(error){
-console.error(
-'Profile:',
-error
-);
-}
-
-}catch(err){
-
-console.error(err);
-
-}
-}
+/* =========================================================
+   LOGOUT
+   ========================================================= */
 
 async function cloudLogout(){
 
-if(!sb)return;
+  if(sb){
 
-if(
-!confirm(
-'¿Cerrar la sesión de Nate Cloud en este dispositivo?'
-)
-)return;
+    await sb.auth.signOut()
 
-await sb.auth.signOut();
+  }
 
-cloudUser=null;
 
-settings();
+  cloudUser=null;
+
+
+  settings()
 }
+
+
+/* =========================================================
+   MAPEO MÉTODO DE PAGO PARA SUPABASE
+   ========================================================= */
+
+function supabasePaymentMethod(
+  paymentName
+){
+
+  if(
+    paymentName==='Efectivo'
+  ){
+    return 'Efectivo'
+  }
+
+
+  if(
+    paymentName==='Transferencia'
+  ){
+    return 'Transferencia'
+  }
+
+
+  if(
+    paymentName==='Pluxee'
+  ){
+    return 'Vales'
+  }
+
+
+  return 'Tarjeta'
+}
+
+
+/* =========================================================
+   SINCRONIZAR FINANZAS
+   ========================================================= */
+
+async function syncFinance(){
+
+  if(
+    !sb||
+    !navigator.onLine
+  ){
+    return
+  }
+
+
+  if(!cloudUser){
+
+    try{
+
+      let{
+        data:{
+          session
+        }
+      }=
+        await sb.auth.getSession();
+
+
+      cloudUser=
+        session?.user
+        ||null;
+
+    }catch{}
+
+
+    if(!cloudUser){
+      return
+    }
+  }
+
+
+  for(
+    const id
+    of[
+      ...data.sync.queue
+    ]
+  ){
+
+    let x=
+      data.finance.find(
+        z=>z.id===id
+      );
+
+
+    /*
+      Si ya no existe localmente,
+      quitamos el ID de la cola.
+    */
+
+    if(!x){
+
+      data.sync.queue=
+        data.sync.queue.filter(
+          z=>z!==id
+        );
+
+      continue
+    }
+
+
+    let row={
+
+      id:
+        x.id,
+
+      user_id:
+        cloudUser.id,
+
+      transaction_date:
+        x.date||today(),
+
+      transaction_type:
+        normalizeFinanceType(
+          x.type
+        ).toLowerCase(),
+
+      concept:
+        x.concept
+        ||x.category
+        ||'Otros',
+
+      subcategory:
+        x.subconcept
+        ||null,
+
+      amount:
+        n(x.amount),
+
+      payment_method:
+        supabasePaymentMethod(
+          x.payment||x.method
+        ),
+
+      account_card:
+        x.payment
+        ||x.method
+        ||null,
+
+      installments:
+        n(x.msi)
+        ||1,
+
+      note:
+        x.note
+        ||null,
+
+      source:
+        'NLT'
+
+    };
+
+
+    try{
+
+      let{
+        error
+      }=
+        await sb
+          .from('finance')
+          .upsert(
+            row,
+            {
+              onConflict:'id'
+            }
+          );
+
+
+      if(error){
+        throw error
+      }
+
+
+      x.syncStatus=
+        'synced';
+
+
+      data.sync.queue=
+        data.sync.queue.filter(
+          z=>z!==id
+        );
+
+
+      save(false);
+
+    }catch(e){
+
+      console.warn(
+        'Sync finance',
+        e
+      );
+
+
+      x.syncStatus=
+        'error';
+
+
+      save(false);
+
+
+      break
+    }
+  }
+}
+
+
+/* =========================================================
+   WEEKLY RESET
+   ========================================================= */
+
+function weekly(){
+
+  let end=
+    dateObj(today());
+
+
+  let start=
+    new Date(end);
+
+
+  start.setDate(
+    end.getDate()-6
+  );
+
+
+  let ds=
+    d=>
+      d.toLocaleDateString(
+        'en-CA'
+      );
+
+
+  let dates=[];
+
+
+  for(
+    let i=0;
+    i<7;
+    i++
+  ){
+
+    let d=
+      new Date(start);
+
+
+    d.setDate(
+      start.getDate()+i
+    );
+
+
+    dates.push(
+      ds(d)
+    )
+  }
+
+
+  let gymDone=
+    dates.filter(
+      d=>
+        data.gymAttendance[d]
+          ==='completed'
+        ||
+        data.gymAttendance[d]
+          ===true
+    ).length;
+
+
+  let football=
+    dates.filter(
+      d=>
+        data.football[d]
+          ?.status
+        ==='played'
+    ).length;
+
+
+  let cardioMin=
+    dates.reduce(
+      (a,d)=>
+        a+
+        n(
+          data.cardio[d]
+            ?.minutes
+        ),
+      0
+    );
+
+
+  let readMin=
+    data.reading.sessions
+      .filter(
+        x=>
+          dates.includes(
+            x.date
+          )
+      )
+      .reduce(
+        (a,x)=>
+          a+n(x.minutes),
+        0
+      );
+
+
+  let prayer=
+    dates.filter(
+      d=>
+        data.faith[d]
+          ?.prayed
+    ).length;
+
+
+  let old=
+    data.weeklyReviews[today()]
+    ||{};
+
+
+  $('app').innerHTML=`
+
+    ${back()}
+
+
+    ${section(
+      'Weekly Reset',
+      'Revisar para corregir dirección, no para castigarte.'
+    )}
+
+
+    <div class="grid2">
+
+      <div class="card">
+
+        <div class="eyebrow">
+          GYM
+        </div>
+
+        <div class="metric">
+          ${gymDone}
+        </div>
+
+        <div class="small muted">
+          sesiones
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="eyebrow">
+          FÚTBOL
+        </div>
+
+        <div class="metric">
+          ${football}
+        </div>
+
+        <div class="small muted">
+          asistencias
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="eyebrow">
+          CARDIO
+        </div>
+
+        <div class="metric">
+          ${cardioMin}
+        </div>
+
+        <div class="small muted">
+          minutos
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="eyebrow">
+          LECTURA
+        </div>
+
+        <div class="metric">
+          ${readMin}
+        </div>
+
+        <div class="small muted">
+          minutos
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div
+      class="card stack"
+      style="margin-top:11px">
+
+
+      <div>
+
+        <span class="label">
+          Oración
+        </span>
+
+        <b>
+          ${prayer}/7 días registrados
+        </b>
+
+      </div>
+
+
+      <label>
+
+        <span class="label">
+          ¿Qué funcionó?
+        </span>
+
+        <textarea
+          id="wr-good"
+          class="field">${esc(old.good||'')}</textarea>
+
+      </label>
+
+
+      <label>
+
+        <span class="label">
+          ¿Qué debo corregir?
+        </span>
+
+        <textarea
+          id="wr-fix"
+          class="field">${esc(old.fix||'')}</textarea>
+
+      </label>
+
+
+      <label>
+
+        <span class="label">
+          ¿Qué es verdaderamente importante esta semana?
+        </span>
+
+        <textarea
+          id="wr-focus"
+          class="field">${esc(old.focus||'')}</textarea>
+
+      </label>
+
+
+      <button
+        class="btn"
+        onclick="saveWeekly()">
+        Cerrar semana
+      </button>
+
+    </div>
+  `
+}
+
+
+function saveWeekly(){
+
+  data.weeklyReviews[
+    today()
+  ]={
+
+    good:
+      val('wr-good'),
+
+    fix:
+      val('wr-fix'),
+
+    focus:
+      val('wr-focus')
+
+  };
+
+
+  save(false);
+
+
+  weekly()
+}
+
+
+/* =========================================================
+   CONFIGURACIÓN
+   ========================================================= */
+
+function settings(){
+
+  let status=
+    cloudUser
+    ?`Conectado como ${esc(cloudUser.email||'Nate')}`
+    :'Sin iniciar sesión';
+
+
+  $('app').innerHTML=`
+
+    ${back()}
+
+
+    ${section(
+      'Configuración',
+      'Seguridad local y sincronización en la nube.'
+    )}
+
+
+    <div class="card stack">
+
+      <h2>
+        Nate Cloud · Supabase
+      </h2>
+
+
+      <div class="small muted">
+
+        ${status}.
+
+        La contraseña se envía directamente
+        a Supabase y NLT no la guarda
+        en localStorage.
+
+      </div>
+
+
+      ${
+        cloudUser
+        ?`
+
+          <div class="notice small">
+
+            <span class="syncdot ok"></span>
+
+            Nube activa ·
+            ${data.sync.queue.length}
+            pendiente(s)
+
+          </div>
+
+
+          <button
+            class="btn"
+            onclick="
+              syncFinance()
+                .then(settings)
+            ">
+            Sincronizar ahora
+          </button>
+
+
+          <button
+            class="btn light"
+            onclick="cloudLogout()">
+            Cerrar sesión de nube
+          </button>
+
+        `
+        :`
+
+          ${field(
+            'Correo NLT',
+            'cloud-email',
+            'nategoramusic@gmail.com',
+            'email'
+          )}
+
+
+          ${field(
+            'Contraseña NLT',
+            'cloud-pass',
+            '',
+            'password'
+          )}
+
+
+          <button
+            class="btn"
+            onclick="cloudLogin()">
+            Conectar Nate Cloud
+          </button>
+
+        `
+      }
+
+    </div>
+
+
+    <div
+      class="card stack"
+      style="margin-top:11px">
+
+      <h2>
+        Excel
+      </h2>
+
+      <div class="small muted">
+
+        Nate Cloud ya funciona como fuente central.
+        La conexión automática con tu Excel
+        se configurará como una capa separada
+        para no comprometer el registro principal.
+
+      </div>
+
+    </div>
+
+
+    <div
+      class="card stack"
+      style="margin-top:11px">
+
+      <h2>
+        PIN
+      </h2>
+
+
+      ${field(
+        'Nuevo PIN',
+        'newpin',
+        '',
+        'password'
+      )}
+
+
+      <button
+        class="btn light"
+        onclick="changePin()">
+        Cambiar PIN
+      </button>
+
+
+      <button
+        class="btn danger"
+        onclick="lock()">
+        Bloquear ahora
+      </button>
+
+    </div>
+  `
+}
+
+
+/* =========================================================
+   CAMBIAR PIN
+   ========================================================= */
 
 function changePin(){
 
-let pin=
-val('new-pin').trim();
+  let p=
+    val('newpin');
 
-if(
-!pin ||
-pin.length<4 ||
-!/^\d+$/.test(pin)
-){
-return alert(
-'Usa un PIN numérico de al menos 4 dígitos.'
-);
+
+  if(
+    !/^\d{4,8}$/.test(p)
+  ){
+
+    return alert(
+      'PIN de 4 a 8 dígitos.'
+    )
+
+  }
+
+
+  data.pin=p;
+
+
+  save(false);
+
+
+  alert(
+    'PIN actualizado.'
+  )
 }
 
-data.pin=pin;
 
-save(false);
+/* =========================================================
+   BLOQUEAR
+   ========================================================= */
 
-alert(
-'PIN actualizado.'
-);
+function lock(){
 
-settings();
+  sessionStorage.removeItem(
+    'nlt-unlocked'
+  );
+
+
+  render()
 }
 
-function navState(){
 
-[
-'home',
-'plan',
-'food',
-'progress',
-'more'
-].forEach(v=>{
+/* =========================================================
+   BACKUP
+   ========================================================= */
 
-let el=$('n-'+v);
+function backup(){
 
-if(el){
-el.classList.toggle(
-'on',
-view===v
-);
+  $('app').innerHTML=`
+
+    ${back()}
+
+
+    ${section(
+      'Datos & Backup'
+    )}
+
+
+    <div class="stack">
+
+      ${menu(
+        'Exportar Excel',
+        'Copia local de tus registros de NLT.',
+        "exportExcel()"
+      )}
+
+
+      ${menu(
+        'Backup JSON',
+        'Respaldo completo de datos estructurados.',
+        "exportJSON()"
+      )}
+
+
+      <div class="card">
+
+        <h3>
+          Restaurar JSON
+        </h3>
+
+
+        <input
+          class="field"
+          style="margin-top:10px"
+          type="file"
+          accept=".json"
+          onchange="
+            importJSON(event)
+          ">
+
+      </div>
+
+    </div>
+  `
 }
 
-});
+
+/* =========================================================
+   EXPORTAR JSON
+   ========================================================= */
+
+function exportJSON(){
+
+  dl(
+
+    new Blob(
+      [
+        JSON.stringify(
+          data,
+          null,
+          2
+        )
+      ],
+      {
+        type:'application/json'
+      }
+    ),
+
+    `NLT_Backup_${today()}.json`
+
+  )
 }
+
+
+/* =========================================================
+   IMPORTAR JSON
+   ========================================================= */
+
+function importJSON(e){
+
+  let f=
+    e.target.files[0];
+
+
+  if(!f)return;
+
+
+  let r=
+    new FileReader();
+
+
+  r.onload=()=>{
+
+    try{
+
+      let x=
+        JSON.parse(
+          r.result
+        );
+
+
+      if(
+        confirm(
+          '¿Reemplazar datos actuales?'
+        )
+      ){
+
+        data={
+          ...fresh(),
+          ...x
+        };
+
+
+        data.version=2.3;
+
+
+        save();
+
+
+        alert(
+          'Restaurado'
+        )
+
+      }
+
+    }catch{
+
+      alert(
+        'Backup inválido'
+      )
+
+    }
+
+  };
+
+
+  r.readAsText(f)
+}
+
+
+/* =========================================================
+   DESCARGAR ARCHIVO
+   ========================================================= */
+
+function dl(blob,name){
+
+  let a=
+    document.createElement(
+      'a'
+    );
+
+
+  a.href=
+    URL.createObjectURL(
+      blob
+    );
+
+
+  a.download=
+    name;
+
+
+  a.click();
+
+
+  setTimeout(
+    ()=>
+      URL.revokeObjectURL(
+        a.href
+      ),
+    500
+  )
+}
+
+
+/* =========================================================
+   EXPORTAR EXCEL
+   ========================================================= */
+
+function exportExcel(){
+
+  if(
+    typeof XLSX==='undefined'
+  ){
+
+    return alert(
+      'Módulo Excel no disponible.'
+    )
+
+  }
+
+
+  let wb=
+    XLSX.utils.book_new();
+
+
+  let add=
+    (name,rows)=>
+      XLSX.utils
+        .book_append_sheet(
+          wb,
+          XLSX.utils
+            .json_to_sheet(
+              rows
+            ),
+          name
+        );
+
+
+  /*
+    Finanzas con nombres más claros
+    para exportación.
+  */
+
+  add(
+    'Finanzas',
+
+    data.finance.map(
+      x=>({
+
+        Fecha:
+          x.date,
+
+        Tipo:
+          normalizeFinanceType(
+            x.type
+          ),
+
+        Concepto:
+          x.concept
+          ||x.category
+          ||'',
+
+        Subconcepto:
+          x.subconcept
+          ||'',
+
+        Monto:
+          n(x.amount),
+
+        MetodoCuenta:
+          x.payment
+          ||x.method
+          ||'',
+
+        MSI:
+          n(x.msi)
+          ||'',
+
+        Nota:
+          x.note
+          ||'',
+
+        Sincronizacion:
+          x.syncStatus
+          ||'local'
+
+      })
+    )
+  );
+
+
+  add(
+    'Cuerpo',
+
+    Object.entries(
+      data.body
+    ).map(
+      ([Fecha,x])=>({
+        Fecha,
+        ...x
+      })
+    )
+  );
+
+
+  add(
+    'Sueño',
+
+    Object.entries(
+      data.sleep
+    ).map(
+      ([Fecha,x])=>({
+        Fecha,
+        ...x
+      })
+    )
+  );
+
+
+  add(
+    'Fe',
+
+    Object.entries(
+      data.faith
+    ).map(
+      ([Fecha,x])=>({
+        Fecha,
+        ...x
+      })
+    )
+  );
+
+
+  add(
+    'Confesiones',
+
+    data.confessions.map(
+      Fecha=>({
+        Fecha
+      })
+    )
+  );
+
+
+  add(
+    'Cardio',
+
+    Object.entries(
+      data.cardio
+    ).map(
+      ([Fecha,x])=>({
+        Fecha,
+        ...x
+      })
+    )
+  );
+
+
+  add(
+    'Futbol',
+
+    Object.entries(
+      data.football
+    ).map(
+      ([Fecha,x])=>({
+        Fecha,
+        ...x
+      })
+    )
+  );
+
+
+  add(
+    'Lectura',
+    data.reading.sessions
+  );
+
+
+  add(
+    'Eventos',
+    data.events
+  );
+
+
+  /*
+    Exportación de entrenamientos.
+    Mostramos cargas en LB,
+    aunque internamente se preservan KG.
+  */
+
+  let gymRows=[];
+
+
+  Object.entries(
+    data.workouts
+  ).forEach(
+    ([Fecha,w])=>{
+
+      Object.entries(
+        w.entries||{}
+      ).forEach(
+        ([Ejercicio,e])=>{
+
+          (e.sets||[]).forEach(
+            (s,i)=>{
+
+              gymRows.push({
+
+                Fecha,
+
+                Rutina:
+                  w.routine||'',
+
+                Ejercicio,
+
+                Serie:
+                  i+1,
+
+                Peso_lb:
+                  s.weight
+                  ?kgToLb(s.weight)
+                  :'',
+
+                Repeticiones:
+                  s.reps||'',
+
+                RIR:
+                  s.rir??'',
+
+                Completado:
+                  !!w.completed
+
+              })
+
+            }
+          )
+
+        }
+      )
+
+    }
+  );
+
+
+  add(
+    'Gym',
+    gymRows
+  );
+
+
+  let nr=[];
+
+
+  Object.entries(
+    data.mealLog
+  ).forEach(
+    ([Fecha,l])=>
+
+      baseMeals.forEach(
+        m=>{
+
+          let x=
+            l[m.id];
+
+
+          if(x?.done){
+
+            let z=
+              mealMacros(
+                x.items||m.items
+              );
+
+
+            nr.push({
+
+              Fecha,
+
+              Comida:
+                m.name,
+
+              Calorias:
+                Math.round(z.k),
+
+              Proteina:
+                +z.p.toFixed(1),
+
+              Carbs:
+                +z.c.toFixed(1),
+
+              Grasas:
+                +z.f.toFixed(1),
+
+              Nota:
+                x.note||''
+
+            })
+
+          }
+
+        }
+      )
+
+  );
+
+
+  add(
+    'Nutricion',
+    nr
+  );
+
+
+  XLSX.writeFile(
+    wb,
+    `Nate_Life_Tracker_${today()}.xlsx`
+  )
+}
+
+
+/* =========================================================
+   RENDER PRINCIPAL
+   ========================================================= */
 
 function render(){
 
-if(!unlocked()){
-lockScreen();
-return;
+  if(
+    !unlocked()
+  ){
+
+    return lockScreen()
+
+  }
+
+
+  $('nav')
+    .classList
+    .remove('hide');
+
+
+  document
+    .querySelectorAll(
+      '.nav button'
+    )
+    .forEach(
+      x=>
+        x.classList.remove(
+          'on'
+        )
+    );
+
+
+  let id={
+
+    home:'n-home',
+
+    plan:'n-plan',
+
+    food:'n-food',
+
+    progress:'n-progress',
+
+    more:'n-more'
+
+  }[view];
+
+
+  if($(id)){
+
+    $(id)
+      .classList
+      .add('on')
+
+  }
+
+
+  if(view==='home'){
+    home()
+  }
+
+
+  if(view==='plan'){
+    plan()
+  }
+
+
+  if(view==='food'){
+    food()
+  }
+
+
+  if(view==='progress'){
+    progressView()
+  }
+
+
+  if(view==='more'){
+    more()
+  }
 }
 
-$('nav').classList.remove('hide');
 
-navState();
+/* =========================================================
+   EVENTOS GLOBALES
+   ========================================================= */
 
-switch(view){
-
-case 'home':
-home();
-break;
-
-case 'plan':
-plan();
-break;
-
-case 'food':
-food();
-break;
-
-case 'progress':
-progressView();
-break;
-
-case 'more':
-more();
-break;
-
-default:
-home();
-break;
-
-}
-}
-
-initCloud().then(
-()=>render()
+window.addEventListener(
+  'online',
+  syncFinance
 );
 
+
+if(sb){
+
+  sb.auth.onAuthStateChange(
+    (_e,session)=>{
+
+      cloudUser=
+        session?.user
+        ||null
+
+    }
+  )
+
+}
+
+
+/* =========================================================
+   INICIO
+   ========================================================= */
+
+save(false);
+
+render();
+
+cloudInit();
+
 </script>
+
 </body>
 </html>

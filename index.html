@@ -60,7 +60,7 @@ const kgToLb=kg=>kg?+(n(kg)*2.2046226218).toFixed(1):''; const lbToKg=lb=>lb?+(n
 function fresh(){return{version:2.2,pin:DEFAULT_PIN,gymState:{next:0},workouts:{},gymAttendance:{},cardio:{},football:{},macroGoal:{calories:2400,protein:155,carbs:287,fats:70},mealLog:{},macroLog:{},body:{},sleep:{},faith:{},confessions:[],reading:{books:[],sessions:[]},events:[],finance:[],sync:{endpoint:'',queue:[]},weeklyReviews:{},settings:{returnPhaseStart:today()}}}
 function migrate(){let o={};try{o=JSON.parse(localStorage.getItem(KEY))||{}}catch{};let d=fresh(); for(const k of Object.keys(d)) if(o[k]!==undefined)d[k]=o[k]; d.version=2.2; d.gymState={...fresh().gymState,...(o.gymState||{})};d.reading={...fresh().reading,...(o.reading||{})};d.sync={...fresh().sync,...(o.sync||{})}; if(o.macroGoal&&o.macroGoal.calories===2400&&o.macroGoal.protein===155&&o.macroGoal.carbs===275&&o.macroGoal.fats===70)d.macroGoal=fresh().macroGoal; return d}
 let data=migrate(),view=localStorage.getItem(VIEW)||'home'; function save(r=true){localStorage.setItem(KEY,JSON.stringify(data));if(r)render()} function unlocked(){return sessionStorage.getItem('nlt-unlocked')==='1'} function go(v){view=v;localStorage.setItem(VIEW,v);render()} const $=id=>document.getElementById(id); const val=id=>$(id)?.value||'';
-function section(t,s=''){return `<div style="margin-bottom:18px"><div class="eyebrow">NATE LIFE TRACKER 2.26</div><h1>${t}</h1>${s?`<div class="muted small">${s}</div>`:''}</div>`} function field(l,id,v='',type='text',ph=''){return `<label><span class="label">${l}</span><input class="field" id="${id}" type="${type}" value="${esc(v)}" placeholder="${ph}"></label>`} function pill(t,on,js){return `<button class="pill ${on?'on':''}" onclick="${js}">${t}</button>`} function progress(a,b){let p=b?Math.max(0,Math.min(100,Math.round(a/b*100))):0;return `<div class="bar"><i style="width:${p}%"></i></div>`}
+function section(t,s=''){return `<div style="margin-bottom:18px"><div class="eyebrow">NATE LIFE TRACKER 2.27</div><h1>${t}</h1>${s?`<div class="muted small">${s}</div>`:''}</div>`} function field(l,id,v='',type='text',ph=''){return `<label><span class="label">${l}</span><input class="field" id="${id}" type="${type}" value="${esc(v)}" placeholder="${ph}"></label>`} function pill(t,on,js){return `<button class="pill ${on?'on':''}" onclick="${js}">${t}</button>`} function progress(a,b){let p=b?Math.max(0,Math.min(100,Math.round(a/b*100))):0;return `<div class="bar"><i style="width:${p}%"></i></div>`}
 function lockScreen(){ $('nav').classList.add('hide');$('app').innerHTML=`<div class="lock"><div><div class="orb">N</div><div class="eyebrow" style="margin-top:25px">THE NATE SYSTEM</div><h1>Bienvenido, Nate.</h1><div class="muted small">Planificar · Ejecutar · Registrar · Revisar</div><input id="pin" class="field" style="text-align:center;letter-spacing:.4em;margin-top:25px" type="password" inputmode="numeric" placeholder="PIN" onkeydown="if(event.key==='Enter')unlock()"><button class="btn" style="width:100%;margin-top:10px" onclick="unlock()">Entrar</button><div id="pinerr" class="bad small" style="margin-top:10px"></div></div></div>`}
 function unlock(){if(val('pin')===String(data.pin||DEFAULT_PIN)){sessionStorage.setItem('nlt-unlocked','1');render()}else $('pinerr').textContent='PIN incorrecto'}
 function nextGym(){return gymRoutine[n(data.gymState.next)%gymRoutine.length]}
@@ -360,7 +360,27 @@ async function resolveFinanceCloudId(x){
   }catch(e){console.warn('Resolve finance cloud id',e);return null}
 }
 async function saveFinance(){
-  let type=val('fi-type'),concept=val('fi-concept'),existing=editingFinanceId?data.finance.find(z=>z.id===editingFinanceId):null;
+  // Capture an immutable snapshot BEFORE any re-render/reset can change the form.
+  const rawType=String(val('fi-type')||'').trim();
+  const type=rawType==='Ingreso'?'Ingreso':rawType==='Gasto'?'Gasto':'';
+  const concept=String(val('fi-concept')||'').trim();
+  const formSnapshot={
+    date:String(val('fi-date')||today()).trim(),
+    type,
+    concept,
+    subconcept:String(val('fi-sub')||'').trim(),
+    amount:n(val('fi-amt')),
+    payment:String(val('fi-pay')||'').trim(),
+    msi:n(val('fi-msi')),
+    note:String(val('fi-note')||'')
+  };
+  if(!formSnapshot.type)return alert('Selecciona Gasto o Ingreso.');
+  if(!formSnapshot.concept)return alert('Selecciona un concepto.');
+  if(!formSnapshot.amount)return alert('Agrega un monto.');
+  if(!formSnapshot.payment)return alert('Selecciona un método / cuenta.');
+  const allowed=financeConcepts[formSnapshot.type]||[];
+  if(!allowed.includes(formSnapshot.concept))return alert(`El concepto “${formSnapshot.concept}” no corresponde a ${formSnapshot.type}. Vuelve a seleccionarlo.`);
+  let existing=editingFinanceId?data.finance.find(z=>z.id===editingFinanceId):null;
   let realId=editingFinanceId||crypto.randomUUID?.()||Date.now().toString();
   if(existing?.source==='excel'||String(realId).startsWith('excel-')){
     const resolved=await resolveFinanceCloudId(existing);
@@ -370,8 +390,19 @@ async function saveFinance(){
     }
     realId=resolved;
   }
-  let x={id:realId,date:val('fi-date')||today(),month:dateObj(val('fi-date')||today()).toLocaleDateString('es-MX',{month:'long',year:'numeric'}),type,category:concept,concept,subconcept:val('fi-sub').trim(),amount:n(val('fi-amt')),payment:val('fi-pay'),method:val('fi-pay'),msi:n(val('fi-msi')),note:val('fi-note'),source:'nlt',syncStatus:'pending'};
-  if(!x.amount)return alert('Agrega un monto.');
+  const cloudPayload={
+    transaction_date:formSnapshot.date,
+    transaction_type:formSnapshot.type==='Ingreso'?'ingreso':'gasto',
+    concept:formSnapshot.concept,
+    subcategory:formSnapshot.subconcept||null,
+    amount:formSnapshot.amount,
+    payment_method:formSnapshot.payment==='Efectivo'?'Efectivo':formSnapshot.payment==='Transferencia'?'Transferencia':formSnapshot.payment==='Pluxee'?'Vales':'Tarjeta',
+    account_card:formSnapshot.payment,
+    installments:formSnapshot.msi||1,
+    note:formSnapshot.note||null,
+    source:'NLT'
+  };
+  let x={id:realId,date:formSnapshot.date,month:dateObj(formSnapshot.date).toLocaleDateString('es-MX',{month:'long',year:'numeric'}),type:formSnapshot.type,category:formSnapshot.concept,concept:formSnapshot.concept,subconcept:formSnapshot.subconcept,amount:formSnapshot.amount,payment:formSnapshot.payment,method:formSnapshot.payment,msi:formSnapshot.msi,note:formSnapshot.note,source:'nlt',syncStatus:'pending',_syncPayload:cloudPayload};
   let dup=data.finance.find(z=>z.id!==editingFinanceId&&z.id!==x.id&&financeFingerprint(z)===financeFingerprint(x));
   if(dup&&!confirm('Ya existe un movimiento igual (misma fecha, tipo, concepto, subconcepto, monto y método). ¿Guardarlo de todos modos?'))return;
   if(editingFinanceId){
@@ -453,7 +484,22 @@ async function syncFinance(){
     let x=data.finance.find(z=>z.id===id);
     // Never silently discard an orphaned queue item. Keep it visible as a real pending problem.
     if(!x){console.warn('Finance queue orphan',id);allOk=false;continue}
-    let row={id:x.id,user_id:cloudUser.id,transaction_date:x.date||today(),transaction_type:String(x.type||'Gasto').trim().toLowerCase()==='ingreso'?'ingreso':'gasto',concept:x.concept||x.category||(String(x.type||'').trim().toLowerCase()==='ingreso'?'Otros':'Actividades'),subcategory:x.subconcept||null,amount:n(x.amount),payment_method:(x.payment==='Efectivo'?'Efectivo':x.payment==='Transferencia'?'Transferencia':x.payment==='Pluxee'?'Vales':'Tarjeta'),account_card:x.payment||x.method||null,installments:n(x.msi)||1,note:x.note||null,source:'NLT'};
+    const payload=x._syncPayload?{...x._syncPayload}:{
+      transaction_date:x.date||today(),
+      transaction_type:String(x.type||'').trim().toLowerCase(),
+      concept:String(x.concept||x.category||'').trim(),
+      subcategory:x.subconcept||null,
+      amount:n(x.amount),
+      payment_method:(x.payment==='Efectivo'?'Efectivo':x.payment==='Transferencia'?'Transferencia':x.payment==='Pluxee'?'Vales':'Tarjeta'),
+      account_card:x.payment||x.method||null,
+      installments:n(x.msi)||1,
+      note:x.note||null,
+      source:'NLT'
+    };
+    // Never invent Gasto/Actividades when payload data is missing or invalid.
+    if(!['gasto','ingreso'].includes(payload.transaction_type)){x.syncStatus='error';allOk=false;save(false);console.warn('Finance sync blocked: invalid transaction_type',payload);continue}
+    if(!payload.concept){x.syncStatus='error';allOk=false;save(false);console.warn('Finance sync blocked: missing concept',payload);continue}
+    let row={id:x.id,user_id:cloudUser.id,...payload};
     try{
       let {error}=await sb.from('finance').upsert(row,{onConflict:'id'});if(error)throw error;
       x.syncStatus='synced';data.sync.queue=data.sync.queue.filter(z=>z!==id);save(false)
